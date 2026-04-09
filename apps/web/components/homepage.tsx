@@ -23,6 +23,54 @@ const inr = new Intl.NumberFormat('en-IN', {
   maximumFractionDigits: 0,
 })
 
+function CartIcon() {
+  return (
+    <svg aria-hidden="true" viewBox="0 0 24 24" className="h-4 w-4 fill-none stroke-current stroke-[2]">
+      <path d="M3 4h2l2.2 10.5a2 2 0 0 0 2 1.6h7.8a2 2 0 0 0 2-1.6L21 8H6.2" />
+      <circle cx="10" cy="20" r="1.5" />
+      <circle cx="17" cy="20" r="1.5" />
+    </svg>
+  )
+}
+
+function PlusCartIcon() {
+  return (
+    <svg aria-hidden="true" viewBox="0 0 24 24" className="h-4 w-4 fill-none stroke-current stroke-[2]">
+      <path d="M3 5h2l2.2 9.5a2 2 0 0 0 2 1.5h7.8a2 2 0 0 0 2-1.5L21 9H6.2" />
+      <path d="M10.5 12V6.5" />
+      <path d="M7.75 9.25h5.5" />
+      <circle cx="10" cy="19.5" r="1.5" />
+      <circle cx="17" cy="19.5" r="1.5" />
+    </svg>
+  )
+}
+
+function HeartIcon() {
+  return (
+    <svg aria-hidden="true" viewBox="0 0 24 24" className="h-4 w-4 fill-none stroke-current stroke-[2]">
+      <path d="M12 21s-7-4.8-9.2-9.4C1 8.2 2.7 5.5 5.8 5.1c1.7-.2 3.4.6 4.2 1.9.8-1.3 2.5-2.1 4.2-1.9 3.1.4 4.8 3.1 3 6.5C19 16.2 12 21 12 21Z" />
+    </svg>
+  )
+}
+
+function HomeIcon() {
+  return (
+    <svg aria-hidden="true" viewBox="0 0 24 24" className="h-4 w-4 fill-none stroke-current stroke-[2]">
+      <path d="M3 10.5 12 3l9 7.5" />
+      <path d="M5.5 9.5V21h13V9.5" />
+    </svg>
+  )
+}
+
+function ShopIcon() {
+  return (
+    <svg aria-hidden="true" viewBox="0 0 24 24" className="h-4 w-4 fill-none stroke-current stroke-[2]">
+      <path d="M4 8h16l-1.2 11a2 2 0 0 1-2 1.8H7.2a2 2 0 0 1-2-1.8L4 8Z" />
+      <path d="M9 8V6a3 3 0 0 1 6 0v2" />
+    </svg>
+  )
+}
+
 type OfferType = 'PERCENTAGE' | 'FIXED'
 
 function getOffer(product: HomepageProduct): {
@@ -176,16 +224,27 @@ function ProductCard({ product }: { product: HomepageProduct }) {
               feedback.notifyWarning('Already in cart', `${product.title} is already saved in your cart.`)
             }}
           >
-            {inCart ? 'Already in cart' : 'Add to Cart'}
+            <span className="inline-flex items-center gap-2">
+              <PlusCartIcon />
+              <span>{inCart ? 'Already in cart' : 'Add to Cart'}</span>
+            </span>
           </button>
           <button
             className="rounded-lg border border-slate-300 px-4 py-2 text-sm font-bold text-slate-700 transition hover:bg-slate-50"
             onClick={() => {
               marketplace.toggleWishlist(product.id)
-              feedback.notifyInfo(inWishlist ? 'Removed from wishlist' : 'Saved to wishlist', inWishlist ? `${product.title} has been removed from your wishlist.` : `${product.title} is now available in your wishlist.`)
+              feedback.notifyInfo(
+                inWishlist ? 'Removed from wishlist' : 'Saved to wishlist',
+                inWishlist
+                  ? `${product.title} has been removed from your wishlist.`
+                  : `${product.title} is now available in your wishlist.`,
+              )
             }}
           >
-            {inWishlist ? 'Saved' : 'Save'}
+            <span className="inline-flex items-center gap-2">
+              <HeartIcon />
+              <span>{inWishlist ? 'Saved' : 'Save'}</span>
+            </span>
           </button>
         </div>
       </div>
@@ -195,12 +254,15 @@ function ProductCard({ product }: { product: HomepageProduct }) {
 
 export function HomepageClient({ initialData }: { initialData: HomepageData }) {
   const router = useRouter()
+  const marketplace = useMarketplaceState()
   const feedback = useSiteFeedback()
   const [audience, setAudience] = useState<HomepageAudience>('student')
   const [activeCategory, setActiveCategory] = useState<string>('All')
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [selectedSchool, setSelectedSchool] = useState('')
   const [selectedClass, setSelectedClass] = useState('')
+  const cartCount = Object.values(marketplace.cart).reduce((total, quantity) => total + quantity, 0)
+  const wishlistCount = marketplace.wishlist.length
 
   const activeProducts = useMemo(
     () => initialData.products.filter((product) => product.audience === audience),
@@ -268,7 +330,7 @@ export function HomepageClient({ initialData }: { initialData: HomepageData }) {
   }
 
   return (
-    <main className="text-slate-900">
+    <main className="pb-24 text-slate-900 lg:pb-0">
       <div className="px-4 py-2 text-center text-xs font-semibold text-white sm:text-sm" style={{ backgroundColor: BRAND.navy }}>
         New user offer: Extra 10% off + free delivery on first order
       </div>
@@ -276,10 +338,12 @@ export function HomepageClient({ initialData }: { initialData: HomepageData }) {
       <header className="sticky top-0 z-40 border-b border-slate-200 bg-white/95 backdrop-blur">
         <div className="mx-auto flex max-w-7xl items-center gap-3 px-4 py-3 sm:px-6">
           <Link href="/" className="inline-flex items-center gap-3 text-xl font-extrabold tracking-tight sm:text-2xl" style={{ color: BRAND.navy }}>
-            <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-gradient-to-br from-[#0b3558] to-[#00a67e] text-base text-white shadow-lg">
-              E
-            </span>
-            <span>EduMart</span>
+            <img
+              src="/brand/karom-edumart-shield.png"
+              alt="Karom EduMart"
+              className="h-11 w-11 rounded-xl border border-amber-200 bg-white object-contain p-1 shadow-lg"
+            />
+            <span>KAROM EDUMART</span>
           </Link>
 
           <div className="hidden flex-1 items-center gap-2 rounded-xl border border-slate-200 bg-white px-3 py-2 md:flex">
@@ -308,14 +372,42 @@ export function HomepageClient({ initialData }: { initialData: HomepageData }) {
                 {label}
               </Link>
             ))}
+            <Link href="/wishlist" className="inline-flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-100" aria-label="Open wishlist">
+              <HeartIcon />
+              <span>Wishlist</span>
+            </Link>
+            <Link href="/cart" className="inline-flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-100" aria-label="Open cart">
+              <CartIcon />
+              <span>Cart</span>
+            </Link>
           </nav>
 
           <div className="ml-auto flex items-center gap-2 lg:ml-0">
-            <Link href="/login" className="rounded-lg border border-slate-300 px-3 py-2 text-sm font-semibold text-slate-700">
+            <Link href="/login" className="hidden rounded-lg border border-slate-300 px-3 py-2 text-sm font-semibold text-slate-700 sm:inline-flex">
               Login
             </Link>
             <Link href="/signup" className="hidden rounded-lg px-3 py-2 text-sm font-semibold text-white sm:inline-flex" style={{ backgroundColor: BRAND.teal }}>
               Become Seller
+            </Link>
+            <Link
+              href="/wishlist"
+              className="relative inline-flex h-10 w-10 items-center justify-center rounded-xl border border-slate-300 text-slate-700 transition hover:bg-slate-100 lg:hidden"
+              aria-label="Open wishlist"
+            >
+              <HeartIcon />
+              {wishlistCount > 0 ? (
+                <span className="absolute -right-1 -top-1 rounded-full bg-slate-900 px-1.5 py-0.5 text-[10px] font-bold text-white">{wishlistCount}</span>
+              ) : null}
+            </Link>
+            <Link
+              href="/cart"
+              className="relative inline-flex h-10 w-10 items-center justify-center rounded-xl border border-slate-300 text-slate-700 transition hover:bg-slate-100 lg:hidden"
+              aria-label="Open cart"
+            >
+              <CartIcon />
+              {cartCount > 0 ? (
+                <span className="absolute -right-1 -top-1 rounded-full bg-[#0B3558] px-1.5 py-0.5 text-[10px] font-bold text-white">{cartCount}</span>
+              ) : null}
             </Link>
             <button
               type="button"
@@ -767,6 +859,27 @@ export function HomepageClient({ initialData }: { initialData: HomepageData }) {
           </div>
         </div>
       </footer>
+
+      <nav className="fixed bottom-3 left-1/2 z-50 flex w-[calc(100%-1.5rem)] max-w-md -translate-x-1/2 items-center justify-between rounded-2xl border border-slate-200 bg-white/95 px-3 py-2 shadow-2xl backdrop-blur lg:hidden">
+        <Link href="/" className="inline-flex h-11 w-11 items-center justify-center rounded-xl text-slate-700 transition hover:bg-slate-100" aria-label="Home">
+          <HomeIcon />
+        </Link>
+        <Link href="/shop" className="inline-flex h-11 w-11 items-center justify-center rounded-xl text-slate-700 transition hover:bg-slate-100" aria-label="Shop">
+          <ShopIcon />
+        </Link>
+        <Link href="/wishlist" className="relative inline-flex h-11 w-11 items-center justify-center rounded-xl text-slate-700 transition hover:bg-slate-100" aria-label="Wishlist">
+          <HeartIcon />
+          {wishlistCount > 0 ? (
+            <span className="absolute right-1 top-1 rounded-full bg-slate-900 px-1.5 py-0.5 text-[10px] font-bold text-white">{wishlistCount}</span>
+          ) : null}
+        </Link>
+        <Link href="/cart" className="relative inline-flex h-11 w-11 items-center justify-center rounded-xl text-slate-700 transition hover:bg-slate-100" aria-label="Cart">
+          <CartIcon />
+          {cartCount > 0 ? (
+            <span className="absolute right-1 top-1 rounded-full bg-[#0B3558] px-1.5 py-0.5 text-[10px] font-bold text-white">{cartCount}</span>
+          ) : null}
+        </Link>
+      </nav>
     </main>
   )
 }

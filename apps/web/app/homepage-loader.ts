@@ -1,3 +1,4 @@
+import { prisma } from '../lib/prisma'
 import type { HomepageAudience, HomepageData, HomepageProduct } from '../lib/homepage-types'
 
 const FALLBACK_IMAGE =
@@ -442,5 +443,43 @@ function toHomepageProduct(product: {
 }
 
 export async function getHomepageData(): Promise<HomepageData> {
-  return { products: FALLBACK_PRODUCTS }
+  try {
+    const products = await prisma.product.findMany({
+      where: {
+        status: 'ACTIVE',
+        deletedAt: null,
+      },
+      include: {
+        vendor: {
+          select: {
+            storeName: true,
+          },
+        },
+        category: {
+          select: {
+            name: true,
+          },
+        },
+        images: {
+          orderBy: {
+            displayOrder: 'asc',
+          },
+          take: 1,
+          select: {
+            imageUrl: true,
+          },
+        },
+      },
+      orderBy: {
+        createdAt: 'desc',
+      },
+      take: 24,
+    })
+
+    return {
+      products: products.map(toHomepageProduct),
+    }
+  } catch {
+    return { products: FALLBACK_PRODUCTS }
+  }
 }

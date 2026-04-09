@@ -16,7 +16,7 @@ const spaceGrotesk = Space_Grotesk({
 })
 
 export const metadata: Metadata = {
-  title: 'EduMart - Premium Education Marketplace',
+  title: 'Karom EduMart - Premium Education Marketplace',
   description: 'Buy and sell educational products with ease. Secure, trusted, scalable.',
   openGraph: {
     type: 'website',
@@ -25,7 +25,11 @@ export const metadata: Metadata = {
     siteName: 'EduMart',
   },
   icons: {
-    icon: '/favicon.ico',
+    icon: [
+      { url: '/brand/karom-edumart-shield.png', type: 'image/png' },
+      { url: '/favicon.ico', type: 'image/x-icon' },
+    ],
+    apple: '/brand/karom-edumart-shield.png',
   },
 }
 
