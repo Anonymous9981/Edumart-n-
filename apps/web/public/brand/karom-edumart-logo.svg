@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 320" role="img" aria-label="Karom EduMart">
+  <defs>
+    <linearGradient id="g" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0%" stop-color="#d4af37"/>
+      <stop offset="50%" stop-color="#f7e38c"/>
+      <stop offset="100%" stop-color="#8a6b12"/>
+    </linearGradient>
+  </defs>
+  <rect width="960" height="320" rx="42" fill="none"/>
+  <g transform="translate(70 30)">
+    <path d="M160 0 290 64v138c0 86-54 140-130 188C84 342 30 288 30 202V64L160 0Z" fill="url(#g)"/>
+    <path d="M160 18 276 74v124c0 74-47 120-116 164-69-44-116-90-116-164V74l116-56Z" fill="#1b1403" opacity="0.16"/>
+    <path d="M160 34 260 83v116c0 64-39 104-100 144-61-40-100-80-100-144V83l100-49Z" fill="#fff2b7" opacity="0.24"/>
+    <circle cx="194" cy="128" r="12" fill="#f7e38c"/>
+    <circle cx="224" cy="150" r="8" fill="#f7e38c"/>
+    <path d="M112 103h42l18 74 15-74h29l16 61 22-61h36l-43 108h-37l-14-58-15 58h-35l-34-108Z" fill="#f9e28f"/>
+    <path d="M86 225h150l-10 21H96l-10-21Zm16 29h118l-8 18H102l-0-18Zm23 24h72l-6 14h-60l-6-14Z" fill="#f9e28f"/>
+  </g>
+  <text x="390" y="140" font-family="Arial, Helvetica, sans-serif" font-size="52" font-weight="800" letter-spacing="2" fill="url(#g)">KAROM</text>
+  <text x="390" y="210" font-family="Arial, Helvetica, sans-serif" font-size="58" font-weight="900" letter-spacing="2" fill="url(#g)">EDUMART</text>
+</svg>

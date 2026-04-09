@@ -79,11 +79,10 @@ export function MarketingPageShell({
           <div>
             <Link href="/" className="inline-flex items-center gap-3 text-2xl font-extrabold tracking-tight" style={{ color: '#0B3558' }}>
               <img
-                src="/brand/karom-edumart-shield.png"
+                src="/brand/karom-edumart-logo.svg"
                 alt="Karom EduMart"
-                className="h-11 w-11 rounded-xl border border-amber-200 bg-white object-contain p-1 shadow-lg"
+                className="h-11 w-[180px] flex-none rounded-xl border border-amber-200 bg-white object-contain px-2 py-1 shadow-lg"
               />
-              <span>KAROM EDUMART</span>
             </Link>
             <p className="mt-1 text-xs font-semibold uppercase tracking-[0.24em] text-slate-500">Education marketplace</p>
           </div>

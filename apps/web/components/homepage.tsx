@@ -339,11 +339,10 @@ export function HomepageClient({ initialData }: { initialData: HomepageData }) {
         <div className="mx-auto flex max-w-7xl items-center gap-3 px-4 py-3 sm:px-6">
           <Link href="/" className="inline-flex items-center gap-3 text-xl font-extrabold tracking-tight sm:text-2xl" style={{ color: BRAND.navy }}>
             <img
-              src="/brand/karom-edumart-shield.png"
+              src="/brand/karom-edumart-logo.svg"
               alt="Karom EduMart"
-              className="h-11 w-11 rounded-xl border border-amber-200 bg-white object-contain p-1 shadow-lg"
+              className="h-11 w-[180px] flex-none rounded-xl border border-amber-200 bg-white object-contain px-2 py-1 shadow-lg"
             />
-            <span>KAROM EDUMART</span>
           </Link>
 
           <div className="hidden flex-1 items-center gap-2 rounded-xl border border-slate-200 bg-white px-3 py-2 md:flex">

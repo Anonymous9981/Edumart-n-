@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Karom EduMart favicon">
+  <defs>
+    <linearGradient id="g" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0%" stop-color="#d4af37"/>
+      <stop offset="100%" stop-color="#8a6b12"/>
+    </linearGradient>
+  </defs>
+  <rect width="64" height="64" rx="16" fill="#0b3558"/>
+  <path d="M32 8 50 17v19c0 13-8 23-18 31C22 59 14 49 14 36V17l18-9Z" fill="url(#g)"/>
+  <path d="M22 21h8l3 12 2-12h6l3 9 4-9h8l-10 23h-8l-3-11-3 11h-8l-10-23Z" fill="#f9e28f"/>
+</svg>
