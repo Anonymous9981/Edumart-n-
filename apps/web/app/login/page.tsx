@@ -1,8 +1,8 @@
 'use client';
 
 import Link from 'next/link';
-import { useRouter, useSearchParams } from 'next/navigation';
-import { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
 
 import { getDashboardPath } from '../../lib/auth';
 import { UserRole } from '@edumart/shared';
@@ -46,16 +46,20 @@ function normalizeAuthError(message: string | null) {
 
 export default function LoginPage() {
   const router = useRouter();
-  const searchParams = useSearchParams();
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(() => normalizeAuthError(searchParams.get('error')));
+  const [error, setError] = useState('');
   const [fieldErrors, setFieldErrors] = useState<{ email?: string; password?: string }>({});
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [rememberMe, setRememberMe] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [redirectPath, setRedirectPath] = useState('/dashboard/customer');
 
-  const redirectPath = normalizeReturnPath(searchParams.get('from'));
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    setError(normalizeAuthError(params.get('error')));
+    setRedirectPath(normalizeReturnPath(params.get('from')));
+  }, []);
 
   function goToGoogle() {
     router.push(`/api/v1/auth/google?returnTo=${encodeURIComponent(redirectPath)}`);

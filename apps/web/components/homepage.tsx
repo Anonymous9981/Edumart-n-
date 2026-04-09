@@ -195,6 +195,7 @@ function ProductCard({ product }: { product: HomepageProduct }) {
 
 export function HomepageClient({ initialData }: { initialData: HomepageData }) {
   const router = useRouter()
+  const feedback = useSiteFeedback()
   const [audience, setAudience] = useState<HomepageAudience>('student')
   const [activeCategory, setActiveCategory] = useState<string>('All')
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
