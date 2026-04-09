@@ -1,0 +1,62 @@
+export enum UserRole {
+  CUSTOMER = 'CUSTOMER',
+  VENDOR = 'VENDOR',
+  ADMIN = 'ADMIN',
+}
+
+export enum VendorStatus {
+  PENDING_VERIFICATION = 'PENDING_VERIFICATION',
+  APPROVED = 'APPROVED',
+  REJECTED = 'REJECTED',
+  SUSPENDED = 'SUSPENDED',
+}
+
+export enum ProductStatus {
+  DRAFT = 'DRAFT',
+  PENDING_APPROVAL = 'PENDING_APPROVAL',
+  ACTIVE = 'ACTIVE',
+  INACTIVE = 'INACTIVE',
+  DELETED = 'DELETED',
+}
+
+export enum OrderStatus {
+  PENDING = 'PENDING',
+  CONFIRMED = 'CONFIRMED',
+  SHIPPED = 'SHIPPED',
+  DELIVERED = 'DELIVERED',
+  CANCELLED = 'CANCELLED',
+  REFUNDED = 'REFUNDED',
+}
+
+export enum PaymentStatus {
+  PENDING = 'PENDING',
+  PAID = 'PAID',
+  FAILED = 'FAILED',
+  REFUNDED = 'REFUNDED',
+}
+
+export enum FulfillmentStatus {
+  PENDING = 'PENDING',
+  SHIPPED = 'SHIPPED',
+  DELIVERED = 'DELIVERED',
+  CANCELLED = 'CANCELLED',
+}
+
+export enum NotificationType {
+  ORDER_UPDATE = 'ORDER_UPDATE',
+  PRODUCT_APPROVED = 'PRODUCT_APPROVED',
+  VENDOR_REJECTED = 'VENDOR_REJECTED',
+  PROMO = 'PROMO',
+  SYSTEM = 'SYSTEM',
+}
+
+export enum AddressLabel {
+  HOME = 'HOME',
+  WORK = 'WORK',
+  OTHER = 'OTHER',
+}
+
+export enum CouponType {
+  PERCENTAGE = 'PERCENTAGE',
+  FIXED_AMOUNT = 'FIXED_AMOUNT',
+}

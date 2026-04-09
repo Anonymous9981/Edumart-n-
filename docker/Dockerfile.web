@@ -1,0 +1,39 @@
+FROM node:20-alpine
+
+WORKDIR /app
+
+# Install pnpm
+RUN npm install -g pnpm
+
+# Copy workspace files
+COPY pnpm-workspace.yaml .
+COPY package.json .
+COPY turbo.json .
+COPY tsconfig.json .
+COPY prisma ./prisma
+
+# Copy packages
+COPY packages ./packages
+
+# Copy web app
+COPY apps/web ./apps/web
+
+# Install dependencies
+RUN pnpm install
+
+# Build packages
+RUN pnpm run build
+
+# Build web app
+WORKDIR /app/apps/web
+RUN pnpm run build
+
+# Generate Prisma Client
+RUN npx prisma generate
+
+# Set production environment
+ENV NODE_ENV=production
+
+EXPOSE 3000
+
+CMD ["node", ".next/standalone/server.js"]

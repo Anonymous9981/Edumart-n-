@@ -1,0 +1,41 @@
+{
+  "compilerOptions": {
+    "target": "ES2020",
+    "lib": ["ES2020"],
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "ignoreDeprecations": "6.0",
+    "resolveJsonModule": true,
+    "allowJs": true,
+    "checkJs": false,
+    "declaration": true,
+    "declarationMap": true,
+    "sourceMap": true,
+    "outDir": "./dist",
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["apps/web/*"],
+      "@edumart/shared": ["packages/shared/src/index.ts"],
+      "@edumart/shared/*": ["packages/shared/src/*"],
+      "@edumart/validation": ["packages/validation/src/index.ts"],
+      "@edumart/validation/*": ["packages/validation/src/*"],
+      "@edumart/sdk": ["packages/sdk/src/index.ts"],
+      "@edumart/sdk/*": ["packages/sdk/src/*"],
+      "@edumart/ui": ["packages/ui/src/index.ts"],
+      "@edumart/ui/*": ["packages/ui/src/*"],
+      "@edumart/config": ["packages/config/src/index.ts"],
+      "@edumart/config/*": ["packages/config/src/*"],
+      "@shared/*": ["packages/shared/src/*"],
+      "@validation/*": ["packages/validation/src/*"],
+      "@sdk/*": ["packages/sdk/src/*"],
+      "@ui/*": ["packages/ui/src/*"],
+      "@config/*": ["packages/config/src/*"]
+    }
+  },
+  "include": ["packages", "apps"],
+  "exclude": ["node_modules", "dist", "build"]
+}

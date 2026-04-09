@@ -1,0 +1,1053 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>EduMart - Student & School Products</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --navy: #0b3558;
+            --blue: #2563eb;
+            --orange: #f97316;
+            --purple: #a855f7;
+            --green: #10b981;
+            --teal: #00a67e;
+            --amber: #ff8a24;
+            --slate: #64748b;
+            --border: #e2e8f0;
+            --bg-light: #f8fafc;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            color: #1e293b;
+            background: #f8fafc;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 16px;
+        }
+
+        /* ===== TOPBAR ===== */
+        .topbar {
+            background: var(--navy);
+            color: white;
+            text-align: center;
+            padding: 10px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        /* ===== HEADER ===== */
+        .header {
+            background: white;
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-content {
+            display: grid;
+            grid-template-columns: 120px 1fr auto;
+            gap: 16px;
+            align-items: center;
+            padding: 12px 0;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: 900;
+            color: var(--blue);
+        }
+
+        .search-box {
+            display: flex;
+            align-items: center;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 0 12px;
+            background: white;
+        }
+
+        .search-box input {
+            border: none;
+            outline: none;
+            padding: 10px;
+            flex: 1;
+            font-size: 14px;
+        }
+
+        .search-box button {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+            color: var(--slate);
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 16px;
+            align-items: center;
+        }
+
+        .header-link {
+            color: var(--navy);
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 14px;
+            cursor: pointer;
+            transition: color 0.3s;
+        }
+
+        .header-link:hover {
+            color: var(--blue);
+        }
+
+        .cart-icon {
+            position: relative;
+            cursor: pointer;
+            font-size: 20px;
+        }
+
+        .cart-count {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background: var(--blue);
+            color: white;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        /* ===== NAV TABS ===== */
+        .nav-tabs {
+            display: flex;
+            gap: 24px;
+            padding: 0;
+            border-top: 1px solid var(--border);
+            background: white;
+        }
+
+        .nav-tab {
+            padding: 12px 16px;
+            border: none;
+            background: none;
+            cursor: pointer;
+            font-weight: 500;
+            color: var(--slate);
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s;
+        }
+
+        .nav-tab:hover,
+        .nav-tab.active {
+            color: var(--blue);
+            border-bottom-color: var(--blue);
+        }
+
+        /* ===== HERO SECTION ===== */
+        .hero-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+            margin: 32px 0;
+        }
+
+        .hero-card {
+            border-radius: 16px;
+            padding: 32px;
+            color: white;
+            position: relative;
+            overflow: hidden;
+            min-height: 240px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+
+        .hero-card:hover {
+            transform: translateY(-4px);
+        }
+
+        .hero-card.blue {
+            background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
+        }
+
+        .hero-card.orange {
+            background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
+        }
+
+        .hero-label {
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            opacity: 0.9;
+        }
+
+        .hero-title {
+            font-size: 28px;
+            font-weight: 800;
+            margin: 12px 0;
+            line-height: 1.2;
+        }
+
+        .hero-subtitle {
+            font-size: 14px;
+            opacity: 0.95;
+            margin-bottom: 16px;
+        }
+
+        .hero-btn {
+            align-self: flex-start;
+            background: white;
+            color: inherit;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 14px;
+        }
+
+        .hero-card.blue .hero-btn {
+            color: #2563eb;
+        }
+
+        .hero-card.orange .hero-btn {
+            color: #f97316;
+        }
+
+        .hero-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        /* ===== CATEGORY SECTION ===== */
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 40px 0 24px 0;
+        }
+
+        .section-title {
+            font-size: 20px;
+            font-weight: 800;
+            color: #1e293b;
+        }
+
+        .view-all {
+            color: var(--slate);
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: color 0.3s;
+        }
+
+        .view-all:hover {
+            color: var(--blue);
+        }
+
+        .categories {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 12px;
+            margin-bottom: 40px;
+        }
+
+        .category-chip {
+            background: white;
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            padding: 16px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 600;
+            color: #1e293b;
+            font-size: 14px;
+        }
+
+        .category-chip:hover,
+        .category-chip.active {
+            border-color: var(--blue);
+            background: #eff6ff;
+            color: var(--blue);
+        }
+
+        /* ===== BANNER SECTION ===== */
+        .banner {
+            border-radius: 16px;
+            padding: 32px;
+            color: white;
+            margin: 40px 0;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 32px;
+            align-items: center;
+        }
+
+        .banner.prime {
+            background: linear-gradient(135deg, #a855f7 0%, #7c3aed 100%);
+        }
+
+        .banner.sale {
+            background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
+        }
+
+        .banner-content h2 {
+            font-size: 28px;
+            font-weight: 800;
+            margin-bottom: 12px;
+        }
+
+        .banner-content p {
+            font-size: 14px;
+            opacity: 0.95;
+            margin-bottom: 16px;
+        }
+
+        .banner-list {
+            list-style: none;
+            margin: 16px 0;
+        }
+
+        .banner-list li {
+            font-size: 13px;
+            margin: 8px 0;
+            padding-left: 24px;
+            position: relative;
+        }
+
+        .banner-list li:before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: white;
+            font-weight: bold;
+        }
+
+        .banner-btn {
+            background: white;
+            border: none;
+            padding: 10px 24px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 14px;
+        }
+
+        .banner.prime .banner-btn {
+            color: #a855f7;
+        }
+
+        .banner.sale .banner-btn {
+            color: #2563eb;
+        }
+
+        .banner-btn:hover {
+            transform: scale(1.05);
+        }
+
+        .banner-image {
+            text-align: center;
+        }
+
+        .banner-image img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 12px;
+        }
+
+        /* ===== PRODUCTS SECTION ===== */
+        .products-section {
+            margin: 40px 0;
+        }
+
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+            gap: 16px;
+        }
+
+        .product-card {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        .product-card:hover {
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.12);
+            transform: translateY(-4px);
+        }
+
+        .product-image {
+            width: 100%;
+            height: 160px;
+            background: linear-gradient(135deg, #e0e7ff 0%, #f3e8ff 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .product-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .product-badge {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            background: var(--orange);
+            color: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .product-info {
+            padding: 12px;
+        }
+
+        .product-title {
+            font-size: 13px;
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 6px;
+            line-height: 1.3;
+            min-height: 26px;
+        }
+
+        .product-meta {
+            font-size: 11px;
+            color: var(--slate);
+            margin-bottom: 8px;
+        }
+
+        .product-rating {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            margin-bottom: 8px;
+            font-size: 12px;
+        }
+
+        .star {
+            color: #fbbf24;
+        }
+
+        .price-row {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        .price-original {
+            text-decoration: line-through;
+            color: var(--slate);
+            font-size: 12px;
+        }
+
+        .price-final {
+            color: #1e293b;
+            font-size: 14px;
+        }
+
+        .price-discount {
+            color: #10b981;
+            font-size: 12px;
+        }
+
+        .add-to-cart-btn {
+            width: 100%;
+            background: var(--blue);
+            color: white;
+            border: none;
+            padding: 8px;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 12px;
+            transition: all 0.3s;
+        }
+
+        .add-to-cart-btn:hover {
+            background: #1d4ed8;
+            transform: scale(1.02);
+        }
+
+        /* ===== FEATURES SECTION ===== */
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 24px;
+            margin: 40px 0;
+            padding: 32px;
+            background: white;
+            border-radius: 16px;
+        }
+
+        .feature {
+            text-align: center;
+        }
+
+        .feature-icon {
+            font-size: 32px;
+            margin-bottom: 12px;
+        }
+
+        .feature-title {
+            font-weight: 700;
+            margin-bottom: 6px;
+            color: #1e293b;
+        }
+
+        .feature-desc {
+            font-size: 13px;
+            color: var(--slate);
+        }
+
+        /* ===== NEWSLETTER SECTION ===== */
+        .newsletter {
+            background: var(--blue);
+            color: white;
+            border-radius: 16px;
+            padding: 40px;
+            margin: 40px 0;
+            text-align: center;
+        }
+
+        .newsletter h2 {
+            font-size: 24px;
+            font-weight: 800;
+            margin-bottom: 8px;
+        }
+
+        .newsletter p {
+            margin-bottom: 24px;
+            opacity: 0.95;
+        }
+
+        .newsletter-input {
+            display: flex;
+            gap: 8px;
+            max-width: 500px;
+            margin: 0 auto;
+        }
+
+        .newsletter-input input {
+            flex: 1;
+            padding: 12px 16px;
+            border: none;
+            border-radius: 8px;
+            outline: none;
+            font-size: 14px;
+        }
+
+        .newsletter-input button {
+            background: var(--orange);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .newsletter-input button:hover {
+            background: #ea580c;
+        }
+
+        /* ===== FOOTER ===== */
+        .footer {
+            background: #1e293b;
+            color: white;
+            padding: 40px 0;
+            margin-top: 40px;
+        }
+
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 32px;
+            margin-bottom: 32px;
+        }
+
+        .footer-col h4 {
+            font-size: 14px;
+            font-weight: 700;
+            margin-bottom: 16px;
+            color: white;
+        }
+
+        .footer-col ul {
+            list-style: none;
+        }
+
+        .footer-col li {
+            margin: 8px 0;
+        }
+
+        .footer-col a {
+            color: #cbd5e1;
+            text-decoration: none;
+            font-size: 13px;
+            transition: color 0.3s;
+        }
+
+        .footer-col a:hover {
+            color: white;
+        }
+
+        .footer-bottom {
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            padding-top: 24px;
+            text-align: center;
+            font-size: 12px;
+            color: #94a3b8;
+        }
+
+        .social-links {
+            display: flex;
+            gap: 12px;
+            margin-top: 12px;
+        }
+
+        .social-links a {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 32px;
+            height: 32px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            color: white;
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+
+        .social-links a:hover {
+            background: var(--blue);
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 768px) {
+            .header-content {
+                grid-template-columns: 1fr;
+            }
+
+            .hero-section {
+                grid-template-columns: 1fr;
+            }
+
+            .banner {
+                grid-template-columns: 1fr;
+            }
+
+            .products-grid {
+                grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            }
+
+            .categories {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        @media (max-width: 480px) {
+            .products-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .categories {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        /* ===== ANIMATIONS ===== */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .fade-in-up {
+            animation: fadeInUp 0.6s ease forwards;
+        }
+    </style>
+</head>
+<body>
+    <!-- TOPBAR -->
+    <div class="topbar">
+        🎓 Back to School Sale - Up to 50% Off | Use Code: BACKTOSCHOOL
+    </div>
+
+    <!-- HEADER -->
+    <div class="header">
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">📚 EduMart</div>
+                <div class="search-box">
+                    <input type="text" id="searchInput" placeholder="Search books, supplies, uniforms..." />
+                    <button onclick="handleSearch()">🔍</button>
+                </div>
+                <div class="header-actions">
+                    <a href="#" class="header-link">For Students</a>
+                    <a href="#" class="header-link">For Schools</a>
+                    <div class="cart-icon" onclick="toggleCart()">
+                        🛒
+                        <span class="cart-count" id="cartCount">0</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- NAV TABS -->
+        <div class="container">
+            <div class="nav-tabs">
+                <button class="nav-tab active" onclick="switchTab(this, 'students')">👨‍🎓 Student Supplies</button>
+                <button class="nav-tab" onclick="switchTab(this, 'schools')">🏫 School Infrastructure</button>
+                <button class="nav-tab" onclick="switchTab(this, 'digital')">💻 Digital Learning</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div class="container">
+        <!-- HERO SECTION -->
+        <section class="hero-section">
+            <div class="hero-card blue fade-in-up" onclick="navigateTo('students')">
+                <div>
+                    <div class="hero-label">👨‍🎓 Student Supplies</div>
+                    <div class="hero-title">Everything Students Need</div>
+                    <div class="hero-subtitle">Books, uniforms, stationery, bags & more at best prices</div>
+                </div>
+                <button class="hero-btn">Explore Student Collection →</button>
+            </div>
+
+            <div class="hero-card orange fade-in-up" onclick="navigateTo('schools')" style="animation-delay: 0.1s">
+                <div>
+                    <div class="hero-label">🏫 School Infrastructure</div>
+                    <div class="hero-title">Complete School Infrastructure</div>
+                    <div class="hero-subtitle">Classroom furniture, sports equipment, lab tools & safety equipment</div>
+                </div>
+                <button class="hero-btn">Explore School Collection →</button>
+            </div>
+        </section>
+
+        <!-- CATEGORY SECTION -->
+        <section id="students" class="products-section">
+            <div class="section-header">
+                <h2 class="section-title">👥 Shop by Student Category</h2>
+                <a href="#" class="view-all">View All →</a>
+            </div>
+            <div class="categories" id="categoriesContainer">
+                <!-- Categories will be populated by JS -->
+            </div>
+        </section>
+
+        <!-- PRIME BANNER -->
+        <section class="banner prime">
+            <div class="banner-content">
+                <h2>💎 EduMart Prime</h2>
+                <p>Get unlimited free delivery + exclusive deals for just ₹199/month</p>
+                <ul class="banner-list">
+                    <li>Free Delivery on all orders</li>
+                    <li>Early access to sales</li>
+                    <li>Extra discounts</li>
+                </ul>
+                <button class="banner-btn">Join Prime - ₹199/month</button>
+            </div>
+            <div class="banner-image">
+                <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Crect fill='%23ffffff' width='200' height='200' rx='8'/%3E%3Ctext x='50%25' y='50%25' font-size='48' text-anchor='middle' dy='.3em' fill='%23a855f7'%3E👑%3C/text%3E%3C/svg%3E" alt="Prime" />
+            </div>
+        </section>
+
+        <!-- FEATURED PRODUCTS -->
+        <section class="products-section">
+            <div class="section-header">
+                <h2 class="section-title">⭐ Featured Student Products</h2>
+                <a href="#" class="view-all">View All →</a>
+            </div>
+            <div class="products-grid" id="featuredProducts">
+                <!-- Products will be populated by JS -->
+            </div>
+        </section>
+
+        <!-- SALE BANNER -->
+        <section class="banner sale">
+            <div class="banner-content">
+                <h2>🎉 Student Special</h2>
+                <p>Limited time offer on all student supplies</p>
+                <button class="banner-btn">Shop Sale Items →</button>
+            </div>
+            <div style="font-size: 64px; text-align: center;">50% OFF</div>
+        </section>
+
+        <!-- BEST SELLERS -->
+        <section class="products-section">
+            <div class="section-header">
+                <h2 class="section-title">🔥 Best Sellers</h2>
+                <a href="#" class="view-all">View All →</a>
+            </div>
+            <div class="products-grid" id="bestSellers">
+                <!-- Products will be populated by JS -->
+            </div>
+        </section>
+
+        <!-- REFER SECTION -->
+        <section class="banner" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); grid-template-columns: 1fr; text-align: center;">
+            <h2>🎁 Refer & Earn ₹100</h2>
+            <p>Share your EduMart code with friends and earn rewards</p>
+            <button class="banner-btn" style="background: white; color: #10b981; margin: 0 auto;">Refer Now →</button>
+        </section>
+
+        <!-- FEATURES -->
+        <section class="features">
+            <div class="feature">
+                <div class="feature-icon">🚚</div>
+                <div class="feature-title">Fast Delivery</div>
+                <div class="feature-desc">Free delivery on orders above ₹500</div>
+            </div>
+            <div class="feature">
+                <div class="feature-icon">🔒</div>
+                <div class="feature-title">Secure Payment</div>
+                <div class="feature-desc">100% secure transactions</div>
+            </div>
+            <div class="feature">
+                <div class="feature-icon">↩️</div>
+                <div class="feature-title">Easy Returns</div>
+                <div class="feature-desc">7-day easy return policy</div>
+            </div>
+            <div class="feature">
+                <div class="feature-icon">✅</div>
+                <div class="feature-title">Genuine Products</div>
+                <div class="feature-desc">Only authentic products</div>
+            </div>
+        </section>
+
+        <!-- NEWSLETTER -->
+        <section class="newsletter">
+            <h2>📬 Subscribe to our Newsletter</h2>
+            <p>Get updates on new products and special offers</p>
+            <div class="newsletter-input">
+                <input type="email" placeholder="Enter your email..." />
+                <button onclick="subscribeNewsletter()">Subscribe</button>
+            </div>
+        </section>
+    </div>
+
+    <!-- FOOTER -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-col">
+                    <h4>📚 About EduMart</h4>
+                    <ul>
+                        <li><a href="#" onclick="handleNavigation(event)">About Us</a></li>
+                        <li><a href="#" onclick="handleNavigation(event)">Careers</a></li>
+                        <li><a href="#" onclick="handleNavigation(event)">Blog</a></li>
+                        <li><a href="#" onclick="handleNavigation(event)">Press</a></li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h4>🛍️ Shop</h4>
+                    <ul>
+                        <li><a href="#" onclick="handleNavigation(event)">Books & Textbooks</a></li>
+                        <li><a href="#" onclick="handleNavigation(event)">Stationery</a></li>
+                        <li><a href="#" onclick="handleNavigation(event)">Uniforms</a></li>
+                        <li><a href="#" onclick="handleNavigation(event)">Sports Equipment</a></li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h4>💬 Customer Service</h4>
+                    <ul>
+                        <li><a href="#" onclick="handleNavigation(event)">Contact Us</a></li>
+                        <li><a href="#" onclick="handleNavigation(event)">Track Order</a></li>
+                        <li><a href="#" onclick="handleNavigation(event)">Shipping & Delivery</a></li>
+                        <li><a href="#" onclick="handleNavigation(event)">Returns & Refunds</a></li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h4>⚖️ Policies</h4>
+                    <ul>
+                        <li><a href="#" onclick="handleNavigation(event)">Privacy Policy</a></li>
+                        <li><a href="#" onclick="handleNavigation(event)">Terms & Conditions</a></li>
+                        <li><a href="#" onclick="handleNavigation(event)">Shipping Policy</a></li>
+                        <li><a href="#" onclick="handleNavigation(event)">FAQ</a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="footer-bottom">
+                <div style="margin-bottom: 16px;">
+                    <strong>Follow Us</strong>
+                    <div class="social-links">
+                        <a href="#" onclick="handleNavigation(event)" title="Facebook">f</a>
+                        <a href="#" onclick="handleNavigation(event)" title="Twitter">𝕏</a>
+                        <a href="#" onclick="handleNavigation(event)" title="Instagram">📷</a>
+                        <a href="#" onclick="handleNavigation(event)" title="LinkedIn">in</a>
+                    </div>
+                </div>
+                <p>&copy; 2024 EduMart. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Sample data
+        const categories = [
+            { name: "📚 Books & Textbooks", icon: "📚" },
+            { name: "✏️ Stationery", icon: "✏️" },
+            { name: "👕 School Uniforms", icon: "👕" },
+            { name: "🎒 Bags & Backpacks", icon: "🎒" },
+            { name: "⚽ Sports Equipment", icon: "⚽" },
+            { name: "🎨 Art Supplies", icon: "🎨" }
+        ];
+
+        const products = [
+            { id: 1, name: "Premium School Backpack", price: 1299, originalPrice: 1999, discount: 35, rating: 4.5, reviews: 234, category: "Bags", image: "🎒" },
+            { id: 2, name: "CBSE Mathematics Textbook", price: 299, originalPrice: 399, discount: 25, rating: 4.8, reviews: 567, category: "Books", image: "📚" },
+            { id: 3, name: "Complete Stationery Kit", price: 599, originalPrice: 999, discount: 40, rating: 4.3, reviews: 123, category: "Stationery", image: "✏️" },
+            { id: 4, name: "School Uniform Shirt", price: 449, originalPrice: 699, discount: 35, rating: 4.6, reviews: 89, category: "Uniforms", image: "👕" },
+            { id: 5, name: "Cricket Sports Kit", price: 2499, originalPrice: 3999, discount: 37, rating: 4.7, reviews: 342, category: "Sports", image: "🏏" },
+            { id: 6, name: "Art Supplies Box", price: 799, originalPrice: 1299, discount: 38, rating: 4.4, reviews: 201, category: "Art", image: "🎨" },
+            { id: 7, name: "Digital Geometry Box", price: 399, originalPrice: 599, discount: 33, rating: 4.2, reviews: 156, category: "Supplies", image: "📐" },
+            { id: 8, name: "School Shoes - Black", price: 699, originalPrice: 1099, discount: 36, rating: 4.5, reviews: 234, category: "Shoes", image: "👞" }
+        ];
+
+        let cart = [];
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            renderCategories();
+            renderFeaturedProducts();
+            renderBestSellers();
+        });
+
+        function renderCategories() {
+            const container = document.getElementById('categoriesContainer');
+            container.innerHTML = categories.map((cat, idx) => 
+                `<div class="category-chip" onclick="filterByCategory(this, '${cat.name}')">${cat.name}</div>`
+            ).join('');
+        }
+
+        function renderFeaturedProducts() {
+            const container = document.getElementById('featuredProducts');
+            container.innerHTML = products.slice(0, 4).map(product => createProductCard(product)).join('');
+        }
+
+        function renderBestSellers() {
+            const container = document.getElementById('bestSellers');
+            container.innerHTML = products.slice(4, 8).map(product => createProductCard(product)).join('');
+        }
+
+        function createProductCard(product) {
+            return `
+                <div class="product-card">
+                    <div class="product-image">
+                        ${product.image}
+                        <span class="product-badge">${product.discount}% OFF</span>
+                    </div>
+                    <div class="product-info">
+                        <div class="product-title">${product.name}</div>
+                        <div class="product-meta">${product.category} • ${product.reviews} reviews</div>
+                        <div class="product-rating">
+                            <span class="star">★</span>
+                            <span>${product.rating}</span>
+                        </div>
+                        <div class="price-row">
+                            <span class="price-final">₹${product.price}</span>
+                            <span class="price-original">₹${product.originalPrice}</span>
+                        </div>
+                        <button class="add-to-cart-btn" onclick="addToCart(${product.id}, '${product.name}', ${product.price})">Add to Cart</button>
+                    </div>
+                </div>
+            `;
+        }
+
+        function addToCart(id, name, price) {
+            cart.push({ id, name, price, qty: 1 });
+            document.getElementById('cartCount').textContent = cart.length;
+            alert(`✅ ${name} added to cart!`);
+        }
+
+        function toggleCart() {
+            if (cart.length === 0) {
+                alert('🛒 Cart is empty');
+            } else {
+                const total = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
+                alert(`🛒 Cart Items: ${cart.length}\nTotal: ₹${total}`);
+            }
+        }
+
+        function handleSearch() {
+            const query = document.getElementById('searchInput').value;
+            if (query) alert(`🔍 Searching for: ${query}`);
+        }
+
+        function filterByCategory(elem, category) {
+            document.querySelectorAll('.category-chip').forEach(e => e.classList.remove('active'));
+            elem.classList.add('active');
+            alert(`🔍 Filtering by: ${category}`);
+        }
+
+        function switchTab(elem, tab) {
+            document.querySelectorAll('.nav-tab').forEach(e => e.classList.remove('active'));
+            elem.classList.add('active');
+            alert(`📂 Switched to: ${tab}`);
+        }
+
+        function navigateTo(section) {
+            alert(`🚀 Navigating to: ${section}`);
+        }
+
+        function subscribeNewsletter() {
+            const email = event.target.parentElement.querySelector('input').value;
+            if (email) alert(`✅ Subscribed with: ${email}`);
+        }
+
+        function handleNavigation(event) {
+            event.preventDefault();
+            alert('🔗 Link clicked (functional in live app)');
+        }
+    </script>
+</body>
+</html>
