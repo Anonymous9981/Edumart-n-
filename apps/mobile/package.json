@@ -8,7 +8,8 @@
     "ios": "expo start --ios",
     "web": "expo start --web",
     "eject": "expo eject",
-    "build": "eas build",
+    "build": "pnpm run type-check",
+    "build:release": "eas build",
     "preview": "eas build --platform android --profile preview",
     "type-check": "tsc --noEmit",
     "lint": "eslint app screens hooks"
