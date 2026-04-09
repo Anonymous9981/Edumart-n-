@@ -1,4 +1,4 @@
-import type { PrismaClient as PrismaClientType } from '@prisma/client'
+type PrismaClientType = any
 
 type PrismaClientConstructor = new (...args: unknown[]) => PrismaClientType
 
