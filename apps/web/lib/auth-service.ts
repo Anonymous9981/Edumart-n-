@@ -60,11 +60,21 @@ function toPublicUser(user: {
   vendorProfile?: {
     id: string;
     storeName: string;
-    verificationStatus: VendorStatus;
+    verificationStatus: unknown;
     rating: number | null;
     reviewCount: number;
   } | null;
 }): PublicUser {
+  const vendorProfile = user.vendorProfile
+    ? {
+        id: user.vendorProfile.id,
+        storeName: user.vendorProfile.storeName,
+        verificationStatus: user.vendorProfile.verificationStatus as VendorStatus,
+        rating: user.vendorProfile.rating,
+        reviewCount: user.vendorProfile.reviewCount,
+      }
+    : null;
+
   return {
     id: user.id,
     email: user.email,
@@ -75,7 +85,7 @@ function toPublicUser(user: {
     phone: user.phone,
     isActive: user.isActive,
     isEmailVerified: user.isEmailVerified,
-    vendorProfile: user.vendorProfile ?? null,
+    vendorProfile,
   };
 }
 
