@@ -1,6 +1,8 @@
 import type { ReactNode } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
+import { Theme } from '../../theme/tokens';
+
 interface InfoCardProps {
   title: string;
   subtitle?: string;
@@ -21,19 +23,20 @@ const styles = StyleSheet.create({
   card: {
     borderRadius: 18,
     borderWidth: 1,
-    borderColor: '#d5e2f2',
-    backgroundColor: '#ffffff',
+    borderColor: Theme.colors.border,
+    backgroundColor: Theme.colors.surface,
     padding: 14,
     gap: 8,
+    ...Theme.shadows.neumorph,
   },
   title: {
     fontSize: 15,
     fontWeight: '800',
-    color: '#0B3558',
+    color: Theme.colors.text,
   },
   subtitle: {
     fontSize: 12,
     lineHeight: 18,
-    color: '#4f6d88',
+    color: Theme.colors.textMuted,
   },
 });

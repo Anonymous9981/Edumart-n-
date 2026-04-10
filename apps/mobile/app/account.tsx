@@ -1,12 +1,32 @@
+import { useRouter } from 'expo-router';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 import { ScreenShell } from '../components/screen-shell';
+import { Theme } from '../theme/tokens';
 
 export default function AccountScreen() {
+  const router = useRouter();
+
+  const quickLinks = [
+    { label: 'About', route: '/more/about' },
+    { label: 'Catalog', route: '/more/catalog' },
+    { label: 'Checkout', route: '/more/checkout' },
+    { label: 'Order Success', route: '/more/order-success' },
+    { label: 'Contact', route: '/more/contact' },
+    { label: 'FAQ', route: '/more/faq' },
+    { label: 'Schools', route: '/more/schools' },
+    { label: 'School Flow', route: '/more/school-flow' },
+    { label: 'Login', route: '/more/login' },
+    { label: 'Signup', route: '/more/signup' },
+    { label: 'Forgot Password', route: '/more/forgot-password' },
+    { label: 'Logout', route: '/more/logout' },
+    { label: 'Unauthorized', route: '/more/unauthorized' },
+  ] as const;
+
   return (
     <ScreenShell>
       <Text style={styles.title}>Account</Text>
-      <Text style={styles.subtitle}>Manage profile, addresses and your order preferences.</Text>
+      <Text style={styles.subtitle}>Manage profile and open every key web page flow from mobile.</Text>
 
       <View style={styles.profileCard}>
         <View style={styles.avatar}>
@@ -19,9 +39,9 @@ export default function AccountScreen() {
       </View>
 
       <View style={styles.section}>
-        {['Saved Addresses', 'Order History', 'Notifications', 'Help Center', 'Logout'].map((item) => (
-          <TouchableOpacity key={item} style={styles.row}>
-            <Text style={styles.rowText}>{item}</Text>
+        {quickLinks.map((item) => (
+          <TouchableOpacity key={item.label} style={styles.row} onPress={() => router.push(item.route)}>
+            <Text style={styles.rowText}>{item.label}</Text>
             <Text style={styles.rowArrow}>›</Text>
           </TouchableOpacity>
         ))}
@@ -32,22 +52,20 @@ export default function AccountScreen() {
 
 const styles = StyleSheet.create({
   title: {
-    fontSize: 30,
-    fontWeight: '900',
-    color: '#0B3558',
+    ...Theme.typo.title,
+    color: Theme.colors.text,
   },
   subtitle: {
     marginTop: -4,
-    fontSize: 13,
-    lineHeight: 20,
-    color: '#45627f',
+    ...Theme.typo.subtitle,
+    color: Theme.colors.textMuted,
   },
   profileCard: {
     marginTop: 6,
     borderRadius: 22,
     borderWidth: 1,
-    borderColor: '#d5e2f2',
-    backgroundColor: '#ffffff',
+    borderColor: Theme.colors.border,
+    backgroundColor: Theme.colors.surface,
     padding: 16,
     flexDirection: 'row',
     alignItems: 'center',
@@ -57,37 +75,37 @@ const styles = StyleSheet.create({
     width: 54,
     height: 54,
     borderRadius: 999,
-    backgroundColor: '#0B3558',
+    backgroundColor: Theme.colors.accentSoft,
     alignItems: 'center',
     justifyContent: 'center',
   },
   avatarText: {
-    color: '#fff',
+    color: Theme.colors.accent,
     fontSize: 16,
     fontWeight: '800',
   },
   name: {
     fontSize: 16,
     fontWeight: '800',
-    color: '#0B3558',
+    color: Theme.colors.text,
   },
   email: {
     marginTop: 2,
     fontSize: 12,
-    color: '#55748f',
+    color: Theme.colors.textMuted,
   },
   section: {
     borderRadius: 22,
     borderWidth: 1,
-    borderColor: '#d5e2f2',
-    backgroundColor: '#ffffff',
+    borderColor: Theme.colors.border,
+    backgroundColor: Theme.colors.surface,
     overflow: 'hidden',
   },
   row: {
     paddingHorizontal: 16,
     paddingVertical: 14,
     borderBottomWidth: 1,
-    borderBottomColor: '#edf2f9',
+    borderBottomColor: Theme.colors.border,
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
@@ -95,10 +113,10 @@ const styles = StyleSheet.create({
   rowText: {
     fontSize: 14,
     fontWeight: '700',
-    color: '#183e61',
+    color: Theme.colors.text,
   },
   rowArrow: {
     fontSize: 18,
-    color: '#7f94aa',
+    color: Theme.colors.textMuted,
   },
 });

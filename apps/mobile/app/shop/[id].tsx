@@ -2,6 +2,7 @@ import { useLocalSearchParams } from 'expo-router';
 import { StyleSheet, Text, View } from 'react-native';
 
 import { ScreenShell } from '../../components/screen-shell';
+import { Theme } from '../../theme/tokens';
 import { AppButton } from '../../components/ui/app-button';
 import { InfoCard } from '../../components/ui/info-card';
 
@@ -27,15 +28,13 @@ export default function ProductDetailScreen() {
 
 const styles = StyleSheet.create({
   title: {
-    fontSize: 30,
-    fontWeight: '900',
-    color: '#0B3558',
+    ...Theme.typo.title,
+    color: Theme.colors.text,
   },
   subtitle: {
     marginTop: -4,
-    fontSize: 13,
-    lineHeight: 20,
-    color: '#45627f',
+    ...Theme.typo.subtitle,
+    color: Theme.colors.textMuted,
   },
   metaRow: {
     flexDirection: 'row',
@@ -43,7 +42,7 @@ const styles = StyleSheet.create({
   },
   meta: {
     fontSize: 12,
-    color: '#55748f',
+    color: Theme.colors.textMuted,
     fontWeight: '700',
   },
 });

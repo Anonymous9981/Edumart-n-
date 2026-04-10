@@ -2,6 +2,8 @@ import type { ReactNode } from 'react';
 import { ScrollView, StyleSheet, View } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import { Theme } from '../theme/tokens';
+
 interface ScreenShellProps {
   children: ReactNode;
   withScroll?: boolean;
@@ -37,7 +39,7 @@ export function SkeletonBlock({ height = 16 }: { height?: number }) {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: '#f3f7ff',
+    backgroundColor: Theme.colors.bg,
   },
   container: {
     flex: 1,
@@ -50,6 +52,8 @@ const styles = StyleSheet.create({
   },
   skeleton: {
     borderRadius: 12,
-    backgroundColor: '#dde7f4',
+    backgroundColor: Theme.colors.surfaceRaised,
+    borderWidth: 1,
+    borderColor: Theme.colors.border,
   },
 });

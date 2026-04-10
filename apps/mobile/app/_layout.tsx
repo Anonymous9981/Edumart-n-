@@ -2,20 +2,22 @@ import { Ionicons } from '@expo/vector-icons';
 import { Tabs } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 
+import { Theme } from '../theme/tokens';
+
 export default function RootLayout() {
   return (
     <>
-      <StatusBar style="dark" />
+      <StatusBar style={Theme.isDark ? 'light' : 'dark'} />
       <Tabs
         screenOptions={{
           headerShown: false,
-          tabBarActiveTintColor: '#0B3558',
-          tabBarInactiveTintColor: '#7f94aa',
+          tabBarActiveTintColor: Theme.colors.accent,
+          tabBarInactiveTintColor: Theme.colors.textMuted,
           tabBarStyle: {
             height: 64,
             paddingTop: 8,
-            borderTopColor: '#dce7f5',
-            backgroundColor: '#ffffff',
+            borderTopColor: Theme.colors.border,
+            backgroundColor: Theme.colors.surface,
           },
           tabBarLabelStyle: {
             fontSize: 11,
@@ -58,6 +60,11 @@ export default function RootLayout() {
             tabBarIcon: ({ color, size }) => <Ionicons name="person-outline" color={color} size={size} />,
           }}
         />
+        <Tabs.Screen name="offers" options={{ href: null }} />
+        <Tabs.Screen name="offers/prime" options={{ href: null }} />
+        <Tabs.Screen name="offers/refer" options={{ href: null }} />
+        <Tabs.Screen name="shop/[id]" options={{ href: null }} />
+        <Tabs.Screen name="more" options={{ href: null }} />
       </Tabs>
     </>
   );

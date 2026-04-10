@@ -3,6 +3,7 @@ import { useRouter } from 'expo-router';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 import { ScreenShell, SkeletonBlock } from '../components/screen-shell';
+import { Theme } from '../theme/tokens';
 import { AppButton } from '../components/ui/app-button';
 import { InfoCard } from '../components/ui/info-card';
 
@@ -55,11 +56,11 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 24,
     fontWeight: '900',
-    color: '#0B3558',
+    color: Theme.colors.text,
   },
   subtitle: {
     fontSize: 13,
-    color: '#4b6a88',
+    color: Theme.colors.textMuted,
   },
   filterRow: {
     marginTop: 6,
@@ -70,22 +71,22 @@ const styles = StyleSheet.create({
   filterChip: {
     borderRadius: 999,
     borderWidth: 1,
-    borderColor: '#d6e3f2',
-    backgroundColor: '#ffffff',
+    borderColor: Theme.colors.border,
+    backgroundColor: Theme.colors.surface,
     paddingHorizontal: 12,
     paddingVertical: 7,
   },
   filterChipActive: {
-    backgroundColor: '#0B3558',
-    borderColor: '#0B3558',
+    backgroundColor: Theme.colors.accentSoft,
+    borderColor: Theme.colors.accent,
   },
   filterChipText: {
     fontSize: 12,
     fontWeight: '700',
-    color: '#32526f',
+    color: Theme.colors.textMuted,
   },
   filterChipTextActive: {
-    color: '#fff',
+    color: Theme.colors.accent,
   },
   list: {
     gap: 10,
@@ -94,14 +95,14 @@ const styles = StyleSheet.create({
   cardBadge: {
     alignSelf: 'flex-start',
     borderRadius: 999,
-    backgroundColor: '#e9f5ff',
+    backgroundColor: Theme.colors.accentSoft,
     paddingHorizontal: 8,
     paddingVertical: 4,
   },
   cardBadgeText: {
     fontSize: 10,
     fontWeight: '700',
-    color: '#0B3558',
+    color: Theme.colors.accent,
     textTransform: 'uppercase',
   },
   rowButtons: {
@@ -112,8 +113,8 @@ const styles = StyleSheet.create({
   skeletonCard: {
     borderRadius: 16,
     borderWidth: 1,
-    borderColor: '#dbe7f3',
-    backgroundColor: '#fff',
+    borderColor: Theme.colors.border,
+    backgroundColor: Theme.colors.surfaceRaised,
     padding: 12,
     gap: 8,
   },

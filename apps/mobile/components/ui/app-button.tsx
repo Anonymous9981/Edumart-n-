@@ -1,6 +1,8 @@
 import type { ReactNode } from 'react';
 import { Pressable, StyleSheet, Text } from 'react-native';
 
+import { Theme } from '../../theme/tokens';
+
 interface AppButtonProps {
   label: string;
   onPress?: () => void;
@@ -26,23 +28,26 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     flexDirection: 'row',
     gap: 8,
+    ...Theme.shadows.neumorph,
   },
   primary: {
-    backgroundColor: '#0B3558',
+    backgroundColor: Theme.colors.accentSoft,
+    borderWidth: 1,
+    borderColor: Theme.colors.accent,
   },
   secondary: {
-    backgroundColor: '#ffffff',
+    backgroundColor: Theme.colors.surface,
     borderWidth: 1,
-    borderColor: '#d5e2f2',
+    borderColor: Theme.colors.border,
   },
   label: {
     fontSize: 13,
     fontWeight: '800',
   },
   primaryLabel: {
-    color: '#ffffff',
+    color: Theme.colors.accent,
   },
   secondaryLabel: {
-    color: '#0B3558',
+    color: Theme.colors.text,
   },
 });

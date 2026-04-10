@@ -3,6 +3,7 @@ import { useRouter } from 'expo-router';
 import { Alert, Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 import { ScreenShell, SkeletonBlock } from '../components/screen-shell';
+import { Theme } from '../theme/tokens';
 
 export default function HomeScreen() {
   const router = useRouter();
@@ -89,8 +90,8 @@ const styles = StyleSheet.create({
     height: 42,
     borderRadius: 12,
     borderWidth: 1,
-    borderColor: '#dbe7f3',
-    backgroundColor: '#ffffff',
+    borderColor: Theme.colors.border,
+    backgroundColor: Theme.colors.surface,
     alignItems: 'center',
     justifyContent: 'center',
     shadowColor: '#0b3558',
@@ -101,24 +102,24 @@ const styles = StyleSheet.create({
   },
   iconGlyph: {
     fontSize: 20,
-    color: '#0B3558',
+    color: Theme.colors.accent,
     fontWeight: '700',
   },
   title: {
     fontSize: 24,
     fontWeight: '900',
-    color: '#0B3558',
+    color: Theme.colors.text,
   },
   subtitle: {
     fontSize: 12,
-    color: '#4b6a88',
+    color: Theme.colors.textMuted,
     marginTop: 2,
   },
   heroCard: {
     borderRadius: 22,
     padding: 18,
-    backgroundColor: '#0B3558',
-    shadowColor: '#0B3558',
+    backgroundColor: Theme.colors.surface,
+    shadowColor: '#000',
     shadowOpacity: 0.24,
     shadowRadius: 14,
     shadowOffset: { width: 0, height: 8 },
@@ -129,8 +130,8 @@ const styles = StyleSheet.create({
     borderRadius: 999,
     paddingHorizontal: 10,
     paddingVertical: 4,
-    backgroundColor: '#1f4e78',
-    color: '#d6e8ff',
+    backgroundColor: Theme.colors.accentSoft,
+    color: Theme.colors.accent,
     fontSize: 10,
     fontWeight: '700',
     textTransform: 'uppercase',
@@ -138,26 +139,26 @@ const styles = StyleSheet.create({
   },
   heroTitle: {
     marginTop: 10,
-    color: '#ffffff',
+    color: Theme.colors.text,
     fontSize: 22,
     fontWeight: '800',
     lineHeight: 28,
   },
   heroText: {
     marginTop: 8,
-    color: '#d6e8ff',
+    color: Theme.colors.textMuted,
     fontSize: 14,
     lineHeight: 21,
   },
   primaryButton: {
     marginTop: 14,
-    backgroundColor: '#ffffff',
+    backgroundColor: Theme.colors.accent,
     borderRadius: 12,
     alignItems: 'center',
     paddingVertical: 12,
   },
   primaryButtonText: {
-    color: '#0B3558',
+    color: '#131722',
     fontSize: 15,
     fontWeight: '700',
   },
@@ -171,8 +172,8 @@ const styles = StyleSheet.create({
     width: '48.5%',
     borderRadius: 16,
     borderWidth: 1,
-    borderColor: '#dbe7f3',
-    backgroundColor: '#ffffff',
+    borderColor: Theme.colors.border,
+    backgroundColor: Theme.colors.surface,
     alignItems: 'center',
     justifyContent: 'center',
     paddingVertical: 18,
@@ -181,7 +182,7 @@ const styles = StyleSheet.create({
   quickTitle: {
     fontSize: 14,
     fontWeight: '700',
-    color: '#0B3558',
+    color: Theme.colors.text,
   },
   quickGlyph: {
     fontSize: 24,
@@ -189,8 +190,8 @@ const styles = StyleSheet.create({
   logoPanel: {
     borderRadius: 16,
     borderWidth: 1,
-    borderColor: '#dbe7f3',
-    backgroundColor: '#ffffff',
+    borderColor: Theme.colors.border,
+    backgroundColor: Theme.colors.surface,
     padding: 12,
     alignItems: 'center',
     gap: 6,
@@ -202,22 +203,22 @@ const styles = StyleSheet.create({
   logoLabel: {
     fontSize: 11,
     fontWeight: '700',
-    color: '#43617e',
+    color: Theme.colors.textMuted,
     textTransform: 'uppercase',
     letterSpacing: 0.7,
   },
   loaderCard: {
     borderRadius: 16,
     borderWidth: 1,
-    borderColor: '#dbe7f3',
-    backgroundColor: '#ffffff',
+    borderColor: Theme.colors.border,
+    backgroundColor: Theme.colors.surfaceRaised,
     padding: 14,
     gap: 8,
   },
   loaderTitle: {
     fontSize: 14,
     fontWeight: '800',
-    color: '#0B3558',
+    color: Theme.colors.text,
     marginBottom: 2,
   },
 });

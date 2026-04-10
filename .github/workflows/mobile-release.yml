@@ -44,7 +44,7 @@ jobs:
           cache: pnpm
 
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+        run: pnpm install --filter ./apps/mobile... --frozen-lockfile
 
       - name: Validate required secrets
         shell: bash

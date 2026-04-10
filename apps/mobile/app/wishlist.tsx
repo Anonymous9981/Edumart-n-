@@ -2,6 +2,7 @@ import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
 import { ScreenShell, SkeletonBlock } from '../components/screen-shell';
+import { Theme } from '../theme/tokens';
 
 export default function WishlistScreen() {
   return (
@@ -28,18 +29,18 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 24,
     fontWeight: '900',
-    color: '#0B3558',
+    color: Theme.colors.text,
   },
   subtitle: {
     fontSize: 13,
-    color: '#4b6a88',
+    color: Theme.colors.textMuted,
   },
   emptyCard: {
     marginTop: 14,
     borderRadius: 20,
     borderWidth: 1,
-    borderColor: '#dbe7f3',
-    backgroundColor: '#ffffff',
+    borderColor: Theme.colors.border,
+    backgroundColor: Theme.colors.surface,
     alignItems: 'center',
     paddingHorizontal: 18,
     paddingVertical: 26,
@@ -47,24 +48,24 @@ const styles = StyleSheet.create({
   },
   emptyIcon: {
     fontSize: 28,
-    color: '#0B3558',
+    color: Theme.colors.accent,
   },
   emptyTitle: {
     fontSize: 16,
     fontWeight: '800',
-    color: '#0B3558',
+    color: Theme.colors.text,
   },
   emptyText: {
     fontSize: 13,
-    color: '#4b6a88',
+    color: Theme.colors.textMuted,
     textAlign: 'center',
     lineHeight: 20,
   },
   skeletonArea: {
     borderRadius: 16,
     borderWidth: 1,
-    borderColor: '#dbe7f3',
-    backgroundColor: '#ffffff',
+    borderColor: Theme.colors.border,
+    backgroundColor: Theme.colors.surfaceRaised,
     padding: 12,
     gap: 8,
   },

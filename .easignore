@@ -1,0 +1,17 @@
+# Keep EAS upload focused on mobile app and required workspace packages.
+# This reduces upload size/time in monorepo builds.
+
+# Web app and unrelated infra
+apps/web/
+docker/
+
+# Local docs/mock assets not needed for mobile build
+mock-edumart-figma-ready.html
+PLANTORIUM_SETUP.md
+
+# Repo artifacts
+**/.turbo/
+**/coverage/
+**/dist/
+**/.next/
+**/node_modules/

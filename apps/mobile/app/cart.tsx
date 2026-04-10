@@ -2,6 +2,7 @@ import React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 import { ScreenShell, SkeletonBlock } from '../components/screen-shell';
+import { Theme } from '../theme/tokens';
 
 export default function CartScreen() {
   return (
@@ -32,18 +33,18 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 24,
     fontWeight: '900',
-    color: '#0B3558',
+    color: Theme.colors.text,
   },
   subtitle: {
     fontSize: 13,
-    color: '#4b6a88',
+    color: Theme.colors.textMuted,
   },
   summaryCard: {
     marginTop: 14,
     borderRadius: 20,
     borderWidth: 1,
-    borderColor: '#dbe7f3',
-    backgroundColor: '#ffffff',
+    borderColor: Theme.colors.border,
+    backgroundColor: Theme.colors.surface,
     padding: 16,
     gap: 10,
   },
@@ -55,38 +56,38 @@ const styles = StyleSheet.create({
   summaryDivider: {
     marginTop: 2,
     height: 1,
-    backgroundColor: '#e9eef6',
+    backgroundColor: Theme.colors.border,
   },
   summaryLine: {
     fontSize: 14,
-    color: '#38526a',
+    color: Theme.colors.textMuted,
   },
   free: {
-    color: '#0f9b58',
+    color: Theme.colors.success,
     fontWeight: '700',
   },
   totalLine: {
     fontSize: 16,
     fontWeight: '800',
-    color: '#0B3558',
+    color: Theme.colors.text,
   },
   checkoutButton: {
     marginTop: 10,
     borderRadius: 12,
-    backgroundColor: '#0B3558',
+    backgroundColor: Theme.colors.accentSoft,
     alignItems: 'center',
     paddingVertical: 12,
   },
   checkoutText: {
-    color: '#ffffff',
+    color: Theme.colors.accent,
     fontSize: 14,
     fontWeight: '700',
   },
   loaderArea: {
     borderRadius: 16,
     borderWidth: 1,
-    borderColor: '#dbe7f3',
-    backgroundColor: '#ffffff',
+    borderColor: Theme.colors.border,
+    backgroundColor: Theme.colors.surfaceRaised,
     padding: 12,
     gap: 8,
   },
