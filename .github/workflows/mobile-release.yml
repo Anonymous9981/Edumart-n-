@@ -69,7 +69,7 @@ jobs:
         working-directory: apps/mobile
         shell: bash
         run: |
-          npx eas-cli build --platform android --profile preview --non-interactive --wait --json > eas-build.json
+          npx eas-cli build --platform android --profile release --non-interactive --wait --json > eas-build.json
           node <<'NODE'
           const fs = require('fs');
           const data = JSON.parse(fs.readFileSync('eas-build.json', 'utf8'));

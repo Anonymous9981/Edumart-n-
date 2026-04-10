@@ -2,6 +2,7 @@
   "expo": {
     "name": "EduMart",
     "slug": "edumart",
+    "owner": "kacpl",
     "version": "0.1.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -15,7 +16,7 @@
       "**/*"
     ],
     "ios": {
-      "supportsTabletMode": true,
+      "supportsTablet": true,
       "bundleIdentifier": "com.edumart.mobile"
     },
     "android": {
@@ -31,6 +32,14 @@
     "plugins": [
       "expo-router"
     ],
-    "scheme": "edumart"
+    "scheme": "edumart",
+    "extra": {
+      "router": {
+        "origin": false
+      },
+      "eas": {
+        "projectId": "731247d8-4d42-4acf-b658-361e92a36d5a"
+      }
+    }
   }
 }
