@@ -14,6 +14,11 @@ on:
 permissions:
   contents: write
 
+env:
+  ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+  ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+  ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+
 jobs:
   build-android-apk:
     name: Build Android APK
@@ -50,9 +55,32 @@ jobs:
         working-directory: apps/mobile
         run: pnpm exec expo prebuild --platform android --clean --non-interactive
 
-      - name: Build Android debug APK
+      - name: Decode keystore
+        if: secrets.ANDROID_KEYSTORE != null
+        run: |
+          echo "${{ secrets.ANDROID_KEYSTORE }}" | base64 -d > "apps/mobile/android/app/karom-edumart-release.keystore"
+
+      - name: Create signing properties
+        if: secrets.ANDROID_KEYSTORE != null
+        run: |
+          cat > "apps/mobile/android/signing.properties" << EOF
+          KEYSTORE_FILE=app/karom-edumart-release.keystore
+          KEYSTORE_PASSWORD=${{ env.ANDROID_KEYSTORE_PASSWORD }}
+          KEY_ALIAS=${{ env.ANDROID_KEY_ALIAS }}
+          KEY_PASSWORD=${{ env.ANDROID_KEY_PASSWORD }}
+          EOF
+
+      - name: Build Android release APK
         working-directory: apps/mobile/android
-        run: ./gradlew assembleDebug
+        run: |
+          if [ -f "signing.properties" ]; then
+            ./gradlew assembleRelease
+          else
+            echo "WARNING: Keystore not configured in GitHub Secrets. Building debug APK instead."
+            echo "To enable signed release builds, follow the setup in the workflow comments."
+            ./gradlew assembleDebug
+          fi
+        shell: bash
 
       - name: Resolve release tag
         id: meta
@@ -68,7 +96,14 @@ jobs:
         shell: bash
         run: |
           mkdir -p release
-          cp apps/mobile/android/app/build/outputs/apk/debug/app-debug.apk "release/Karom-EduMart-${{ steps.meta.outputs.tag }}.apk"
+          if [ -f "apps/mobile/android/app/build/outputs/apk/release/app-release.apk" ]; then
+            cp "apps/mobile/android/app/build/outputs/apk/release/app-release.apk" "release/Karom-EduMart-${{ steps.meta.outputs.tag }}.apk"
+          elif [ -f "apps/mobile/android/app/build/outputs/apk/debug/app-debug.apk" ]; then
+            cp "apps/mobile/android/app/build/outputs/apk/debug/app-debug.apk" "release/Karom-EduMart-${{ steps.meta.outputs.tag }}.apk"
+          else
+            echo "ERROR: No APK file found"
+            exit 1
+          fi
 
       - name: Upload build artifact
         uses: actions/upload-artifact@v4
