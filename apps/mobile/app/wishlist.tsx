@@ -1,12 +1,11 @@
 import React from 'react';
-import { SafeAreaView, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 
-import { MobileBottomDock } from '../components/mobile-bottom-dock';
+import { ScreenShell, SkeletonBlock } from '../components/screen-shell';
 
 export default function WishlistScreen() {
   return (
-    <SafeAreaView style={styles.container}>
-      <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
+    <ScreenShell>
         <Text style={styles.title}>Wishlist</Text>
         <Text style={styles.subtitle}>Save products here and move them to cart anytime.</Text>
 
@@ -15,24 +14,17 @@ export default function WishlistScreen() {
           <Text style={styles.emptyTitle}>Your wishlist is ready</Text>
           <Text style={styles.emptyText}>Tap heart icons from Shop or Home to add products here.</Text>
         </View>
-      </ScrollView>
 
-      <MobileBottomDock />
-    </SafeAreaView>
+        <View style={styles.skeletonArea}>
+          <SkeletonBlock height={14} />
+          <SkeletonBlock height={14} />
+          <SkeletonBlock height={48} />
+        </View>
+    </ScreenShell>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#f8fbff',
-  },
-  content: {
-    paddingHorizontal: 16,
-    paddingTop: 10,
-    paddingBottom: 110,
-    gap: 12,
-  },
   title: {
     fontSize: 24,
     fontWeight: '900',
@@ -67,5 +59,13 @@ const styles = StyleSheet.create({
     color: '#4b6a88',
     textAlign: 'center',
     lineHeight: 20,
+  },
+  skeletonArea: {
+    borderRadius: 16,
+    borderWidth: 1,
+    borderColor: '#dbe7f3',
+    backgroundColor: '#ffffff',
+    padding: 12,
+    gap: 8,
   },
 });

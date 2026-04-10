@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import type { ReactNode } from 'react'
 
-import { useMarketplaceState } from '../lib/marketplace-state'
+import { AppHeader } from './app-header'
 
 function CartIcon() {
   return (
@@ -68,73 +68,9 @@ export function MarketingPageShell({
   secondaryCta,
   children,
 }: MarketingPageShellProps) {
-  const marketplace = useMarketplaceState()
-  const cartCount = Object.values(marketplace.cart).reduce((total, quantity) => total + quantity, 0)
-  const wishlistCount = marketplace.wishlist.length
-
   return (
     <main className="min-h-screen bg-[radial-gradient(circle_at_top_left,_rgba(214,248,236,0.95)_0%,_rgba(248,251,255,1)_40%,_rgba(255,247,237,1)_100%)] text-slate-900">
-      <header className="border-b border-slate-200 bg-white/90 backdrop-blur">
-        <div className="mx-auto flex max-w-7xl flex-col gap-3 px-4 py-4 sm:px-6 lg:flex-row lg:items-center lg:justify-between">
-          <div>
-            <Link href="/" className="inline-flex items-center gap-3 text-2xl font-extrabold tracking-tight" style={{ color: '#0B3558' }}>
-              <img
-                src="/brand/karom-edumart-logo.svg"
-                alt="Karom EduMart"
-                className="h-11 w-[180px] flex-none rounded-xl border border-amber-200 bg-white object-contain px-2 py-1 shadow-lg"
-              />
-            </Link>
-            <p className="mt-1 text-xs font-semibold uppercase tracking-[0.24em] text-slate-500">Education marketplace</p>
-          </div>
-
-          <nav className="hidden flex-wrap gap-2 text-sm font-semibold text-slate-700 sm:flex">
-            {[
-              ['Home', '/'],
-              ['Shop', '/shop'],
-              ['Schools', '/schools'],
-              ['Offers', '/offers'],
-              ['About', '/about'],
-              ['FAQ', '/faq'],
-              ['Contact', '/contact'],
-            ].map(([label, href]) => (
-              <Link key={href} href={href} className="rounded-lg px-3 py-2 transition hover:bg-slate-100">
-                {label}
-              </Link>
-            ))}
-            <Link href="/wishlist" className="inline-flex items-center gap-2 rounded-lg px-3 py-2 transition hover:bg-slate-100" aria-label="Open wishlist">
-              <HeartIcon />
-              <span>Wishlist</span>
-              <span className="rounded-full bg-slate-900 px-2 py-0.5 text-xs font-bold text-white">{wishlistCount}</span>
-            </Link>
-            <Link href="/cart" className="inline-flex items-center gap-2 rounded-lg px-3 py-2 transition hover:bg-slate-100" aria-label="Open cart">
-              <CartIcon />
-              <span>Cart</span>
-              <span className="rounded-full bg-[#0B3558] px-2 py-0.5 text-xs font-bold text-white">{cartCount}</span>
-            </Link>
-          </nav>
-
-          <nav className="flex items-center justify-end gap-2 sm:hidden">
-            <Link href="/" className="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-slate-300 text-slate-700 transition hover:bg-slate-100" aria-label="Home">
-              <HomeIcon />
-            </Link>
-            <Link href="/shop" className="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-slate-300 text-slate-700 transition hover:bg-slate-100" aria-label="Shop">
-              <ShopIcon />
-            </Link>
-            <Link href="/wishlist" className="relative inline-flex h-10 w-10 items-center justify-center rounded-xl border border-slate-300 text-slate-700 transition hover:bg-slate-100" aria-label="Open wishlist">
-              <HeartIcon />
-              {wishlistCount > 0 ? (
-                <span className="absolute -right-1 -top-1 rounded-full bg-slate-900 px-1.5 py-0.5 text-[10px] font-bold text-white">{wishlistCount}</span>
-              ) : null}
-            </Link>
-            <Link href="/cart" className="relative inline-flex h-10 w-10 items-center justify-center rounded-xl border border-slate-300 text-slate-700 transition hover:bg-slate-100" aria-label="Open cart">
-              <CartIcon />
-              {cartCount > 0 ? (
-                <span className="absolute -right-1 -top-1 rounded-full bg-[#0B3558] px-1.5 py-0.5 text-[10px] font-bold text-white">{cartCount}</span>
-              ) : null}
-            </Link>
-          </nav>
-        </div>
-      </header>
+      <AppHeader />
 
       <section className="mx-auto max-w-7xl px-4 pb-8 pt-6 sm:px-6 lg:pt-10">
         <div className={`overflow-hidden rounded-[2rem] bg-gradient-to-br ${ACCENT_STYLES[accent]} p-6 text-white shadow-2xl sm:p-8`}>

@@ -1,8 +1,8 @@
 import React from 'react';
 import { useRouter } from 'expo-router';
-import { Alert, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Alert, Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
-import { MobileBottomDock } from '../components/mobile-bottom-dock';
+import { ScreenShell, SkeletonBlock } from '../components/screen-shell';
 
 export default function HomeScreen() {
   const router = useRouter();
@@ -12,21 +12,25 @@ export default function HomeScreen() {
   }
 
   return (
-    <SafeAreaView style={styles.container}>
-      <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
+    <ScreenShell>
         <View style={styles.headerRow}>
           <View>
             <Text style={styles.title}>KAROM EDUMART</Text>
             <Text style={styles.subtitle}>Premium Education Marketplace</Text>
           </View>
           <View style={styles.headerIcons}>
-            <TouchableOpacity style={styles.iconButton} onPress={() => router.push('/wishlist')}>
+            <TouchableOpacity style={styles.iconButton} onPress={() => router.push('/wishlist' as never)}>
               <Text style={styles.iconGlyph}>♡</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.iconButton} onPress={() => router.push('/cart')}>
+            <TouchableOpacity style={styles.iconButton} onPress={() => router.push('/cart' as never)}>
               <Text style={styles.iconGlyph}>🛒</Text>
             </TouchableOpacity>
           </View>
+        </View>
+
+        <View style={styles.logoPanel}>
+          <Image source={require('../assets/2025-07-15-687640b3953e5.webp')} style={styles.logoImage} resizeMode="contain" />
+          <Text style={styles.logoLabel}>Official Karom EduMart mark</Text>
         </View>
 
         <View style={styles.heroCard}>
@@ -35,47 +39,41 @@ export default function HomeScreen() {
           <Text style={styles.heroText}>
             Browse products, save wishlist items, and quickly move to checkout from a clean icon-first interface.
           </Text>
-          <TouchableOpacity style={styles.primaryButton} onPress={() => router.push('/shop')}>
+          <TouchableOpacity style={styles.primaryButton} onPress={() => router.push('/shop' as never)}>
             <Text style={styles.primaryButtonText}>Start shopping</Text>
           </TouchableOpacity>
         </View>
 
         <View style={styles.quickGrid}>
-          <TouchableOpacity style={styles.quickCard} onPress={() => router.push('/shop')}>
+          <TouchableOpacity style={styles.quickCard} onPress={() => router.push('/shop' as never)}>
             <Text style={styles.quickGlyph}>🛍️</Text>
             <Text style={styles.quickTitle}>Shop</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.quickCard} onPress={() => router.push('/wishlist')}>
+          <TouchableOpacity style={styles.quickCard} onPress={() => router.push('/wishlist' as never)}>
             <Text style={styles.quickGlyph}>♡</Text>
             <Text style={styles.quickTitle}>Wishlist</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.quickCard} onPress={() => router.push('/cart')}>
+          <TouchableOpacity style={styles.quickCard} onPress={() => router.push('/cart' as never)}>
             <Text style={styles.quickGlyph}>🛒</Text>
             <Text style={styles.quickTitle}>Cart</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.quickCard} onPress={() => openSoon('Offers')}>
+          <TouchableOpacity style={styles.quickCard} onPress={() => router.push('/offers' as never)}>
             <Text style={styles.quickGlyph}>🏷️</Text>
             <Text style={styles.quickTitle}>Offers</Text>
           </TouchableOpacity>
         </View>
-      </ScrollView>
 
-      <MobileBottomDock />
-    </SafeAreaView>
+        <View style={styles.loaderCard}>
+          <Text style={styles.loaderTitle}>Recommended for you</Text>
+          <SkeletonBlock height={14} />
+          <SkeletonBlock height={14} />
+          <SkeletonBlock height={80} />
+        </View>
+    </ScreenShell>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#f8fbff',
-  },
-  content: {
-    paddingHorizontal: 16,
-    paddingTop: 10,
-    paddingBottom: 110,
-    gap: 16,
-  },
   headerRow: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -187,5 +185,39 @@ const styles = StyleSheet.create({
   },
   quickGlyph: {
     fontSize: 24,
+  },
+  logoPanel: {
+    borderRadius: 16,
+    borderWidth: 1,
+    borderColor: '#dbe7f3',
+    backgroundColor: '#ffffff',
+    padding: 12,
+    alignItems: 'center',
+    gap: 6,
+  },
+  logoImage: {
+    width: 120,
+    height: 120,
+  },
+  logoLabel: {
+    fontSize: 11,
+    fontWeight: '700',
+    color: '#43617e',
+    textTransform: 'uppercase',
+    letterSpacing: 0.7,
+  },
+  loaderCard: {
+    borderRadius: 16,
+    borderWidth: 1,
+    borderColor: '#dbe7f3',
+    backgroundColor: '#ffffff',
+    padding: 14,
+    gap: 8,
+  },
+  loaderTitle: {
+    fontSize: 14,
+    fontWeight: '800',
+    color: '#0B3558',
+    marginBottom: 2,
   },
 });

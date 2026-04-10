@@ -1,23 +1,72 @@
 import { MarketingPageShell } from '../../components/marketing-page-shell'
-import { ProductCard } from '../../components/ui/product-card'
+import { ShopCatalog, type ShopCategory } from '../../components/shop-catalog'
+import { prisma } from '../../lib/prisma'
 import { FALLBACK_PRODUCTS } from '../homepage-loader'
 
-const CATEGORIES = [
-  ['Books', 'Study books and board textbooks'],
-  ['Stationery', 'Kits, pens, notebooks and supplies'],
-  ['Uniforms', 'School uniforms and accessories'],
-  ['Bags', 'Backpacks and travel bags'],
-  ['Sports', 'Sports kits and PE items'],
-  ['Digital', 'Digital learning tools and devices'],
-  ['Workbooks', 'Practice books and revision sets'],
-  ['Art & Craft', 'Creative kits, colors and DIY materials'],
-  ['Classroom Tech', 'Interactive tools for school rooms'],
-  ['School Software', 'Systems for attendance and communication'],
-]
+const FALLBACK_IMAGE =
+  'https://images.unsplash.com/photo-1456513080510-7bf3a84b82f8?auto=format&fit=crop&w=1200&q=80'
 
-const FEATURED_PRODUCTS = FALLBACK_PRODUCTS.slice(0, 12)
+function buildFallbackCategories(): ShopCategory[] {
+  const unique = Array.from(new Set(FALLBACK_PRODUCTS.map((product) => product.category)))
 
-export default function ShopPage() {
+  return unique.map((name, index) => ({
+    id: `fallback-category-${index}`,
+    name,
+    slug: name.toLowerCase().replace(/[^a-z0-9]+/g, '-'),
+    description: `Explore ${name.toLowerCase()} options for students and schools.`,
+    image: FALLBACK_PRODUCTS.find((product) => product.category === name)?.image ?? FALLBACK_IMAGE,
+    subcategories: [
+      {
+        id: `fallback-subcategory-${index}`,
+        name,
+        slug: name.toLowerCase().replace(/[^a-z0-9]+/g, '-'),
+        description: `Top picks from ${name.toLowerCase()}.`,
+        image: FALLBACK_PRODUCTS.find((product) => product.category === name)?.image ?? FALLBACK_IMAGE,
+      },
+    ],
+  }))
+}
+
+async function getShopCategories(): Promise<ShopCategory[]> {
+  try {
+    const categories = await prisma.category.findMany({
+      where: { isActive: true, parentId: null },
+      include: {
+        children: {
+          where: { isActive: true },
+          orderBy: [{ displayOrder: 'asc' }, { name: 'asc' }],
+        },
+      },
+      orderBy: [{ displayOrder: 'asc' }, { name: 'asc' }],
+    })
+
+    if (!categories.length) {
+      return buildFallbackCategories()
+    }
+
+    return categories.map((category) => ({
+      id: category.id,
+      name: category.name,
+      slug: category.slug,
+      description: category.description,
+      image: category.image,
+      subcategories: category.children.map((subcategory) => ({
+        id: subcategory.id,
+        name: subcategory.name,
+        slug: subcategory.slug,
+        description: subcategory.description,
+        image: subcategory.image,
+      })),
+    }))
+  } catch {
+    return buildFallbackCategories()
+  }
+}
+
+export default async function ShopPage() {
+  const categories = await getShopCategories()
+  const featuredProducts = FALLBACK_PRODUCTS.slice(0, 12)
+
   return (
     <MarketingPageShell
       eyebrow="Shop"
@@ -27,35 +76,7 @@ export default function ShopPage() {
       primaryCta={{ label: 'School Flow', href: '/schools' }}
       secondaryCta={{ label: 'View Offers', href: '/offers' }}
     >
-      <div className="grid gap-5 lg:grid-cols-[0.75fr_1.25fr]">
-        <aside className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
-          <h2 className="text-xl font-extrabold text-slate-900">Categories</h2>
-          <div className="mt-4 space-y-3">
-            {CATEGORIES.map(([name, description]) => (
-              <div key={name} className="rounded-2xl bg-slate-50 p-4">
-                <p className="font-bold text-slate-900">{name}</p>
-                <p className="mt-1 text-sm leading-6 text-slate-600">{description}</p>
-              </div>
-            ))}
-          </div>
-        </aside>
-
-        <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
-          {FEATURED_PRODUCTS.map((product) => (
-            <ProductCard
-              key={product.id}
-              product={product}
-              detailHref={`/product/${product.slug}`}
-              priceLabel={`₹${product.finalPrice.toLocaleString('en-IN')}`}
-              originalPriceLabel={`₹${product.price.toLocaleString('en-IN')}`}
-              discountLabel={product.discountType === 'FIXED' ? `₹${product.discountValue?.toLocaleString('en-IN')} OFF` : `${product.discountPercentage}% OFF`}
-              actionLabel="Open Product"
-              secondaryActionLabel="Save"
-              metaLabel={product.audience === 'student' ? 'Student product' : 'School product'}
-            />
-          ))}
-        </div>
-      </div>
+      <ShopCatalog products={featuredProducts} categories={categories} />
     </MarketingPageShell>
   )
 }

@@ -21,6 +21,7 @@
     "@edumart/sdk": "workspace:*",
     "@edumart/shared": "workspace:*",
     "@edumart/validation": "workspace:*",
+    "@expo/vector-icons": "^14.0.2",
     "@react-native-async-storage/async-storage": "1.21.0",
     "@react-native/assets-registry": "0.73.1",
     "@react-navigation/bottom-tabs": "^6.5.11",

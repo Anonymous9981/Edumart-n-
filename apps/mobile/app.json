@@ -26,6 +26,11 @@
       },
       "package": "com.edumart.mobile"
     },
+    "androidStatusBar": {
+      "backgroundColor": "#f3f7ff",
+      "barStyle": "dark-content",
+      "translucent": false
+    },
     "web": {
       "favicon": "./assets/favicon.png"
     },

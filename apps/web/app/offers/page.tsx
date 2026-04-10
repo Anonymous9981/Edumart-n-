@@ -1,4 +1,5 @@
 import { MarketingPageShell } from '../../components/marketing-page-shell'
+import Link from 'next/link'
 
 export default function OffersPage() {
   return (
@@ -15,12 +16,14 @@ export default function OffersPage() {
           <p className="text-xs font-bold uppercase tracking-[0.2em] opacity-90">Prime Membership</p>
           <h2 className="mt-2 text-3xl font-extrabold">₹199 / month</h2>
           <p className="mt-2 text-sm leading-6 opacity-95">Users get 4 free deliveries every month plus early access to sale offers.</p>
+          <Link href="/offers/prime" className="mt-4 inline-flex rounded-lg bg-white px-4 py-2 text-sm font-bold text-violet-700">View Prime details</Link>
         </article>
 
         <article className="rounded-3xl bg-gradient-to-br from-emerald-600 to-teal-700 p-6 text-white shadow-lg">
           <p className="text-xs font-bold uppercase tracking-[0.2em] opacity-90">Refer & Earn</p>
           <h2 className="mt-2 text-3xl font-extrabold">₹100 reward</h2>
           <p className="mt-2 text-sm leading-6 opacity-95">Referral discount is usable only above ₹499 order value.</p>
+          <Link href="/offers/refer" className="mt-4 inline-flex rounded-lg bg-white px-4 py-2 text-sm font-bold text-emerald-700">View referral details</Link>
         </article>
       </div>
 

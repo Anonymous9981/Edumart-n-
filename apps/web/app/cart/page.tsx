@@ -1,5 +1,6 @@
 "use client"
 
+import Link from 'next/link'
 import { useMemo } from 'react'
 
 import { MarketingPageShell } from '../../components/marketing-page-shell'
@@ -82,13 +83,20 @@ export default function CartPage() {
             </div>
           </div>
 
-          <button
-            type="button"
-            className="mt-5 w-full rounded-xl bg-[#0B3558] px-5 py-3 text-sm font-bold text-white shadow-sm"
-            onClick={() => feedback.notifyInfo('Checkout is in progress', 'Secure checkout is not enabled yet. Please continue browsing or use the wishlist for now.')}
+          <Link
+            href="/checkout"
+            className={`mt-5 block w-full rounded-xl px-5 py-3 text-center text-sm font-bold text-white shadow-sm ${
+              cartItems.length ? 'bg-[#0B3558]' : 'pointer-events-none bg-slate-400'
+            }`}
+            onClick={(event) => {
+              if (!cartItems.length) {
+                event.preventDefault()
+                feedback.notifyWarning('Cart is empty', 'Add items to cart before moving to checkout.')
+              }
+            }}
           >
             Proceed to checkout
-          </button>
+          </Link>
 
           <button
             type="button"
@@ -101,7 +109,8 @@ export default function CartPage() {
           <div className="mt-5 rounded-3xl border border-slate-200 bg-white p-5">
             <h3 className="text-lg font-extrabold text-slate-900">Checkout notes</h3>
             <p className="mt-2 text-sm leading-6 text-slate-600">
-              Bulk orders, school procurement and standard family orders can all share the same cart framework.
+              Bulk orders, school procurement and standard family orders can all share the same cart framework. Use checkout
+              to add delivery address and place your order with Cash on Delivery.
             </p>
           </div>
         </aside>

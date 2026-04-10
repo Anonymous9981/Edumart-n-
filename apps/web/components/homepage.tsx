@@ -4,6 +4,8 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useMemo, useState } from 'react'
 
+import { AppHeader } from './app-header'
+
 import type { HomepageAudience, HomepageData, HomepageProduct } from '../lib/homepage-types'
 import { useMarketplaceState } from '../lib/marketplace-state'
 import { useSiteFeedback } from '../lib/site-feedback'
@@ -258,7 +260,6 @@ export function HomepageClient({ initialData }: { initialData: HomepageData }) {
   const feedback = useSiteFeedback()
   const [audience, setAudience] = useState<HomepageAudience>('student')
   const [activeCategory, setActiveCategory] = useState<string>('All')
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [selectedSchool, setSelectedSchool] = useState('')
   const [selectedClass, setSelectedClass] = useState('')
   const cartCount = Object.values(marketplace.cart).reduce((total, quantity) => total + quantity, 0)
@@ -326,7 +327,6 @@ export function HomepageClient({ initialData }: { initialData: HomepageData }) {
 
   function goToRoute(pathname: string) {
     router.push(pathname)
-    setMobileMenuOpen(false)
   }
 
   return (
@@ -335,113 +335,7 @@ export function HomepageClient({ initialData }: { initialData: HomepageData }) {
         New user offer: Extra 10% off + free delivery on first order
       </div>
 
-      <header className="sticky top-0 z-40 border-b border-slate-200 bg-white/95 backdrop-blur">
-        <div className="mx-auto flex max-w-7xl items-center gap-3 px-4 py-3 sm:px-6">
-          <Link href="/" className="inline-flex items-center gap-3 text-xl font-extrabold tracking-tight sm:text-2xl" style={{ color: BRAND.navy }}>
-            <img
-              src="/brand/karom-edumart-logo.svg"
-              alt="Karom EduMart"
-              className="h-11 w-[180px] flex-none rounded-xl border border-amber-200 bg-white object-contain px-2 py-1 shadow-lg"
-            />
-          </Link>
-
-          <div className="hidden flex-1 items-center gap-2 rounded-xl border border-slate-200 bg-white px-3 py-2 md:flex">
-            <span className="text-slate-500">Search</span>
-            <input
-              className="w-full bg-transparent text-sm text-slate-800 outline-none placeholder:text-slate-400"
-              placeholder="Search products, schools, classes"
-            />
-          </div>
-
-          <nav className="ml-auto hidden items-center gap-1 lg:flex">
-            {[
-              ['Home', '/'],
-              ['Shop', '/shop'],
-              ['School Flow', '/schools'],
-              ['Offers', '/offers'],
-              ['About', '/about'],
-              ['FAQ', '/faq'],
-              ['Contact', '/contact'],
-            ].map(([label, href]) => (
-              <Link
-                key={href}
-                href={href}
-                className="rounded-lg px-3 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-100"
-              >
-                {label}
-              </Link>
-            ))}
-            <Link href="/wishlist" className="inline-flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-100" aria-label="Open wishlist">
-              <HeartIcon />
-              <span>Wishlist</span>
-            </Link>
-            <Link href="/cart" className="inline-flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-100" aria-label="Open cart">
-              <CartIcon />
-              <span>Cart</span>
-            </Link>
-          </nav>
-
-          <div className="ml-auto flex items-center gap-2 lg:ml-0">
-            <Link href="/login" className="hidden rounded-lg border border-slate-300 px-3 py-2 text-sm font-semibold text-slate-700 sm:inline-flex">
-              Login
-            </Link>
-            <Link href="/signup" className="hidden rounded-lg px-3 py-2 text-sm font-semibold text-white sm:inline-flex" style={{ backgroundColor: BRAND.teal }}>
-              Become Seller
-            </Link>
-            <Link
-              href="/wishlist"
-              className="relative inline-flex h-10 w-10 items-center justify-center rounded-xl border border-slate-300 text-slate-700 transition hover:bg-slate-100 lg:hidden"
-              aria-label="Open wishlist"
-            >
-              <HeartIcon />
-              {wishlistCount > 0 ? (
-                <span className="absolute -right-1 -top-1 rounded-full bg-slate-900 px-1.5 py-0.5 text-[10px] font-bold text-white">{wishlistCount}</span>
-              ) : null}
-            </Link>
-            <Link
-              href="/cart"
-              className="relative inline-flex h-10 w-10 items-center justify-center rounded-xl border border-slate-300 text-slate-700 transition hover:bg-slate-100 lg:hidden"
-              aria-label="Open cart"
-            >
-              <CartIcon />
-              {cartCount > 0 ? (
-                <span className="absolute -right-1 -top-1 rounded-full bg-[#0B3558] px-1.5 py-0.5 text-[10px] font-bold text-white">{cartCount}</span>
-              ) : null}
-            </Link>
-            <button
-              type="button"
-              className="rounded-lg border border-slate-300 px-3 py-2 text-sm font-semibold lg:hidden"
-              onClick={() => setMobileMenuOpen((value) => !value)}
-            >
-              Menu
-            </button>
-          </div>
-        </div>
-
-        {mobileMenuOpen ? (
-          <div className="border-t border-slate-200 bg-white px-4 py-3 lg:hidden">
-            <div className="flex flex-wrap gap-2">
-              {[
-                ['Home', '/'],
-                ['Shop', '/shop'],
-                ['School Flow', '/schools'],
-                ['Offers', '/offers'],
-                ['About', '/about'],
-                ['FAQ', '/faq'],
-                ['Contact', '/contact'],
-              ].map(([label, href]) => (
-                <Link
-                  key={href}
-                  href={href}
-                  className="rounded-lg bg-slate-100 px-3 py-2 text-sm font-semibold text-slate-700"
-                >
-                  {label}
-                </Link>
-              ))}
-            </div>
-          </div>
-        ) : null}
-      </header>
+      <AppHeader />
 
       <section className="mx-auto max-w-7xl px-4 pt-5 sm:px-6">
         <div className="flex flex-col gap-4 rounded-3xl border border-slate-200 bg-white/90 p-4 shadow-sm backdrop-blur md:flex-row md:items-center md:justify-between">
@@ -859,26 +753,6 @@ export function HomepageClient({ initialData }: { initialData: HomepageData }) {
         </div>
       </footer>
 
-      <nav className="fixed bottom-3 left-1/2 z-50 flex w-[calc(100%-1.5rem)] max-w-md -translate-x-1/2 items-center justify-between rounded-2xl border border-slate-200 bg-white/95 px-3 py-2 shadow-2xl backdrop-blur lg:hidden">
-        <Link href="/" className="inline-flex h-11 w-11 items-center justify-center rounded-xl text-slate-700 transition hover:bg-slate-100" aria-label="Home">
-          <HomeIcon />
-        </Link>
-        <Link href="/shop" className="inline-flex h-11 w-11 items-center justify-center rounded-xl text-slate-700 transition hover:bg-slate-100" aria-label="Shop">
-          <ShopIcon />
-        </Link>
-        <Link href="/wishlist" className="relative inline-flex h-11 w-11 items-center justify-center rounded-xl text-slate-700 transition hover:bg-slate-100" aria-label="Wishlist">
-          <HeartIcon />
-          {wishlistCount > 0 ? (
-            <span className="absolute right-1 top-1 rounded-full bg-slate-900 px-1.5 py-0.5 text-[10px] font-bold text-white">{wishlistCount}</span>
-          ) : null}
-        </Link>
-        <Link href="/cart" className="relative inline-flex h-11 w-11 items-center justify-center rounded-xl text-slate-700 transition hover:bg-slate-100" aria-label="Cart">
-          <CartIcon />
-          {cartCount > 0 ? (
-            <span className="absolute right-1 top-1 rounded-full bg-[#0B3558] px-1.5 py-0.5 text-[10px] font-bold text-white">{cartCount}</span>
-          ) : null}
-        </Link>
-      </nav>
     </main>
   )
 }
