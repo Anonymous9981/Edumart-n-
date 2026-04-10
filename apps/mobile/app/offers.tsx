@@ -2,37 +2,55 @@ import { useRouter } from 'expo-router';
 import { StyleSheet, Text, View } from 'react-native';
 
 import { ScreenShell } from '../components/screen-shell';
-import { Theme } from '../theme/tokens';
 import { AppButton } from '../components/ui/app-button';
 import { InfoCard } from '../components/ui/info-card';
+import { useMockStore } from '../lib/mock-store';
+import { useAppTheme } from '../theme/theme-provider';
 
 export default function OffersScreen() {
   const router = useRouter();
+  const { theme } = useAppTheme();
+  const styles = getStyles(theme);
+  const { offers } = useMockStore();
 
   return (
     <ScreenShell>
       <Text style={styles.title}>Offers</Text>
-      <Text style={styles.subtitle}>Prime membership, referrals and active savings.</Text>
+      <Text style={styles.subtitle}>Live mock campaigns with prime, referral, and bundle savings.</Text>
 
-      <InfoCard title="Prime Membership" subtitle="Get free deliveries and priority support for monthly plans.">
-        <AppButton label="View Prime" onPress={() => router.push('/offers/prime' as never)} />
-      </InfoCard>
+      {offers.map((offer) => (
+        <InfoCard key={offer.id} title={offer.title} subtitle={offer.subtitle}>
+          <AppButton
+            label={offer.cta}
+            onPress={() => {
+              if (offer.id === 'offer-prime') {
+                router.push('/offers/prime' as never);
+                return;
+              }
 
-      <InfoCard title="Refer to Earn" subtitle="Invite friends and earn wallet rewards after successful orders.">
-        <AppButton label="View Referral Program" variant="secondary" onPress={() => router.push('/offers/refer' as never)} />
-      </InfoCard>
+              if (offer.id === 'offer-refer') {
+                router.push('/offers/refer' as never);
+                return;
+              }
+
+              router.push('/shop' as never);
+            }}
+          />
+        </InfoCard>
+      ))}
     </ScreenShell>
   );
 }
 
-const styles = StyleSheet.create({
-  title: {
-    ...Theme.typo.title,
-    color: Theme.colors.text,
-  },
-  subtitle: {
-    marginTop: -4,
-    ...Theme.typo.subtitle,
-    color: Theme.colors.textMuted,
-  },
-});
+const getStyles = (theme: ReturnType<typeof useAppTheme>['theme']) =>
+  StyleSheet.create({
+    title: {
+      ...theme.typo.title,
+      color: theme.colors.text,
+    },
+    subtitle: {
+      marginTop: -4,
+      ...theme.typo.subtitle,
+      color: theme.colors.textMuted,
+    },
+  });

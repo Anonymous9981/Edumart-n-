@@ -1,72 +1,97 @@
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
-import { ScreenShell, SkeletonBlock } from '../components/screen-shell';
-import { Theme } from '../theme/tokens';
+import { ScreenShell } from '../components/screen-shell';
+import { AppButton } from '../components/ui/app-button';
+import { InfoCard } from '../components/ui/info-card';
+import { useMockStore } from '../lib/mock-store';
+import { discountedPrice, formatInr } from '../lib/mock-utils';
+import { useAppTheme } from '../theme/theme-provider';
 
 export default function WishlistScreen() {
+  const { theme } = useAppTheme();
+  const styles = getStyles(theme);
+  const { products, wishlistIds, addToCart, toggleWishlist } = useMockStore();
+
+  const wishlistProducts = React.useMemo(
+    () => products.filter((product) => wishlistIds.includes(product.id)),
+    [products, wishlistIds],
+  );
+
   return (
     <ScreenShell>
-        <Text style={styles.title}>Wishlist</Text>
-        <Text style={styles.subtitle}>Save products here and move them to cart anytime.</Text>
+      <Text style={styles.title}>Wishlist</Text>
+      <Text style={styles.subtitle}>Saved picks you can move to cart instantly.</Text>
 
+      {wishlistProducts.length ? (
+        wishlistProducts.map((product) => (
+          <InfoCard key={product.id} title={product.name} subtitle={`${product.category} • ${product.gradeBand}`}>
+            <Text style={styles.price}>{formatInr(discountedPrice(product.price, product.discountPercent))}</Text>
+            <View style={styles.row}>
+              <AppButton label="Move to cart" onPress={() => addToCart(product.id)} />
+              <AppButton label="Remove" variant="secondary" onPress={() => toggleWishlist(product.id)} />
+            </View>
+          </InfoCard>
+        ))
+      ) : (
         <View style={styles.emptyCard}>
-          <Text style={styles.emptyIcon}>♡</Text>
-          <Text style={styles.emptyTitle}>Your wishlist is ready</Text>
-          <Text style={styles.emptyText}>Tap heart icons from Shop or Home to add products here.</Text>
+          <Text style={styles.emptyIcon}>ED</Text>
+          <Text style={styles.emptyTitle}>No items saved yet</Text>
+          <Text style={styles.emptyText}>Use the wishlist action from Home or Shop to save products.</Text>
         </View>
-
-        <View style={styles.skeletonArea}>
-          <SkeletonBlock height={14} />
-          <SkeletonBlock height={14} />
-          <SkeletonBlock height={48} />
-        </View>
+      )}
     </ScreenShell>
   );
 }
 
-const styles = StyleSheet.create({
-  title: {
-    fontSize: 24,
-    fontWeight: '900',
-    color: Theme.colors.text,
-  },
-  subtitle: {
-    fontSize: 13,
-    color: Theme.colors.textMuted,
-  },
-  emptyCard: {
-    marginTop: 14,
-    borderRadius: 20,
-    borderWidth: 1,
-    borderColor: Theme.colors.border,
-    backgroundColor: Theme.colors.surface,
-    alignItems: 'center',
-    paddingHorizontal: 18,
-    paddingVertical: 26,
-    gap: 6,
-  },
-  emptyIcon: {
-    fontSize: 28,
-    color: Theme.colors.accent,
-  },
-  emptyTitle: {
-    fontSize: 16,
-    fontWeight: '800',
-    color: Theme.colors.text,
-  },
-  emptyText: {
-    fontSize: 13,
-    color: Theme.colors.textMuted,
-    textAlign: 'center',
-    lineHeight: 20,
-  },
-  skeletonArea: {
-    borderRadius: 16,
-    borderWidth: 1,
-    borderColor: Theme.colors.border,
-    backgroundColor: Theme.colors.surfaceRaised,
-    padding: 12,
-    gap: 8,
-  },
-});
+const getStyles = (theme: ReturnType<typeof useAppTheme>['theme']) =>
+  StyleSheet.create({
+    title: {
+      fontSize: 24,
+      fontWeight: '900',
+      color: theme.colors.text,
+    },
+    subtitle: {
+      fontSize: 13,
+      color: theme.colors.textMuted,
+    },
+    price: {
+      fontSize: 14,
+      fontWeight: '900',
+      color: theme.colors.text,
+      marginTop: 2,
+    },
+    row: {
+      flexDirection: 'row',
+      gap: 8,
+      flexWrap: 'wrap',
+      marginTop: 8,
+    },
+    emptyCard: {
+      marginTop: 14,
+      borderRadius: 20,
+      borderWidth: 1,
+      borderColor: theme.colors.border,
+      backgroundColor: theme.colors.surface,
+      alignItems: 'center',
+      paddingHorizontal: 18,
+      paddingVertical: 26,
+      gap: 6,
+    },
+    emptyIcon: {
+      fontSize: 24,
+      fontWeight: '900',
+      color: theme.colors.accent,
+    },
+    emptyTitle: {
+      fontSize: 16,
+      fontWeight: '800',
+      color: theme.colors.text,
+    },
+    emptyText: {
+      fontSize: 13,
+      color: theme.colors.textMuted,
+      textAlign: 'center',
+      lineHeight: 20,
+    },
+  });

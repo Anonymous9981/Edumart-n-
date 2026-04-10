@@ -1,6 +1,4 @@
-import { Appearance } from 'react-native';
-
-const lightColors = {
+export const lightColors = {
   bg: '#F4F8FF',
   bgSoft: '#E9F0FB',
   surface: '#FFFFFF',
@@ -14,7 +12,7 @@ const lightColors = {
   danger: '#D14343',
 };
 
-const darkColors = {
+export const darkColors = {
   bg: '#0E131B',
   bgSoft: '#121925',
   surface: '#171F2C',
@@ -28,31 +26,32 @@ const darkColors = {
   danger: '#F87171',
 };
 
-const colorScheme = Appearance.getColorScheme();
-const isDark = colorScheme !== 'light';
-
-export const Theme = {
-  isDark,
-  colors: isDark ? darkColors : lightColors,
-  typo: {
-    title: {
-      fontSize: 30,
-      fontWeight: '900' as const,
-      letterSpacing: 0.2,
-    },
-    subtitle: {
-      fontSize: 13,
-      lineHeight: 20,
-      fontWeight: '500' as const,
-    },
+const typo = {
+  title: {
+    fontSize: 30,
+    fontWeight: '900' as const,
+    letterSpacing: 0.2,
   },
-  shadows: {
-    neumorph: {
-      shadowColor: isDark ? '#000000' : '#5C7396',
-      shadowOpacity: isDark ? 0.42 : 0.16,
-      shadowRadius: 16,
-      shadowOffset: { width: 0, height: 10 },
-      elevation: 8,
-    },
+  subtitle: {
+    fontSize: 13,
+    lineHeight: 20,
+    fontWeight: '500' as const,
   },
 };
+
+export function createTheme(isDark: boolean) {
+  return {
+    isDark,
+    colors: isDark ? darkColors : lightColors,
+    typo,
+    shadows: {
+      neumorph: {
+        shadowColor: isDark ? '#000000' : '#5C7396',
+        shadowOpacity: isDark ? 0.42 : 0.16,
+        shadowRadius: 16,
+        shadowOffset: { width: 0, height: 10 },
+        elevation: 8,
+      },
+    },
+  };
+}

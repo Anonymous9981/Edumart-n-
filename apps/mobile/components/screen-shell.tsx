@@ -2,7 +2,7 @@ import type { ReactNode } from 'react';
 import { ScrollView, StyleSheet, View } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { Theme } from '../theme/tokens';
+import { useAppTheme } from '../theme/theme-provider';
 
 interface ScreenShellProps {
   children: ReactNode;
@@ -11,6 +11,8 @@ interface ScreenShellProps {
 
 export function ScreenShell({ children, withScroll = true }: ScreenShellProps) {
   const insets = useSafeAreaInsets();
+  const { theme } = useAppTheme();
+  const styles = getStyles(theme);
 
   if (!withScroll) {
     return (
@@ -33,27 +35,30 @@ export function ScreenShell({ children, withScroll = true }: ScreenShellProps) {
 }
 
 export function SkeletonBlock({ height = 16 }: { height?: number }) {
+  const { theme } = useAppTheme();
+  const styles = getStyles(theme);
   return <View style={[styles.skeleton, { height }]} />;
 }
 
-const styles = StyleSheet.create({
-  safeArea: {
-    flex: 1,
-    backgroundColor: Theme.colors.bg,
-  },
-  container: {
-    flex: 1,
-    paddingHorizontal: 16,
-    gap: 14,
-  },
-  content: {
-    paddingHorizontal: 16,
-    gap: 14,
-  },
-  skeleton: {
-    borderRadius: 12,
-    backgroundColor: Theme.colors.surfaceRaised,
-    borderWidth: 1,
-    borderColor: Theme.colors.border,
-  },
-});
+const getStyles = (theme: ReturnType<typeof useAppTheme>['theme']) =>
+  StyleSheet.create({
+    safeArea: {
+      flex: 1,
+      backgroundColor: theme.colors.bg,
+    },
+    container: {
+      flex: 1,
+      paddingHorizontal: 16,
+      gap: 14,
+    },
+    content: {
+      paddingHorizontal: 16,
+      gap: 14,
+    },
+    skeleton: {
+      borderRadius: 12,
+      backgroundColor: theme.colors.surfaceRaised,
+      borderWidth: 1,
+      borderColor: theme.colors.border,
+    },
+  });

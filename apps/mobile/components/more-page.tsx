@@ -2,7 +2,7 @@ import { useRouter } from 'expo-router';
 import type { ReactNode } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
-import { Theme } from '../theme/tokens';
+import { useAppTheme } from '../theme/theme-provider';
 import { ScreenShell } from './screen-shell';
 import { AppButton } from './ui/app-button';
 import { InfoCard } from './ui/info-card';
@@ -36,6 +36,8 @@ export function MorePage({
   footer,
 }: MorePageProps) {
   const router = useRouter();
+  const { theme } = useAppTheme();
+  const styles = getStyles(theme);
 
   return (
     <ScreenShell>
@@ -69,49 +71,50 @@ export function MorePage({
   );
 }
 
-const styles = StyleSheet.create({
-  eyebrow: {
-    fontSize: 11,
-    fontWeight: '800',
-    letterSpacing: 1,
-    textTransform: 'uppercase',
-    color: Theme.colors.accent,
-  },
-  title: {
-    ...Theme.typo.title,
-    color: Theme.colors.text,
-    marginTop: 6,
-  },
-  subtitle: {
-    ...Theme.typo.subtitle,
-    color: Theme.colors.textMuted,
-    marginTop: 4,
-  },
-  list: {
-    gap: 10,
-    marginTop: 6,
-  },
-  listItem: {
-    borderRadius: 16,
-    borderWidth: 1,
-    borderColor: Theme.colors.border,
-    backgroundColor: Theme.colors.surfaceRaised,
-    paddingHorizontal: 14,
-    paddingVertical: 12,
-  },
-  listText: {
-    fontSize: 13,
-    lineHeight: 20,
-    fontWeight: '600',
-    color: Theme.colors.text,
-  },
-  actions: {
-    marginTop: 4,
-    gap: 10,
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-  },
-  footer: {
-    marginTop: 4,
-  },
-});
+const getStyles = (theme: ReturnType<typeof useAppTheme>['theme']) =>
+  StyleSheet.create({
+    eyebrow: {
+      fontSize: 11,
+      fontWeight: '800',
+      letterSpacing: 1,
+      textTransform: 'uppercase',
+      color: theme.colors.accent,
+    },
+    title: {
+      ...theme.typo.title,
+      color: theme.colors.text,
+      marginTop: 6,
+    },
+    subtitle: {
+      ...theme.typo.subtitle,
+      color: theme.colors.textMuted,
+      marginTop: 4,
+    },
+    list: {
+      gap: 10,
+      marginTop: 6,
+    },
+    listItem: {
+      borderRadius: 16,
+      borderWidth: 1,
+      borderColor: theme.colors.border,
+      backgroundColor: theme.colors.surfaceRaised,
+      paddingHorizontal: 14,
+      paddingVertical: 12,
+    },
+    listText: {
+      fontSize: 13,
+      lineHeight: 20,
+      fontWeight: '600',
+      color: theme.colors.text,
+    },
+    actions: {
+      marginTop: 4,
+      gap: 10,
+      flexDirection: 'row',
+      flexWrap: 'wrap',
+    },
+    footer: {
+      marginTop: 4,
+    },
+  });

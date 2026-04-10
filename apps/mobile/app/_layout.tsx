@@ -2,22 +2,35 @@ import { Ionicons } from '@expo/vector-icons';
 import { Tabs } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 
-import { Theme } from '../theme/tokens';
+import { MockStoreProvider } from '../lib/mock-store';
+import { ThemeProvider, useAppTheme } from '../theme/theme-provider';
 
 export default function RootLayout() {
   return (
+    <ThemeProvider>
+      <MockStoreProvider>
+        <RootTabs />
+      </MockStoreProvider>
+    </ThemeProvider>
+  );
+}
+
+function RootTabs() {
+  const { theme } = useAppTheme();
+
+  return (
     <>
-      <StatusBar style={Theme.isDark ? 'light' : 'dark'} />
+      <StatusBar style={theme.isDark ? 'light' : 'dark'} />
       <Tabs
         screenOptions={{
           headerShown: false,
-          tabBarActiveTintColor: Theme.colors.accent,
-          tabBarInactiveTintColor: Theme.colors.textMuted,
+          tabBarActiveTintColor: theme.colors.accent,
+          tabBarInactiveTintColor: theme.colors.textMuted,
           tabBarStyle: {
             height: 64,
             paddingTop: 8,
-            borderTopColor: Theme.colors.border,
-            backgroundColor: Theme.colors.surface,
+            borderTopColor: theme.colors.border,
+            backgroundColor: theme.colors.surface,
           },
           tabBarLabelStyle: {
             fontSize: 11,

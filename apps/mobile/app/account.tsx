@@ -1,11 +1,15 @@
 import { useRouter } from 'expo-router';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { StyleSheet, Switch, Text, TouchableOpacity, View } from 'react-native';
 
 import { ScreenShell } from '../components/screen-shell';
-import { Theme } from '../theme/tokens';
+import { useMockStore } from '../lib/mock-store';
+import { useAppTheme } from '../theme/theme-provider';
 
 export default function AccountScreen() {
   const router = useRouter();
+  const { theme, isDark, toggleTheme } = useAppTheme();
+  const styles = getStyles(theme);
+  const { user, wishlistCount, cartCount, products } = useMockStore();
 
   const quickLinks = [
     { label: 'About', route: '/more/about' },
@@ -26,16 +30,31 @@ export default function AccountScreen() {
   return (
     <ScreenShell>
       <Text style={styles.title}>Account</Text>
-      <Text style={styles.subtitle}>Manage profile and open every key web page flow from mobile.</Text>
+      <Text style={styles.subtitle}>Profile, app controls and every mapped flow page in one place.</Text>
 
       <View style={styles.profileCard}>
         <View style={styles.avatar}>
           <Text style={styles.avatarText}>EM</Text>
         </View>
         <View>
-          <Text style={styles.name}>EduMart User</Text>
-          <Text style={styles.email}>user@edumart.com</Text>
+          <Text style={styles.name}>{user.name}</Text>
+          <Text style={styles.email}>{user.email}</Text>
+          <Text style={styles.email}>{user.school} • {user.city}</Text>
         </View>
+      </View>
+
+      <View style={styles.statsRow}>
+        <View style={styles.statCard}><Text style={styles.statValue}>{products.length}</Text><Text style={styles.statLabel}>Products</Text></View>
+        <View style={styles.statCard}><Text style={styles.statValue}>{wishlistCount}</Text><Text style={styles.statLabel}>Wishlist</Text></View>
+        <View style={styles.statCard}><Text style={styles.statValue}>{cartCount}</Text><Text style={styles.statLabel}>Cart</Text></View>
+      </View>
+
+      <View style={styles.toggleCard}>
+        <View>
+          <Text style={styles.toggleTitle}>Theme mode</Text>
+          <Text style={styles.toggleHint}>{isDark ? 'Dark mode enabled' : 'Light mode enabled'}</Text>
+        </View>
+        <Switch value={isDark} onValueChange={toggleTheme} thumbColor={theme.colors.accent} trackColor={{ false: theme.colors.border, true: theme.colors.accentSoft }} />
       </View>
 
       <View style={styles.section}>
@@ -50,73 +69,120 @@ export default function AccountScreen() {
   );
 }
 
-const styles = StyleSheet.create({
-  title: {
-    ...Theme.typo.title,
-    color: Theme.colors.text,
-  },
-  subtitle: {
-    marginTop: -4,
-    ...Theme.typo.subtitle,
-    color: Theme.colors.textMuted,
-  },
-  profileCard: {
-    marginTop: 6,
-    borderRadius: 22,
-    borderWidth: 1,
-    borderColor: Theme.colors.border,
-    backgroundColor: Theme.colors.surface,
-    padding: 16,
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 12,
-  },
-  avatar: {
-    width: 54,
-    height: 54,
-    borderRadius: 999,
-    backgroundColor: Theme.colors.accentSoft,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  avatarText: {
-    color: Theme.colors.accent,
-    fontSize: 16,
-    fontWeight: '800',
-  },
-  name: {
-    fontSize: 16,
-    fontWeight: '800',
-    color: Theme.colors.text,
-  },
-  email: {
-    marginTop: 2,
-    fontSize: 12,
-    color: Theme.colors.textMuted,
-  },
-  section: {
-    borderRadius: 22,
-    borderWidth: 1,
-    borderColor: Theme.colors.border,
-    backgroundColor: Theme.colors.surface,
-    overflow: 'hidden',
-  },
-  row: {
-    paddingHorizontal: 16,
-    paddingVertical: 14,
-    borderBottomWidth: 1,
-    borderBottomColor: Theme.colors.border,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-  rowText: {
-    fontSize: 14,
-    fontWeight: '700',
-    color: Theme.colors.text,
-  },
-  rowArrow: {
-    fontSize: 18,
-    color: Theme.colors.textMuted,
-  },
-});
+const getStyles = (theme: ReturnType<typeof useAppTheme>['theme']) =>
+  StyleSheet.create({
+    title: {
+      ...theme.typo.title,
+      color: theme.colors.text,
+    },
+    subtitle: {
+      marginTop: -4,
+      ...theme.typo.subtitle,
+      color: theme.colors.textMuted,
+    },
+    profileCard: {
+      marginTop: 6,
+      borderRadius: 22,
+      borderWidth: 1,
+      borderColor: theme.colors.border,
+      backgroundColor: theme.colors.surface,
+      padding: 16,
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: 12,
+    },
+    avatar: {
+      width: 54,
+      height: 54,
+      borderRadius: 999,
+      backgroundColor: theme.colors.accentSoft,
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+    avatarText: {
+      color: theme.colors.accent,
+      fontSize: 16,
+      fontWeight: '800',
+    },
+    name: {
+      fontSize: 16,
+      fontWeight: '800',
+      color: theme.colors.text,
+    },
+    email: {
+      marginTop: 2,
+      fontSize: 12,
+      color: theme.colors.textMuted,
+    },
+    statsRow: {
+      flexDirection: 'row',
+      gap: 8,
+    },
+    statCard: {
+      flex: 1,
+      borderRadius: 14,
+      borderWidth: 1,
+      borderColor: theme.colors.border,
+      backgroundColor: theme.colors.surface,
+      paddingVertical: 10,
+      alignItems: 'center',
+    },
+    statValue: {
+      fontSize: 19,
+      fontWeight: '900',
+      color: theme.colors.text,
+    },
+    statLabel: {
+      fontSize: 10,
+      fontWeight: '700',
+      color: theme.colors.textMuted,
+      textTransform: 'uppercase',
+      letterSpacing: 0.8,
+    },
+    toggleCard: {
+      borderRadius: 16,
+      borderWidth: 1,
+      borderColor: theme.colors.border,
+      backgroundColor: theme.colors.surface,
+      paddingHorizontal: 14,
+      paddingVertical: 12,
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+    },
+    toggleTitle: {
+      fontSize: 14,
+      fontWeight: '800',
+      color: theme.colors.text,
+    },
+    toggleHint: {
+      fontSize: 12,
+      color: theme.colors.textMuted,
+      marginTop: 2,
+    },
+    section: {
+      borderRadius: 22,
+      borderWidth: 1,
+      borderColor: theme.colors.border,
+      backgroundColor: theme.colors.surface,
+      overflow: 'hidden',
+    },
+    row: {
+      paddingHorizontal: 16,
+      paddingVertical: 14,
+      borderBottomWidth: 1,
+      borderBottomColor: theme.colors.border,
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+    },
+    rowText: {
+      fontSize: 14,
+      fontWeight: '700',
+      color: theme.colors.text,
+    },
+    rowArrow: {
+      fontSize: 18,
+      color: theme.colors.textMuted,
+    },
+  });

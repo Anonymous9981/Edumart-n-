@@ -1,7 +1,7 @@
 import type { ReactNode } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
-import { Theme } from '../../theme/tokens';
+import { useAppTheme } from '../../theme/theme-provider';
 
 interface InfoCardProps {
   title: string;
@@ -10,6 +10,9 @@ interface InfoCardProps {
 }
 
 export function InfoCard({ title, subtitle, children }: InfoCardProps) {
+  const { theme } = useAppTheme();
+  const styles = getStyles(theme);
+
   return (
     <View style={styles.card}>
       <Text style={styles.title}>{title}</Text>
@@ -19,24 +22,25 @@ export function InfoCard({ title, subtitle, children }: InfoCardProps) {
   );
 }
 
-const styles = StyleSheet.create({
-  card: {
-    borderRadius: 18,
-    borderWidth: 1,
-    borderColor: Theme.colors.border,
-    backgroundColor: Theme.colors.surface,
-    padding: 14,
-    gap: 8,
-    ...Theme.shadows.neumorph,
-  },
-  title: {
-    fontSize: 15,
-    fontWeight: '800',
-    color: Theme.colors.text,
-  },
-  subtitle: {
-    fontSize: 12,
-    lineHeight: 18,
-    color: Theme.colors.textMuted,
-  },
-});
+const getStyles = (theme: ReturnType<typeof useAppTheme>['theme']) =>
+  StyleSheet.create({
+    card: {
+      borderRadius: 18,
+      borderWidth: 1,
+      borderColor: theme.colors.border,
+      backgroundColor: theme.colors.surface,
+      padding: 14,
+      gap: 8,
+      ...theme.shadows.neumorph,
+    },
+    title: {
+      fontSize: 15,
+      fontWeight: '800',
+      color: theme.colors.text,
+    },
+    subtitle: {
+      fontSize: 12,
+      lineHeight: 18,
+      color: theme.colors.textMuted,
+    },
+  });
