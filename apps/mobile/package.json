@@ -11,7 +11,7 @@
     "eject": "expo eject",
     "build": "pnpm run type-check",
     "build:release": "eas build",
-    "build:apk": "eas build --platform android --profile preview",
+    "build:apk": "eas build --platform android --profile release",
     "preview": "eas build --platform android --profile preview",
     "type-check": "tsc --noEmit",
     "lint": "eslint app screens hooks"

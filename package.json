@@ -15,7 +15,7 @@
     "build:web": "pnpm --filter @edumart/web build",
     "deploy:web": "pnpm dlx vercel --cwd apps/web",
     "build:apk": "pnpm --filter @edumart/mobile build:apk",
-    "build:apk:ci": "pnpm --filter @edumart/mobile exec eas build --platform android --profile preview --non-interactive",
+    "build:apk:ci": "pnpm --filter @edumart/mobile exec eas build --platform android --profile release --non-interactive",
     "build:all": "turbo run build",
     "postinstall": "prisma generate",
     "type-check": "pnpm --filter @edumart/mobile run build && pnpm exec tsc -p apps/web/tsconfig.json --noEmit --pretty false",
