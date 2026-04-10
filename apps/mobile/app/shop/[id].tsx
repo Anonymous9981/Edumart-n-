@@ -1,5 +1,5 @@
 import { useLocalSearchParams } from 'expo-router';
-import { StyleSheet, Text, View } from 'react-native';
+import { Image, StyleSheet, Text, View } from 'react-native';
 
 import { ScreenShell } from '../../components/screen-shell';
 import { AppButton } from '../../components/ui/app-button';
@@ -23,11 +23,14 @@ export default function ProductDetailScreen() {
       <Text style={styles.title}>{product.name}</Text>
       <Text style={styles.subtitle}>{product.subtitle}</Text>
 
+      <Image source={{ uri: product.image }} style={styles.heroImage} resizeMode="cover" />
+
       <InfoCard title={`${product.category} • ${product.gradeBand}`} subtitle={product.description}>
         <View style={styles.metaRow}>
           <Text style={styles.meta}>Rating: {product.rating.toFixed(1)} ★ ({product.reviewCount})</Text>
           <Text style={styles.meta}>Stock: {product.stock}</Text>
         </View>
+        <Text style={styles.audience}>Audience: {product.audience === 'school' ? 'School' : 'Student'}</Text>
         <View style={styles.priceRow}>
           <Text style={styles.priceNow}>{formatInr(finalPrice)}</Text>
           <Text style={styles.priceOld}>{formatInr(product.price)}</Text>
@@ -58,11 +61,28 @@ const getStyles = (theme: ReturnType<typeof useAppTheme>['theme']) =>
       justifyContent: 'space-between',
       gap: 8,
     },
+    heroImage: {
+      width: '100%',
+      height: 220,
+      borderRadius: 16,
+      borderWidth: 1,
+      borderColor: theme.colors.border,
+      backgroundColor: theme.colors.bgSoft,
+      marginTop: 2,
+    },
     meta: {
       fontSize: 12,
       color: theme.colors.textMuted,
       fontWeight: '700',
       flex: 1,
+    },
+    audience: {
+      marginTop: 4,
+      fontSize: 12,
+      fontWeight: '700',
+      color: theme.colors.accent,
+      textTransform: 'uppercase',
+      letterSpacing: 0.4,
     },
     priceRow: {
       marginTop: 8,

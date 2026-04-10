@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { Image, StyleSheet, Text, View } from 'react-native';
 
 import { ScreenShell } from '../components/screen-shell';
 import { AppButton } from '../components/ui/app-button';
@@ -26,6 +26,7 @@ export default function WishlistScreen() {
       {wishlistProducts.length ? (
         wishlistProducts.map((product) => (
           <InfoCard key={product.id} title={product.name} subtitle={`${product.category} • ${product.gradeBand}`}>
+            <Image source={{ uri: product.image }} style={styles.productImage} resizeMode="cover" />
             <Text style={styles.price}>{formatInr(discountedPrice(product.price, product.discountPercent))}</Text>
             <View style={styles.row}>
               <AppButton label="Move to cart" onPress={() => addToCart(product.id)} />
@@ -59,6 +60,13 @@ const getStyles = (theme: ReturnType<typeof useAppTheme>['theme']) =>
       fontSize: 14,
       fontWeight: '900',
       color: theme.colors.text,
+      marginTop: 2,
+    },
+    productImage: {
+      width: '100%',
+      height: 120,
+      borderRadius: 12,
+      backgroundColor: theme.colors.bgSoft,
       marginTop: 2,
     },
     row: {

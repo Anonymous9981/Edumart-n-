@@ -11,12 +11,22 @@ export default function OffersScreen() {
   const router = useRouter();
   const { theme } = useAppTheme();
   const styles = getStyles(theme);
-  const { offers } = useMockStore();
+  const { offers, audienceFilter, setAudienceFilter } = useMockStore();
 
   return (
     <ScreenShell>
       <Text style={styles.title}>Offers</Text>
       <Text style={styles.subtitle}>Live mock campaigns with prime, referral, and bundle savings.</Text>
+
+      <View style={styles.audienceRow}>
+        <AppButton label="All" variant={audienceFilter === 'all' ? 'primary' : 'secondary'} onPress={() => setAudienceFilter('all')} />
+        <AppButton label="Student" variant={audienceFilter === 'student' ? 'primary' : 'secondary'} onPress={() => setAudienceFilter('student')} />
+        <AppButton label="School" variant={audienceFilter === 'school' ? 'primary' : 'secondary'} onPress={() => setAudienceFilter('school')} />
+      </View>
+
+      <Text style={styles.audienceHint}>
+        Showing {audienceFilter === 'all' ? 'all audience' : audienceFilter} offer recommendations.
+      </Text>
 
       {offers.map((offer) => (
         <InfoCard key={offer.id} title={offer.title} subtitle={offer.subtitle}>
@@ -52,5 +62,17 @@ const getStyles = (theme: ReturnType<typeof useAppTheme>['theme']) =>
       marginTop: -4,
       ...theme.typo.subtitle,
       color: theme.colors.textMuted,
+    },
+    audienceRow: {
+      flexDirection: 'row',
+      gap: 8,
+      flexWrap: 'wrap',
+      marginTop: 4,
+    },
+    audienceHint: {
+      fontSize: 12,
+      color: theme.colors.textMuted,
+      marginTop: -4,
+      marginBottom: 2,
     },
   });

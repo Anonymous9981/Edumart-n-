@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { Image, StyleSheet, Text, View } from 'react-native';
 
 import { ScreenShell } from '../components/screen-shell';
 import { AppButton } from '../components/ui/app-button';
@@ -37,6 +37,7 @@ export default function CartScreen() {
 
         return (
           <InfoCard key={product.id} title={product.name} subtitle={`${product.category} • ${formatInr(unitPrice)} each`}>
+            <Image source={{ uri: product.image }} style={styles.itemImage} resizeMode="cover" />
             <View style={styles.itemRow}>
               <View style={styles.qtyRow}>
                 <AppButton label="-" variant="secondary" onPress={() => decrementFromCart(product.id)} />
@@ -82,6 +83,13 @@ const getStyles = (theme: ReturnType<typeof useAppTheme>['theme']) =>
       justifyContent: 'space-between',
       alignItems: 'center',
       marginTop: 6,
+    },
+    itemImage: {
+      width: '100%',
+      height: 110,
+      borderRadius: 12,
+      backgroundColor: theme.colors.bgSoft,
+      marginTop: 2,
     },
     qtyRow: {
       flexDirection: 'row',

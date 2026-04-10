@@ -9,7 +9,7 @@ export default function AccountScreen() {
   const router = useRouter();
   const { theme, isDark, toggleTheme } = useAppTheme();
   const styles = getStyles(theme);
-  const { user, wishlistCount, cartCount, products } = useMockStore();
+  const { user, wishlistCount, cartCount, products, contentSource, lastSyncedAt } = useMockStore();
 
   const quickLinks = [
     { label: 'About', route: '/more/about' },
@@ -55,6 +55,12 @@ export default function AccountScreen() {
           <Text style={styles.toggleHint}>{isDark ? 'Dark mode enabled' : 'Light mode enabled'}</Text>
         </View>
         <Switch value={isDark} onValueChange={toggleTheme} thumbColor={theme.colors.accent} trackColor={{ false: theme.colors.border, true: theme.colors.accentSoft }} />
+      </View>
+
+      <View style={styles.syncCard}>
+        <Text style={styles.syncTitle}>Website content sync</Text>
+        <Text style={styles.syncText}>Source: {contentSource === 'website' ? 'Website API' : 'Fallback mock data'}</Text>
+        <Text style={styles.syncText}>Last update: {lastSyncedAt ? new Date(lastSyncedAt).toLocaleString() : 'Not synced yet'}</Text>
       </View>
 
       <View style={styles.section}>
@@ -159,6 +165,24 @@ const getStyles = (theme: ReturnType<typeof useAppTheme>['theme']) =>
       fontSize: 12,
       color: theme.colors.textMuted,
       marginTop: 2,
+    },
+    syncCard: {
+      borderRadius: 16,
+      borderWidth: 1,
+      borderColor: theme.colors.border,
+      backgroundColor: theme.colors.surface,
+      paddingHorizontal: 14,
+      paddingVertical: 12,
+      gap: 4,
+    },
+    syncTitle: {
+      fontSize: 14,
+      fontWeight: '800',
+      color: theme.colors.text,
+    },
+    syncText: {
+      fontSize: 12,
+      color: theme.colors.textMuted,
     },
     section: {
       borderRadius: 22,

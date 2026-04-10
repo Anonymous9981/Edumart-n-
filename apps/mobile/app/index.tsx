@@ -1,7 +1,7 @@
 import React from 'react';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { ScreenShell } from '../components/screen-shell';
 import { useMockStore } from '../lib/mock-store';
@@ -12,9 +12,24 @@ export default function HomeScreen() {
   const router = useRouter();
   const { theme } = useAppTheme();
   const styles = getStyles(theme);
-  const { products, cartCount, wishlistCount, addToCart, toggleWishlist, wishlistIds } = useMockStore();
+  const {
+    products,
+    cartCount,
+    wishlistCount,
+    addToCart,
+    toggleWishlist,
+    wishlistIds,
+    audienceFilter,
+    setAudienceFilter,
+    contentSource,
+  } = useMockStore();
 
-  const featured = products.slice(0, 3);
+  const filteredProducts = React.useMemo(
+    () => products.filter((product) => audienceFilter === 'all' || product.audience === audienceFilter),
+    [products, audienceFilter],
+  );
+
+  const featured = filteredProducts.slice(0, 3);
 
   return (
     <ScreenShell>
@@ -48,6 +63,22 @@ export default function HomeScreen() {
         </View>
       </View>
 
+      <View style={styles.audienceRow}>
+        {[
+          { key: 'all', label: 'All' },
+          { key: 'student', label: 'Student' },
+          { key: 'school', label: 'School' },
+        ].map((item) => (
+          <Pressable
+            key={item.key}
+            style={[styles.audienceChip, audienceFilter === item.key ? styles.audienceChipActive : null]}
+            onPress={() => setAudienceFilter(item.key as 'all' | 'student' | 'school')}
+          >
+            <Text style={[styles.audienceChipText, audienceFilter === item.key ? styles.audienceChipTextActive : null]}>{item.label}</Text>
+          </Pressable>
+        ))}
+      </View>
+
       <View style={styles.heroCard}>
         <View style={styles.brandMark}>
           <Text style={styles.brandMarkText}>ED</Text>
@@ -55,6 +86,7 @@ export default function HomeScreen() {
         <Text style={styles.heroBadge}>Edition 2026</Text>
         <Text style={styles.heroTitle}>Complete mock marketplace with real interactions</Text>
         <Text style={styles.heroText}>Browse category products, wishlist favorites, cart totals, offers and account utilities with live mock state.</Text>
+        <Text style={styles.heroMeta}>Content source: {contentSource === 'website' ? 'Website API sync' : 'Fallback local data'}</Text>
         <Pressable style={styles.primaryButton} onPress={() => router.push('/shop' as never)}>
           <Text style={styles.primaryButtonText}>Explore products</Text>
         </Pressable>
@@ -67,6 +99,7 @@ export default function HomeScreen() {
 
           return (
             <View key={product.id} style={styles.productCard}>
+              <Image source={{ uri: product.image }} style={styles.productImage} resizeMode="cover" />
               <Text style={styles.productName}>{product.name}</Text>
               <Text style={styles.productSubtitle}>{product.subtitle}</Text>
               <View style={styles.priceRow}>
@@ -143,6 +176,31 @@ const getStyles = (theme: ReturnType<typeof useAppTheme>['theme']) =>
       flexDirection: 'row',
       gap: 8,
     },
+    audienceRow: {
+      flexDirection: 'row',
+      gap: 8,
+      marginTop: -2,
+    },
+    audienceChip: {
+      borderRadius: 999,
+      borderWidth: 1,
+      borderColor: theme.colors.border,
+      backgroundColor: theme.colors.surface,
+      paddingHorizontal: 12,
+      paddingVertical: 7,
+    },
+    audienceChipActive: {
+      borderColor: theme.colors.accent,
+      backgroundColor: theme.colors.accentSoft,
+    },
+    audienceChipText: {
+      fontSize: 12,
+      fontWeight: '700',
+      color: theme.colors.textMuted,
+    },
+    audienceChipTextActive: {
+      color: theme.colors.accent,
+    },
     kpiCard: {
       flex: 1,
       borderRadius: 14,
@@ -213,6 +271,14 @@ const getStyles = (theme: ReturnType<typeof useAppTheme>['theme']) =>
       fontSize: 14,
       lineHeight: 21,
     },
+    heroMeta: {
+      marginTop: 4,
+      fontSize: 11,
+      color: theme.colors.textMuted,
+      fontWeight: '700',
+      textTransform: 'uppercase',
+      letterSpacing: 0.6,
+    },
     primaryButton: {
       marginTop: 10,
       backgroundColor: theme.colors.accent,
@@ -241,6 +307,13 @@ const getStyles = (theme: ReturnType<typeof useAppTheme>['theme']) =>
       backgroundColor: theme.colors.surface,
       padding: 14,
       gap: 4,
+    },
+    productImage: {
+      width: '100%',
+      height: 132,
+      borderRadius: 12,
+      marginBottom: 6,
+      backgroundColor: theme.colors.bgSoft,
     },
     productName: {
       fontSize: 15,

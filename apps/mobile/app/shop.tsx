@@ -1,7 +1,7 @@
 import React from 'react';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
-import { StyleSheet, Text, View } from 'react-native';
+import { Image, StyleSheet, Text, View } from 'react-native';
 
 import { ScreenShell } from '../components/screen-shell';
 import { AppButton } from '../components/ui/app-button';
@@ -14,18 +14,38 @@ export default function ShopScreen() {
   const router = useRouter();
   const { theme } = useAppTheme();
   const styles = getStyles(theme);
-  const { products, categories, wishlistIds, addToCart, toggleWishlist } = useMockStore();
+  const { products, categories, wishlistIds, addToCart, toggleWishlist, audienceFilter, setAudienceFilter } = useMockStore();
   const [activeCategory, setActiveCategory] = React.useState<(typeof categories)[number]>('All');
 
   const visibleProducts = React.useMemo(
-    () => products.filter((product) => activeCategory === 'All' || product.category === activeCategory),
-    [products, activeCategory],
+    () =>
+      products.filter(
+        (product) =>
+          (activeCategory === 'All' || product.category === activeCategory) &&
+          (audienceFilter === 'all' || product.audience === audienceFilter),
+      ),
+    [products, activeCategory, audienceFilter],
   );
 
   return (
     <ScreenShell>
       <Text style={styles.title}>Shop</Text>
       <Text style={styles.subtitle}>Full mock catalog with working cart and wishlist actions.</Text>
+
+      <View style={styles.audienceRow}>
+        {[
+          { key: 'all', label: 'All' },
+          { key: 'student', label: 'Student' },
+          { key: 'school', label: 'School' },
+        ].map((item) => (
+          <AppButton
+            key={item.key}
+            label={item.label}
+            variant={audienceFilter === item.key ? 'primary' : 'secondary'}
+            onPress={() => setAudienceFilter(item.key as 'all' | 'student' | 'school')}
+          />
+        ))}
+      </View>
 
       <View style={styles.filterRow}>
         {categories.map((label) => (
@@ -47,6 +67,7 @@ export default function ShopScreen() {
               title={item.name}
               subtitle={`${item.category} • ${item.gradeBand} • ${item.rating.toFixed(1)}★ (${item.reviewCount})`}
             >
+              <Image source={{ uri: item.image }} style={styles.cardImage} resizeMode="cover" />
               <View style={styles.cardBadge}>
                 <Text style={styles.cardBadgeText}>{item.badge ?? `${item.discountPercent}% off`}</Text>
               </View>
@@ -89,6 +110,12 @@ const getStyles = (theme: ReturnType<typeof useAppTheme>['theme']) =>
       gap: 8,
       flexWrap: 'wrap',
     },
+    audienceRow: {
+      marginTop: 4,
+      flexDirection: 'row',
+      gap: 8,
+      flexWrap: 'wrap',
+    },
     list: {
       gap: 10,
       marginTop: 8,
@@ -100,6 +127,12 @@ const getStyles = (theme: ReturnType<typeof useAppTheme>['theme']) =>
       paddingHorizontal: 8,
       paddingVertical: 4,
       marginTop: 2,
+    },
+    cardImage: {
+      width: '100%',
+      height: 140,
+      borderRadius: 12,
+      backgroundColor: theme.colors.bgSoft,
     },
     cardBadgeText: {
       fontSize: 10,
