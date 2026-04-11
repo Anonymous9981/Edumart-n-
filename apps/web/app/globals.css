@@ -137,3 +137,88 @@ h4 {
     background: rgba(255, 255, 255, 0.18);
   }
 }
+
+/* Native app web-wrapper parity: only applied when rendered inside the APK WebView bridge. */
+html[data-app-shell='edumart-mobile'][data-native-theme='light'] {
+  color-scheme: light;
+}
+
+html[data-app-shell='edumart-mobile'][data-native-theme='dark'] {
+  color-scheme: dark;
+  --brand-ink: #edf4ff;
+  --brand-muted: #a9bad1;
+  --brand-border: #233651;
+  --brand-surface: #0e1a2d;
+  --brand-surface-soft: #152338;
+  --brand-bg: radial-gradient(circle at 0% 0%, #0a1a2d 0%, #07101e 56%, #0e1f33 100%);
+}
+
+html[data-app-shell='edumart-mobile'][data-native-theme='dark'] body {
+  background: var(--brand-bg);
+  color: var(--brand-ink);
+}
+
+html[data-app-shell='edumart-mobile'][data-native-theme='dark'] .brand-shell {
+  border-color: #1f3655;
+  background: linear-gradient(140deg, #0b3558 0%, #0f456f 54%, #00b58a 100%);
+  box-shadow: 0 14px 30px rgba(0, 0, 0, 0.4);
+}
+
+html[data-app-shell='edumart-mobile'][data-native-theme='dark'] .brand-panel,
+html[data-app-shell='edumart-mobile'][data-native-theme='dark'] .brand-card {
+  border-color: var(--brand-border);
+  background: var(--brand-surface);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.32);
+}
+
+html[data-app-shell='edumart-mobile'][data-native-theme='dark'] .brand-title {
+  color: var(--brand-ink);
+}
+
+html[data-app-shell='edumart-mobile'][data-native-theme='dark'] .brand-copy {
+  color: #d7e7f7;
+}
+
+html[data-app-shell='edumart-mobile'][data-native-theme='dark'] .bg-white,
+html[data-app-shell='edumart-mobile'][data-native-theme='dark'] .bg-white\/90 {
+  background-color: var(--brand-surface) !important;
+}
+
+html[data-app-shell='edumart-mobile'][data-native-theme='dark'] .bg-slate-100 {
+  background-color: var(--brand-surface-soft) !important;
+}
+
+html[data-app-shell='edumart-mobile'][data-native-theme='dark'] .text-slate-900 {
+  color: var(--brand-ink) !important;
+}
+
+html[data-app-shell='edumart-mobile'][data-native-theme='dark'] .text-slate-700,
+html[data-app-shell='edumart-mobile'][data-native-theme='dark'] .text-slate-600,
+html[data-app-shell='edumart-mobile'][data-native-theme='dark'] .text-slate-500 {
+  color: var(--brand-muted) !important;
+}
+
+html[data-app-shell='edumart-mobile'][data-native-theme='dark'] .border-slate-200,
+html[data-app-shell='edumart-mobile'][data-native-theme='dark'] .border-slate-300 {
+  border-color: var(--brand-border) !important;
+}
+
+html[data-app-shell='edumart-mobile'][data-native-theme='dark'] .shadow-sm,
+html[data-app-shell='edumart-mobile'][data-native-theme='dark'] .shadow-lg,
+html[data-app-shell='edumart-mobile'][data-native-theme='dark'] .shadow-xl {
+  --tw-shadow-color: rgba(0, 0, 0, 0.4);
+}
+
+html[data-app-shell='edumart-mobile'] .brand-card,
+html[data-app-shell='edumart-mobile'] .brand-panel {
+  border-radius: 1.2rem;
+}
+
+html[data-app-shell='edumart-mobile'] .p-4 {
+  padding: 0.9rem !important;
+}
+
+html[data-app-shell='edumart-mobile'] .p-5,
+html[data-app-shell='edumart-mobile'] .sm\:p-6 {
+  padding: 1rem !important;
+}
