@@ -4,6 +4,7 @@ import { Plus_Jakarta_Sans, Space_Grotesk } from 'next/font/google'
 
 import { MarketplaceProvider } from '../lib/marketplace-state'
 import { SiteFeedbackProvider } from '../lib/site-feedback'
+import { PwaRegister } from '../components/pwa-register'
 
 const jakarta = Plus_Jakarta_Sans({
   subsets: ['latin'],
@@ -19,6 +20,14 @@ export const metadata: Metadata = {
   title: 'Karom EduMart - Premium Education Marketplace',
   description: 'Buy and sell educational products with ease. Secure, trusted, scalable.',
   metadataBase: new URL('https://edumart.com'),
+  manifest: '/manifest.webmanifest',
+  applicationName: 'Karom EduMart',
+  themeColor: '#0B3558',
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: 'default',
+    title: 'Karom EduMart',
+  },
   openGraph: {
     type: 'website',
     locale: 'en_US',
@@ -48,6 +57,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${jakarta.variable} ${spaceGrotesk.variable}`}>
+        <PwaRegister />
         <MarketplaceProvider>
           <SiteFeedbackProvider>{children}</SiteFeedbackProvider>
         </MarketplaceProvider>
