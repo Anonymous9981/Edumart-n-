@@ -50,7 +50,7 @@ async function getShopCategories(): Promise<ShopCategory[]> {
       return buildFallbackCategories()
     }
 
-    return categories.map((category) => ({
+    const dbCategories = categories.map((category) => ({
       id: category.id,
       name: category.name,
       slug: category.slug,
@@ -64,6 +64,14 @@ async function getShopCategories(): Promise<ShopCategory[]> {
         image: subcategory.image,
       })),
     }))
+
+    const fallbackCategories = buildFallbackCategories()
+    const mergedCategories = [
+      ...dbCategories,
+      ...fallbackCategories.filter((fallbackCategory) => !dbCategories.some((dbCategory) => dbCategory.slug === fallbackCategory.slug)),
+    ]
+
+    return mergedCategories
   } catch {
     return buildFallbackCategories()
   }

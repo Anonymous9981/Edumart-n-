@@ -29,8 +29,10 @@ export default function AccountScreen() {
 
   return (
     <ScreenShell>
-      <Text style={styles.title}>Account</Text>
-      <Text style={styles.subtitle}>Profile, app controls and every mapped flow page in one place.</Text>
+      <View style={styles.heroCard}>
+        <Text style={styles.title}>Account</Text>
+        <Text style={styles.subtitle}>Profile, app controls and every mapped flow page in one place.</Text>
+      </View>
 
       <View style={styles.profileCard}>
         <View style={styles.avatar}>
@@ -78,13 +80,22 @@ export default function AccountScreen() {
 const getStyles = (theme: ReturnType<typeof useAppTheme>['theme']) =>
   StyleSheet.create({
     title: {
-      ...theme.typo.title,
-      color: theme.colors.text,
+      fontSize: 28,
+      fontWeight: '900',
+      color: '#F8FBFF',
     },
     subtitle: {
-      marginTop: -4,
+      marginTop: 2,
       ...theme.typo.subtitle,
-      color: theme.colors.textMuted,
+      color: '#D8E7F7',
+    },
+    heroCard: {
+      borderRadius: 22,
+      borderWidth: 1,
+      borderColor: theme.colors.border,
+      backgroundColor: theme.colors.accent,
+      paddingHorizontal: 16,
+      paddingVertical: 14,
     },
     profileCard: {
       marginTop: 6,

@@ -492,8 +492,16 @@ export async function getHomepageData(): Promise<HomepageData> {
       take: 24,
     })
 
+    const dbProducts = products.map(toHomepageProduct)
+    const mergedProducts = [
+      ...dbProducts,
+      ...taxonomyFallbackProducts.filter(
+        (fallbackProduct) => !dbProducts.some((dbProduct) => dbProduct.slug === fallbackProduct.slug),
+      ),
+    ]
+
     return {
-      products: products.map(toHomepageProduct),
+      products: mergedProducts,
     }
   } catch {
     return { products: FALLBACK_PRODUCTS }

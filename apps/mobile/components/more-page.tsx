@@ -41,9 +41,11 @@ export function MorePage({
 
   return (
     <ScreenShell>
-      <Text style={styles.eyebrow}>{eyebrow}</Text>
-      <Text style={styles.title}>{title}</Text>
-      <Text style={styles.subtitle}>{subtitle}</Text>
+      <View style={styles.heroCard}>
+        <Text style={styles.eyebrow}>{eyebrow}</Text>
+        <Text style={styles.title}>{title}</Text>
+        <Text style={styles.subtitle}>{subtitle}</Text>
+      </View>
 
       <InfoCard title={overviewTitle} subtitle={overview} />
 
@@ -73,21 +75,31 @@ export function MorePage({
 
 const getStyles = (theme: ReturnType<typeof useAppTheme>['theme']) =>
   StyleSheet.create({
+    heroCard: {
+      borderRadius: 22,
+      borderWidth: 1,
+      borderColor: theme.colors.border,
+      backgroundColor: theme.colors.accent,
+      paddingHorizontal: 16,
+      paddingVertical: 14,
+      gap: 2,
+    },
     eyebrow: {
       fontSize: 11,
       fontWeight: '800',
       letterSpacing: 1,
       textTransform: 'uppercase',
-      color: theme.colors.accent,
+      color: theme.isDark ? '#C7F4EA' : '#D9F8F0',
     },
     title: {
       ...theme.typo.title,
-      color: theme.colors.text,
-      marginTop: 6,
+      color: '#F8FBFF',
+      marginTop: 2,
+      fontSize: 27,
     },
     subtitle: {
       ...theme.typo.subtitle,
-      color: theme.colors.textMuted,
+      color: '#D8E7F7',
       marginTop: 4,
     },
     list: {
@@ -98,7 +110,7 @@ const getStyles = (theme: ReturnType<typeof useAppTheme>['theme']) =>
       borderRadius: 16,
       borderWidth: 1,
       borderColor: theme.colors.border,
-      backgroundColor: theme.colors.surfaceRaised,
+      backgroundColor: theme.colors.surface,
       paddingHorizontal: 14,
       paddingVertical: 12,
     },
