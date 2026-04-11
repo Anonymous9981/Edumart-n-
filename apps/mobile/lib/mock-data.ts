@@ -1,4 +1,3 @@
-export type ProductCategory = 'Books' | 'Stationery' | 'Tech' | 'Furniture' | 'Uniform';
 export type ProductAudience = 'student' | 'school';
 
 export interface MockProduct {
@@ -7,7 +6,8 @@ export interface MockProduct {
   subtitle: string;
   image: string;
   description: string;
-  category: ProductCategory;
+  category: string;
+  subcategory?: string;
   audience: ProductAudience;
   gradeBand: string;
   price: number;
@@ -273,11 +273,4 @@ export const mockAboutPoints = [
   'Post-delivery support for institutions and families',
 ];
 
-export const productCategories: Array<'All' | ProductCategory> = [
-  'All',
-  'Books',
-  'Stationery',
-  'Tech',
-  'Furniture',
-  'Uniform',
-];
+export const productCategories: string[] = ['All', ...Array.from(new Set(mockProducts.map((product) => product.category)))];

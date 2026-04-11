@@ -2,16 +2,21 @@ import type { ReactNode } from 'react';
 import { createContext, useContext, useEffect, useMemo, useState } from 'react';
 
 import { mockAboutPoints, mockCompany, mockOffers, mockProducts, mockUser, productCategories } from './mock-data';
-import { fetchWebsiteMobileContent } from './web-content';
+import { fetchWebsiteMobileContent, type WebsiteTaxonomyCategory } from './web-content';
 
 type AudienceFilter = 'all' | 'student' | 'school';
-type ProductCategory = Exclude<(typeof productCategories)[number], 'All'>;
+
+export interface AppCategoryTree {
+  name: string;
+  subcategories: string[];
+}
 
 interface MockStoreValue {
   products: typeof mockProducts;
   offers: typeof mockOffers;
   user: typeof mockUser;
-  categories: typeof productCategories;
+  categories: string[];
+  categoryTree: AppCategoryTree[];
   audienceFilter: AudienceFilter;
   setAudienceFilter: (value: AudienceFilter) => void;
   company: typeof mockCompany;
@@ -38,6 +43,7 @@ export function MockStoreProvider({ children }: { children: ReactNode }) {
   const [products, setProducts] = useState(mockProducts);
   const [offers, setOffers] = useState(mockOffers);
   const [categories, setCategories] = useState(productCategories);
+  const [categoryTree, setCategoryTree] = useState<AppCategoryTree[]>(buildCategoryTree(mockProducts));
   const [audienceFilter, setAudienceFilter] = useState<AudienceFilter>('all');
   const [company, setCompany] = useState(mockCompany);
   const [aboutPoints, setAboutPoints] = useState<string[]>(mockAboutPoints);
@@ -89,10 +95,11 @@ export function MockStoreProvider({ children }: { children: ReactNode }) {
       const mappedProducts = remoteContent.products.map((product) => ({
         id: product.id,
         name: product.title,
-        subtitle: `${product.vendor} • ${product.category}`,
+        subtitle: `${product.vendor} • ${product.subcategory ?? product.category}`,
         image: product.image,
         description: product.description,
-        category: resolveCategory(product.category),
+        category: product.category,
+        subcategory: product.subcategory,
         audience: (product.audience === 'teacher' ? 'school' : 'student') as 'student' | 'school',
         gradeBand: product.schoolClasses?.length ? `Class ${product.schoolClasses.join(', ')}` : product.audience === 'teacher' ? 'School Solutions' : 'Student Picks',
         price: Math.max(product.price, product.finalPrice),
@@ -111,10 +118,14 @@ export function MockStoreProvider({ children }: { children: ReactNode }) {
       }));
 
       const mappedCategories = buildCategories(mappedProducts);
+      const mappedCategoryTree = remoteContent.taxonomy?.length
+        ? mapTaxonomyToTree(remoteContent.taxonomy)
+        : buildCategoryTree(mappedProducts);
 
       setProducts(mappedProducts.length ? mappedProducts : mockProducts);
       setOffers(mappedOffers.length ? mappedOffers : mockOffers);
       setCategories(mappedCategories.length ? mappedCategories : productCategories);
+      setCategoryTree(mappedCategoryTree.length ? mappedCategoryTree : buildCategoryTree(mockProducts));
       if (remoteContent.company) {
         setCompany({
           name: remoteContent.company.name,
@@ -175,6 +186,7 @@ export function MockStoreProvider({ children }: { children: ReactNode }) {
       offers,
       user: mockUser,
       categories,
+      categoryTree,
       audienceFilter,
       setAudienceFilter,
       company,
@@ -191,37 +203,43 @@ export function MockStoreProvider({ children }: { children: ReactNode }) {
       clearCart,
       ...cartMetrics,
     }),
-    [products, offers, categories, audienceFilter, company, aboutPoints, contentSource, lastSyncedAt, wishlistIds, cart, cartMetrics],
+    [products, offers, categories, categoryTree, audienceFilter, company, aboutPoints, contentSource, lastSyncedAt, wishlistIds, cart, cartMetrics],
   );
 
   return <MockStoreContext.Provider value={value}>{children}</MockStoreContext.Provider>;
 }
 
-const supportedCategoryMap: Record<string, (typeof productCategories)[number]> = {
-  books: 'Books',
-  workbook: 'Books',
-  reading: 'Books',
-  stationery: 'Stationery',
-  craft: 'Stationery',
-  classroom: 'Furniture',
-  furniture: 'Furniture',
-  infrastructure: 'Furniture',
-  tech: 'Tech',
-  coding: 'Tech',
-  tablet: 'Tech',
-  bag: 'Uniform',
-  uniform: 'Uniform',
-};
-
-function resolveCategory(categoryName: string): ProductCategory {
-  const key = categoryName.toLowerCase();
-  const hit = Object.entries(supportedCategoryMap).find(([token]) => key.includes(token));
-  return (hit?.[1] ?? 'Books') as ProductCategory;
+function buildCategories(products: Array<{ category: string }>) {
+  const unique = Array.from(new Set(products.map((product) => product.category)));
+  return ['All', ...unique];
 }
 
-function buildCategories(products: Array<{ category: (typeof productCategories)[number] }>) {
-  const unique = Array.from(new Set(products.map((product) => product.category)));
-  return ['All', ...unique] as typeof productCategories;
+function buildCategoryTree(products: Array<{ category: string; subcategory?: string }>): AppCategoryTree[] {
+  const tree = new Map<string, Set<string>>();
+
+  products.forEach((product) => {
+    if (!tree.has(product.category)) {
+      tree.set(product.category, new Set<string>());
+    }
+    if (product.subcategory) {
+      tree.get(product.category)?.add(product.subcategory);
+    }
+  });
+
+  return Array.from(tree.entries())
+    .map(([name, subcategories]) => ({
+      name,
+      subcategories: Array.from(subcategories).sort((a, b) => a.localeCompare(b)),
+    }))
+    .sort((a, b) => a.name.localeCompare(b.name));
+}
+
+function mapTaxonomyToTree(taxonomy: WebsiteTaxonomyCategory[]): AppCategoryTree[] {
+  return taxonomy
+    .map((category) => ({
+      name: category.name,
+      subcategories: category.subcategories.map((subcategory) => subcategory.name),
+    }));
 }
 
 export function useMockStore() {

@@ -25,7 +25,7 @@ export default function ProductDetailScreen() {
 
       <Image source={{ uri: product.image }} style={styles.heroImage} resizeMode="cover" />
 
-      <InfoCard title={`${product.category} • ${product.gradeBand}`} subtitle={product.description}>
+      <InfoCard title={`${product.subcategory ?? product.category} • ${product.gradeBand}`} subtitle={product.description}>
         <View style={styles.metaRow}>
           <Text style={styles.meta}>Rating: {product.rating.toFixed(1)} ★ ({product.reviewCount})</Text>
           <Text style={styles.meta}>Stock: {product.stock}</Text>

@@ -1,10 +1,11 @@
 import { prisma } from '../lib/prisma'
+import { buildTaxonomyFallbackProducts } from '../lib/catalog-mock'
 import type { HomepageAudience, HomepageData, HomepageProduct } from '../lib/homepage-types'
 
 const FALLBACK_IMAGE =
   'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=1200&q=80'
 
-export const FALLBACK_PRODUCTS: HomepageProduct[] = [
+const LEGACY_FALLBACK_PRODUCTS: HomepageProduct[] = [
   {
     id: 'fallback-student-1',
     slug: 'class-10-student-success-pack',
@@ -378,12 +379,21 @@ export const FALLBACK_PRODUCTS: HomepageProduct[] = [
   },
 ]
 
+const taxonomyFallbackProducts = buildTaxonomyFallbackProducts()
+
+export const FALLBACK_PRODUCTS: HomepageProduct[] = [
+  ...LEGACY_FALLBACK_PRODUCTS,
+  ...taxonomyFallbackProducts.filter(
+    (candidate) => !LEGACY_FALLBACK_PRODUCTS.some((existing) => existing.slug === candidate.slug),
+  ),
+]
+
 function toHomepageProduct(product: {
   id: string
   slug: string
   name: string
   vendor: { storeName: string }
-  category: { name: string }
+  category: { name: string; parent: { name: string } | null }
   tags: string[] | null
   images: { imageUrl: string }[]
   rating: number | null
@@ -422,7 +432,8 @@ function toHomepageProduct(product: {
     slug: product.slug,
     title: product.name,
     vendor: product.vendor.storeName,
-    category: product.category.name,
+    category: product.category.parent?.name ?? product.category.name,
+    subcategory: product.category.parent ? product.category.name : undefined,
     audience,
     image: product.images[0]?.imageUrl ?? FALLBACK_IMAGE,
     rating: product.rating ?? 0,
@@ -458,6 +469,11 @@ export async function getHomepageData(): Promise<HomepageData> {
         category: {
           select: {
             name: true,
+            parent: {
+              select: {
+                name: true,
+              },
+            },
           },
         },
         images: {

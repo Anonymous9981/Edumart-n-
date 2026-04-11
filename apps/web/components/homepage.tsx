@@ -10,6 +10,13 @@ import type { HomepageAudience, HomepageData, HomepageProduct } from '../lib/hom
 import { useMarketplaceState } from '../lib/marketplace-state'
 import { useSiteFeedback } from '../lib/site-feedback'
 
+type CategoryExplorerItem = {
+  category: string
+  count: number
+  image: string
+  subcategories: string[]
+}
+
 const BRAND = {
   navy: '#0B3558',
   teal: '#00A67E',
@@ -260,6 +267,7 @@ export function HomepageClient({ initialData }: { initialData: HomepageData }) {
   const feedback = useSiteFeedback()
   const [audience, setAudience] = useState<HomepageAudience>('student')
   const [activeCategory, setActiveCategory] = useState<string>('All')
+  const [activeSubcategory, setActiveSubcategory] = useState<string>('All')
   const [selectedSchool, setSelectedSchool] = useState('')
   const [selectedClass, setSelectedClass] = useState('')
   const cartCount = Object.values(marketplace.cart).reduce((total, quantity) => total + quantity, 0)
@@ -275,9 +283,51 @@ export function HomepageClient({ initialData }: { initialData: HomepageData }) {
     return ['All', ...unique]
   }, [activeProducts])
 
+  const categoryTree = useMemo(() => {
+    const tree = new Map<string, Set<string>>()
+    activeProducts.forEach((product) => {
+      if (!tree.has(product.category)) {
+        tree.set(product.category, new Set<string>())
+      }
+      if (product.subcategory) {
+        tree.get(product.category)?.add(product.subcategory)
+      }
+    })
+
+    return Array.from(tree.entries()).map(([category, subcategories]) => ({
+      category,
+      subcategories: Array.from(subcategories).sort((a, b) => a.localeCompare(b)),
+    }))
+  }, [activeProducts])
+
+  const categoryExplorer = useMemo<CategoryExplorerItem[]>(() => {
+    return categoryTree.map((entry) => {
+      const categoryProducts = activeProducts.filter((product) => product.category === entry.category)
+
+      return {
+        category: entry.category,
+        count: categoryProducts.length,
+        image: categoryProducts[0]?.image ?? 'https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?auto=format&fit=crop&w=1200&q=80',
+        subcategories: entry.subcategories.slice(0, 4),
+      }
+    })
+  }, [activeProducts, categoryTree])
+
+  const activeSubcategories = useMemo(() => {
+    if (activeCategory === 'All') {
+      return [] as string[]
+    }
+
+    return categoryTree.find((entry) => entry.category === activeCategory)?.subcategories ?? []
+  }, [activeCategory, categoryTree])
+
   const visibleProducts = useMemo(() => {
-    return activeProducts.filter((product) => activeCategory === 'All' || product.category === activeCategory)
-  }, [activeCategory, activeProducts])
+    return activeProducts.filter((product) => {
+      const categoryMatch = activeCategory === 'All' || product.category === activeCategory
+      const subcategoryMatch = activeSubcategory === 'All' || product.subcategory === activeSubcategory
+      return categoryMatch && subcategoryMatch
+    })
+  }, [activeCategory, activeProducts, activeSubcategory])
 
   const schoolProducts = useMemo(() => {
     if (!selectedClass) {
@@ -354,6 +404,7 @@ export function HomepageClient({ initialData }: { initialData: HomepageData }) {
                 onClick={() => {
                   setAudience(value as HomepageAudience)
                   setActiveCategory('All')
+                  setActiveSubcategory('All')
                 }}
                 className={`rounded-full px-4 py-2 text-sm font-bold transition ${audience === value ? 'text-white' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'}`}
                 style={audience === value ? { backgroundColor: value === 'student' ? BRAND.navy : BRAND.amber } : undefined}
@@ -398,70 +449,94 @@ export function HomepageClient({ initialData }: { initialData: HomepageData }) {
       </section>
 
       <section id="catalog" className="mx-auto max-w-7xl px-4 py-6 sm:px-6">
-        <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
-          <h2 className="inline-flex rounded-xl bg-blue-50 px-3 py-1 text-2xl font-extrabold text-blue-700 sm:text-3xl">
-            Shop by Category
-          </h2>
-          <div className="text-sm font-semibold text-slate-500">Viewing {activeAudienceLabel} products</div>
-        </div>
-        <p className="mt-2 text-sm text-slate-600">Choose category and audience, all prices already include auto-applied offers.</p>
+        <div className="rounded-3xl border border-slate-200 bg-white p-4 shadow-sm sm:p-5">
+          <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+            <div>
+              <p className="text-xs font-bold uppercase tracking-[0.2em] text-slate-500">Marketplace feed</p>
+              <h2 className="mt-1 text-2xl font-extrabold text-slate-900 sm:text-3xl">Top picks and live deals first</h2>
+              <p className="mt-2 text-sm text-slate-600">Product-first layout with fast category and subcategory jumps.</p>
+            </div>
+            <div className="flex flex-wrap items-center gap-2 text-xs font-semibold sm:text-sm">
+              <span className="rounded-full bg-blue-50 px-3 py-2 text-blue-700">Viewing {activeAudienceLabel}</span>
+              <span className="rounded-full bg-slate-100 px-3 py-2 text-slate-700">{visibleProducts.length.toLocaleString('en-IN')} results</span>
+              <button
+                type="button"
+                className="rounded-full border border-slate-300 px-3 py-2 text-slate-700 transition hover:bg-slate-100"
+                onClick={() => goToRoute('/shop')}
+              >
+                Open full shop
+              </button>
+            </div>
+          </div>
 
-        <div className="mt-5 flex flex-wrap gap-3">
-          <button
-            type="button"
-            onClick={() => {
-              setAudience('student')
-              setActiveCategory('All')
-            }}
-            className={`rounded-full px-4 py-2 text-sm font-bold transition ${audience === 'student' ? 'text-white' : 'bg-slate-100 text-slate-700'}`}
-            style={audience === 'student' ? { backgroundColor: BRAND.navy } : undefined}
-          >
-            Student Products
-          </button>
-          <button
-            type="button"
-            onClick={() => {
-              setAudience('teacher')
-              setActiveCategory('All')
-            }}
-            className={`rounded-full px-4 py-2 text-sm font-bold transition ${audience === 'teacher' ? 'text-white' : 'bg-slate-100 text-slate-700'}`}
-            style={audience === 'teacher' ? { backgroundColor: BRAND.amber } : undefined}
-          >
-            School Products
-          </button>
-        </div>
-
-        <div className="mt-4 sm:hidden">
-          <select
-            className="w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-800 outline-none"
-            value={activeCategory}
-            onChange={(event) => setActiveCategory(event.target.value)}
-          >
-            {categories.map((category) => (
-              <option key={category} value={category}>
-                {category}
-              </option>
+          <div className="mt-4 flex flex-wrap gap-2">
+            {[
+              ['student', 'Student Products'],
+              ['teacher', 'School Products'],
+            ].map(([value, label]) => (
+              <button
+                key={value}
+                type="button"
+                onClick={() => {
+                  setAudience(value as HomepageAudience)
+                  setActiveCategory('All')
+                  setActiveSubcategory('All')
+                }}
+                className={`rounded-full px-4 py-2 text-sm font-bold transition ${audience === value ? 'text-white' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'}`}
+                style={audience === value ? { backgroundColor: value === 'student' ? BRAND.navy : BRAND.amber } : undefined}
+              >
+                {label}
+              </button>
             ))}
-          </select>
+          </div>
+
+          <div className="mt-4 overflow-x-auto pb-2">
+            <div className="flex min-w-max gap-2">
+              {categories.map((category) => (
+                <button
+                  key={category}
+                  type="button"
+                  onClick={() => {
+                    setActiveCategory(category)
+                    setActiveSubcategory('All')
+                  }}
+                  className={`rounded-full px-4 py-2 text-sm font-bold transition ${activeCategory === category ? 'text-white' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'}`}
+                  style={activeCategory === category ? { backgroundColor: BRAND.navy } : undefined}
+                >
+                  {category}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {activeSubcategories.length ? (
+            <div className="mt-3 overflow-x-auto pb-2">
+              <div className="flex min-w-max gap-2">
+                <button
+                  type="button"
+                  onClick={() => setActiveSubcategory('All')}
+                  className={`rounded-full px-3 py-2 text-xs font-bold transition ${activeSubcategory === 'All' ? 'text-white' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'}`}
+                  style={activeSubcategory === 'All' ? { backgroundColor: BRAND.teal } : undefined}
+                >
+                  All subcategories
+                </button>
+                {activeSubcategories.map((subcategory) => (
+                  <button
+                    key={subcategory}
+                    type="button"
+                    onClick={() => setActiveSubcategory(subcategory)}
+                    className={`rounded-full px-3 py-2 text-xs font-bold transition ${activeSubcategory === subcategory ? 'text-white' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'}`}
+                    style={activeSubcategory === subcategory ? { backgroundColor: BRAND.teal } : undefined}
+                  >
+                    {subcategory}
+                  </button>
+                ))}
+              </div>
+            </div>
+          ) : null}
         </div>
 
-        <div className="mt-4 no-scrollbar flex gap-2 overflow-x-auto whitespace-nowrap rounded-2xl border border-slate-200 bg-white p-3">
-          {categories.map((category) => (
-            <button
-              key={category}
-              type="button"
-              onClick={() => setActiveCategory(category)}
-              className={`rounded-xl px-4 py-2 text-sm font-semibold transition ${
-                activeCategory === category ? 'text-white' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
-              }`}
-              style={activeCategory === category ? { backgroundColor: BRAND.navy } : undefined}
-            >
-              {category}
-            </button>
-          ))}
-        </div>
-
-        <div className="mt-6 grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
+        <div className="mt-5 grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
           {visibleProducts.length ? (
             visibleProducts.map((product) => <ProductCard key={product.id} product={product} />)
           ) : (
@@ -469,6 +544,55 @@ export function HomepageClient({ initialData }: { initialData: HomepageData }) {
               No products match the current filter. Switch audience or category to see more items.
             </div>
           )}
+        </div>
+
+        <div className="mt-6 rounded-3xl border border-slate-200 bg-white p-4 shadow-sm sm:p-5">
+          <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+            <h3 className="text-xl font-extrabold text-slate-900">Category to subcategory quick lanes</h3>
+            <p className="text-sm text-slate-600">Tap any subcategory to jump directly into filtered shop results.</p>
+          </div>
+
+          <div className="mt-4 grid gap-4 lg:grid-cols-2 xl:grid-cols-3">
+            {categoryExplorer.map((item) => {
+              const categorySlug = item.category.toLowerCase().replace(/[^a-z0-9]+/g, '-')
+
+              return (
+                <article key={item.category} className="overflow-hidden rounded-2xl border border-slate-200 bg-slate-50">
+                  <img src={item.image} alt={item.category} className="h-32 w-full object-cover" />
+                  <div className="p-4">
+                    <div className="flex items-center justify-between gap-3">
+                      <h4 className="text-base font-extrabold text-slate-900">{item.category}</h4>
+                      <span className="rounded-full bg-white px-2 py-1 text-xs font-bold text-slate-600">{item.count}</span>
+                    </div>
+                    <div className="mt-3 flex flex-wrap gap-2">
+                      <button
+                        type="button"
+                        className="rounded-full px-3 py-2 text-xs font-bold text-white"
+                        style={{ backgroundColor: BRAND.navy }}
+                        onClick={() => goToRoute(`/shop?category=${categorySlug}`)}
+                      >
+                        Open
+                      </button>
+                      {item.subcategories.slice(0, 3).map((subcategory) => (
+                        <button
+                          key={subcategory}
+                          type="button"
+                          className="rounded-full border border-slate-300 bg-white px-3 py-2 text-xs font-semibold text-slate-700 transition hover:bg-slate-100"
+                          onClick={() =>
+                            goToRoute(
+                              `/shop?category=${categorySlug}&subcategory=${subcategory.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`,
+                            )
+                          }
+                        >
+                          {subcategory}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                </article>
+              )
+            })}
+          </div>
         </div>
       </section>
 

@@ -6,6 +6,7 @@ export interface WebsiteProduct {
   title: string;
   vendor: string;
   category: string;
+  subcategory?: string;
   audience: 'student' | 'teacher';
   image: string;
   rating: number;
@@ -16,6 +17,19 @@ export interface WebsiteProduct {
   schoolClasses?: string[];
   description: string;
   featured: boolean;
+}
+
+export interface WebsiteTaxonomyCategory {
+  id: string;
+  name: string;
+  slug: string;
+  priority: number;
+  subcategories: Array<{
+    id: string;
+    name: string;
+    slug: string;
+    priority: number;
+  }>;
 }
 
 export interface WebsiteOffer {
@@ -37,6 +51,7 @@ export interface WebsiteCompany {
 export interface WebsiteMobileContent {
   products: WebsiteProduct[];
   categories: string[];
+  taxonomy?: WebsiteTaxonomyCategory[];
   offers: WebsiteOffer[];
   company?: WebsiteCompany;
   aboutPoints?: string[];

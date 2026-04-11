@@ -94,3 +94,5 @@ export const TOKEN_EXPIRY = {
   REFRESH_TOKEN: 604800, // 7 days in seconds
   PASSWORD_RESET: 3600, // 1 hour in seconds
 };
+
+export * from './catalog-taxonomy';

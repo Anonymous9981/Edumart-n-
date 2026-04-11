@@ -6,6 +6,7 @@ export interface HomepageProduct {
   title: string
   vendor: string
   category: string
+  subcategory?: string
   audience: HomepageAudience
   image: string
   rating: number

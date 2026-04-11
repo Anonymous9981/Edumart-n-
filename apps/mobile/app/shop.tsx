@@ -14,17 +14,26 @@ export default function ShopScreen() {
   const router = useRouter();
   const { theme } = useAppTheme();
   const styles = getStyles(theme);
-  const { products, categories, wishlistIds, addToCart, toggleWishlist, audienceFilter, setAudienceFilter } = useMockStore();
-  const [activeCategory, setActiveCategory] = React.useState<(typeof categories)[number]>('All');
+  const { products, categoryTree, wishlistIds, addToCart, toggleWishlist, audienceFilter, setAudienceFilter } = useMockStore();
+  const [activeCategory, setActiveCategory] = React.useState<string>('All');
+  const [activeSubcategory, setActiveSubcategory] = React.useState<string>('All');
+
+  const categoryChips = React.useMemo(() => ['All', ...categoryTree.map((category) => category.name)], [categoryTree]);
+
+  const activeCategoryData = React.useMemo(
+    () => categoryTree.find((category) => category.name === activeCategory),
+    [categoryTree, activeCategory],
+  );
 
   const visibleProducts = React.useMemo(
     () =>
       products.filter(
         (product) =>
           (activeCategory === 'All' || product.category === activeCategory) &&
+          (activeSubcategory === 'All' || product.subcategory === activeSubcategory) &&
           (audienceFilter === 'all' || product.audience === audienceFilter),
       ),
-    [products, activeCategory, audienceFilter],
+    [products, activeCategory, activeSubcategory, audienceFilter],
   );
 
   return (
@@ -48,15 +57,37 @@ export default function ShopScreen() {
       </View>
 
       <View style={styles.filterRow}>
-        {categories.map((label) => (
+        {categoryChips.map((label) => (
           <AppButton
             key={label}
             label={label}
             variant={activeCategory === label ? 'primary' : 'secondary'}
-            onPress={() => setActiveCategory(label)}
+            onPress={() => {
+              setActiveCategory(label);
+              setActiveSubcategory('All');
+            }}
           />
         ))}
       </View>
+
+      {activeCategoryData?.subcategories.length ? (
+        <View style={styles.filterRow}>
+          <AppButton
+            key="all-subcategories"
+            label="All Subcategories"
+            variant={activeSubcategory === 'All' ? 'primary' : 'secondary'}
+            onPress={() => setActiveSubcategory('All')}
+          />
+          {activeCategoryData.subcategories.map((label) => (
+            <AppButton
+              key={label}
+              label={label}
+              variant={activeSubcategory === label ? 'primary' : 'secondary'}
+              onPress={() => setActiveSubcategory(label)}
+            />
+          ))}
+        </View>
+      ) : null}
 
       <View style={styles.list}>
         {visibleProducts.map((item) => {
@@ -65,7 +96,7 @@ export default function ShopScreen() {
             <InfoCard
               key={item.id}
               title={item.name}
-              subtitle={`${item.category} • ${item.gradeBand} • ${item.rating.toFixed(1)}★ (${item.reviewCount})`}
+              subtitle={`${item.subcategory ?? item.category} • ${item.gradeBand} • ${item.rating.toFixed(1)}★ (${item.reviewCount})`}
             >
               <Image source={{ uri: item.image }} style={styles.cardImage} resizeMode="cover" />
               <View style={styles.cardBadge}>
