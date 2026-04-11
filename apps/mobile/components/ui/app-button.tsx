@@ -25,9 +25,9 @@ export function AppButton({ label, onPress, variant = 'primary', icon }: AppButt
 const getStyles = (theme: ReturnType<typeof useAppTheme>['theme']) =>
   StyleSheet.create({
     base: {
-      borderRadius: 12,
-      paddingHorizontal: 14,
-      paddingVertical: 11,
+      borderRadius: 16,
+      paddingHorizontal: 16,
+      paddingVertical: 12,
       alignItems: 'center',
       justifyContent: 'center',
       flexDirection: 'row',
@@ -35,7 +35,7 @@ const getStyles = (theme: ReturnType<typeof useAppTheme>['theme']) =>
       ...theme.shadows.neumorph,
     },
     primary: {
-      backgroundColor: theme.colors.accentSoft,
+      backgroundColor: theme.colors.accent,
       borderWidth: 1,
       borderColor: theme.colors.accent,
     },
@@ -49,7 +49,7 @@ const getStyles = (theme: ReturnType<typeof useAppTheme>['theme']) =>
       fontWeight: '800',
     },
     primaryLabel: {
-      color: theme.colors.accent,
+      color: theme.isDark ? '#11131B' : '#F7FAFF',
     },
     secondaryLabel: {
       color: theme.colors.text,

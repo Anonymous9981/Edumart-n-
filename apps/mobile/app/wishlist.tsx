@@ -1,6 +1,7 @@
 import React from 'react';
 import { Image, StyleSheet, Text, View } from 'react-native';
 
+import { AnimatedEntry } from '../components/ui/animated-entry';
 import { ScreenShell } from '../components/screen-shell';
 import { AppButton } from '../components/ui/app-button';
 import { InfoCard } from '../components/ui/info-card';
@@ -20,27 +21,35 @@ export default function WishlistScreen() {
 
   return (
     <ScreenShell>
-      <Text style={styles.title}>Wishlist</Text>
-      <Text style={styles.subtitle}>Saved picks you can move to cart instantly.</Text>
-
-      {wishlistProducts.length ? (
-        wishlistProducts.map((product) => (
-          <InfoCard key={product.id} title={product.name} subtitle={`${product.category} • ${product.gradeBand}`}>
-            <Image source={{ uri: product.image }} style={styles.productImage} resizeMode="cover" />
-            <Text style={styles.price}>{formatInr(discountedPrice(product.price, product.discountPercent))}</Text>
-            <View style={styles.row}>
-              <AppButton label="Move to cart" onPress={() => addToCart(product.id)} />
-              <AppButton label="Remove" variant="secondary" onPress={() => toggleWishlist(product.id)} />
-            </View>
-          </InfoCard>
-        ))
-      ) : (
-        <View style={styles.emptyCard}>
-          <Text style={styles.emptyIcon}>ED</Text>
-          <Text style={styles.emptyTitle}>No items saved yet</Text>
-          <Text style={styles.emptyText}>Use the wishlist action from Home or Shop to save products.</Text>
+      <AnimatedEntry>
+        <View style={styles.heroCard}>
+          <Text style={styles.title}>Wishlist</Text>
+          <Text style={styles.subtitle}>Saved picks you can move to cart instantly.</Text>
         </View>
-      )}
+      </AnimatedEntry>
+
+      <View style={styles.list}>
+        {wishlistProducts.length ? (
+          wishlistProducts.map((product, index) => (
+            <AnimatedEntry key={product.id} delay={80 + index * 40}>
+              <InfoCard title={product.name} subtitle={`${product.category} • ${product.gradeBand}`}>
+                <Image source={{ uri: product.image }} style={styles.productImage} resizeMode="cover" />
+                <Text style={styles.price}>{formatInr(discountedPrice(product.price, product.discountPercent))}</Text>
+                <View style={styles.row}>
+                  <AppButton label="Move to cart" onPress={() => addToCart(product.id)} />
+                  <AppButton label="Remove" variant="secondary" onPress={() => toggleWishlist(product.id)} />
+                </View>
+              </InfoCard>
+            </AnimatedEntry>
+          ))
+        ) : (
+          <View style={styles.emptyCard}>
+            <Text style={styles.emptyIcon}>ED</Text>
+            <Text style={styles.emptyTitle}>No items saved yet</Text>
+            <Text style={styles.emptyText}>Use the wishlist action from Home or Shop to save products.</Text>
+          </View>
+        )}
+      </View>
     </ScreenShell>
   );
 }
@@ -48,13 +57,23 @@ export default function WishlistScreen() {
 const getStyles = (theme: ReturnType<typeof useAppTheme>['theme']) =>
   StyleSheet.create({
     title: {
-      fontSize: 24,
+      fontSize: 26,
       fontWeight: '900',
-      color: theme.colors.text,
+      color: '#F8FBFF',
     },
     subtitle: {
       fontSize: 13,
-      color: theme.colors.textMuted,
+      color: '#D8E7F7',
+    },
+    heroCard: {
+      borderRadius: 24,
+      backgroundColor: theme.colors.accent,
+      borderWidth: 1,
+      borderColor: theme.colors.border,
+      padding: 16,
+    },
+    list: {
+      gap: 10,
     },
     price: {
       fontSize: 14,

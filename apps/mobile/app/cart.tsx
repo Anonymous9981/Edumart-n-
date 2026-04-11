@@ -1,6 +1,7 @@
 import React from 'react';
 import { Image, StyleSheet, Text, View } from 'react-native';
 
+import { AnimatedEntry } from '../components/ui/animated-entry';
 import { ScreenShell } from '../components/screen-shell';
 import { AppButton } from '../components/ui/app-button';
 import { InfoCard } from '../components/ui/info-card';
@@ -29,29 +30,38 @@ export default function CartScreen() {
 
   return (
     <ScreenShell>
-      <Text style={styles.title}>Cart</Text>
-      <Text style={styles.subtitle}>Working cart with quantity controls and live totals.</Text>
+      <AnimatedEntry>
+        <View style={styles.heroCard}>
+          <Text style={styles.title}>Cart</Text>
+          <Text style={styles.subtitle}>Working cart with quantity controls and live totals.</Text>
+        </View>
+      </AnimatedEntry>
 
-      {items.map(({ product, qty }) => {
-        const unitPrice = discountedPrice(product.price, product.discountPercent);
+      <View style={styles.list}>
+        {items.map(({ product, qty }, index) => {
+          const unitPrice = discountedPrice(product.price, product.discountPercent);
 
-        return (
-          <InfoCard key={product.id} title={product.name} subtitle={`${product.category} • ${formatInr(unitPrice)} each`}>
-            <Image source={{ uri: product.image }} style={styles.itemImage} resizeMode="cover" />
-            <View style={styles.itemRow}>
-              <View style={styles.qtyRow}>
-                <AppButton label="-" variant="secondary" onPress={() => decrementFromCart(product.id)} />
-                <Text style={styles.qtyText}>{qty}</Text>
-                <AppButton label="+" variant="secondary" onPress={() => addToCart(product.id)} />
-              </View>
-              <Text style={styles.itemTotal}>{formatInr(unitPrice * qty)}</Text>
-            </View>
-            <AppButton label="Remove" variant="secondary" onPress={() => removeFromCart(product.id)} />
-          </InfoCard>
-        );
-      })}
+          return (
+            <AnimatedEntry key={product.id} delay={80 + index * 40}>
+              <InfoCard title={product.name} subtitle={`${product.category} • ${formatInr(unitPrice)} each`}>
+                <Image source={{ uri: product.image }} style={styles.itemImage} resizeMode="cover" />
+                <View style={styles.itemRow}>
+                  <View style={styles.qtyRow}>
+                    <AppButton label="-" variant="secondary" onPress={() => decrementFromCart(product.id)} />
+                    <Text style={styles.qtyText}>{qty}</Text>
+                    <AppButton label="+" variant="secondary" onPress={() => addToCart(product.id)} />
+                  </View>
+                  <Text style={styles.itemTotal}>{formatInr(unitPrice * qty)}</Text>
+                </View>
+                <AppButton label="Remove" variant="secondary" onPress={() => removeFromCart(product.id)} />
+              </InfoCard>
+            </AnimatedEntry>
+          );
+        })}
+      </View>
 
-      <View style={styles.summaryCard}>
+      <AnimatedEntry delay={160}>
+        <View style={styles.summaryCard}>
         <View style={styles.summaryRow}><Text style={styles.summaryLine}>Items</Text><Text style={styles.summaryLine}>{items.length}</Text></View>
         <View style={styles.summaryRow}><Text style={styles.summaryLine}>Subtotal</Text><Text style={styles.summaryLine}>{formatInr(cartSubtotal)}</Text></View>
         <View style={styles.summaryRow}><Text style={styles.summaryLine}>Savings</Text><Text style={styles.free}>{formatInr(cartDiscount)}</Text></View>
@@ -62,7 +72,8 @@ export default function CartScreen() {
           <AppButton label="Clear cart" variant="secondary" onPress={clearCart} />
           <AppButton label="Proceed to checkout" onPress={() => {}} />
         </View>
-      </View>
+        </View>
+      </AnimatedEntry>
     </ScreenShell>
   );
 }
@@ -70,13 +81,23 @@ export default function CartScreen() {
 const getStyles = (theme: ReturnType<typeof useAppTheme>['theme']) =>
   StyleSheet.create({
     title: {
-      fontSize: 24,
+      fontSize: 26,
       fontWeight: '900',
-      color: theme.colors.text,
+      color: '#F8FBFF',
     },
     subtitle: {
       fontSize: 13,
-      color: theme.colors.textMuted,
+      color: '#D8E7F7',
+    },
+    heroCard: {
+      borderRadius: 24,
+      backgroundColor: theme.colors.accent,
+      borderWidth: 1,
+      borderColor: theme.colors.border,
+      padding: 16,
+    },
+    list: {
+      gap: 10,
     },
     itemRow: {
       flexDirection: 'row',

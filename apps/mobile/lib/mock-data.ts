@@ -6,6 +6,7 @@ export interface MockProduct {
   subtitle: string;
   image: string;
   description: string;
+  vendor?: string;
   category: string;
   subcategory?: string;
   audience: ProductAudience;
@@ -16,6 +17,7 @@ export interface MockProduct {
   reviewCount: number;
   stock: number;
   badge?: string;
+  featured?: boolean;
 }
 
 export interface MockOffer {

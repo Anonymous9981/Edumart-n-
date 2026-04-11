@@ -25,17 +25,17 @@ export function InfoCard({ title, subtitle, children }: InfoCardProps) {
 const getStyles = (theme: ReturnType<typeof useAppTheme>['theme']) =>
   StyleSheet.create({
     card: {
-      borderRadius: 18,
+      borderRadius: 22,
       borderWidth: 1,
       borderColor: theme.colors.border,
       backgroundColor: theme.colors.surface,
-      padding: 14,
-      gap: 8,
+      padding: 16,
+      gap: 10,
       ...theme.shadows.neumorph,
     },
     title: {
-      fontSize: 15,
-      fontWeight: '800',
+      fontSize: 16,
+      fontWeight: '900',
       color: theme.colors.text,
     },
     subtitle: {

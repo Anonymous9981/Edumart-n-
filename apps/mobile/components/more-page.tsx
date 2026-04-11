@@ -45,6 +45,11 @@ export function MorePage({
         <Text style={styles.eyebrow}>{eyebrow}</Text>
         <Text style={styles.title}>{title}</Text>
         <Text style={styles.subtitle}>{subtitle}</Text>
+        <View style={styles.heroPills}>
+          <Text style={styles.heroPill}>EduMart</Text>
+          <Text style={styles.heroPill}>Website synced</Text>
+          <Text style={styles.heroPill}>Native flow</Text>
+        </View>
       </View>
 
       <InfoCard title={overviewTitle} subtitle={overview} />
@@ -82,7 +87,8 @@ const getStyles = (theme: ReturnType<typeof useAppTheme>['theme']) =>
       backgroundColor: theme.colors.accent,
       paddingHorizontal: 16,
       paddingVertical: 14,
-      gap: 2,
+      gap: 6,
+      ...theme.shadows.neumorph,
     },
     eyebrow: {
       fontSize: 11,
@@ -102,6 +108,23 @@ const getStyles = (theme: ReturnType<typeof useAppTheme>['theme']) =>
       color: '#D8E7F7',
       marginTop: 4,
     },
+    heroPills: {
+      marginTop: 4,
+      flexDirection: 'row',
+      gap: 8,
+      flexWrap: 'wrap',
+    },
+    heroPill: {
+      borderRadius: 999,
+      backgroundColor: 'rgba(255,255,255,0.14)',
+      color: '#F8FBFF',
+      paddingHorizontal: 10,
+      paddingVertical: 6,
+      fontSize: 10,
+      fontWeight: '800',
+      textTransform: 'uppercase',
+      letterSpacing: 0.6,
+    },
     list: {
       gap: 10,
       marginTop: 6,
@@ -110,7 +133,7 @@ const getStyles = (theme: ReturnType<typeof useAppTheme>['theme']) =>
       borderRadius: 16,
       borderWidth: 1,
       borderColor: theme.colors.border,
-      backgroundColor: theme.colors.surface,
+      backgroundColor: theme.colors.surfaceRaised,
       paddingHorizontal: 14,
       paddingVertical: 12,
     },

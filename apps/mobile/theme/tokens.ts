@@ -1,14 +1,14 @@
 export const lightColors = {
-  bg: '#F8FBFF',
-  bgSoft: '#EAF2FB',
+  bg: '#F6FAFF',
+  bgSoft: '#E7F0FB',
   surface: '#FFFFFF',
-  surfaceRaised: '#F5F9FF',
-  border: '#DBE4EE',
+  surfaceRaised: '#F1F7FF',
+  border: '#D5E1EF',
   text: '#0F172A',
   textMuted: '#475569',
   accent: '#0B3558',
-  accentSoft: '#DFF3EE',
-  success: '#16915B',
+  accentSoft: '#DCECFB',
+  success: '#0F9D67',
   danger: '#D14343',
 };
 
@@ -21,7 +21,7 @@ export const darkColors = {
   text: '#F3F6FF',
   textMuted: '#A8B5CB',
   accent: '#00A67E',
-  accentSoft: '#153A34',
+  accentSoft: '#0F3A34',
   success: '#34D399',
   danger: '#F87171',
 };
@@ -36,6 +36,12 @@ const typo = {
     fontSize: 13,
     lineHeight: 20,
     fontWeight: '500' as const,
+  },
+  caption: {
+    fontSize: 11,
+    lineHeight: 16,
+    fontWeight: '700' as const,
+    letterSpacing: 0.5,
   },
 };
 
