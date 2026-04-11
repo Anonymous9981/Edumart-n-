@@ -18,10 +18,8 @@ permissions:
 
 jobs:
   build-android-apk:
-    name: Build Android APK (EAS Cloud)
+    name: Build Android APK (Runner Local)
     runs-on: ubuntu-latest
-    env:
-      EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
 
     steps:
       - name: Checkout repository
@@ -45,16 +43,17 @@ jobs:
           node-version: 20
           cache: pnpm
 
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
+
       - name: Install dependencies
         run: pnpm install --filter ./apps/mobile... --frozen-lockfile
-
-      - name: Validate required secrets
-        shell: bash
-        run: |
-          if [ -z "$EXPO_TOKEN" ]; then
-            echo "EXPO_TOKEN is missing. Add it in repository secrets before running this workflow."
-            exit 1
-          fi
 
       - name: Resolve release tag
         id: meta
@@ -71,29 +70,55 @@ jobs:
             echo "latest_tag=mobile-latest" >> "$GITHUB_OUTPUT"
           fi
 
-      - name: Build APK on EAS Cloud
-        id: eas
+      - name: Prebuild Android project
+        working-directory: apps/mobile
+        shell: bash
+        run: pnpm exec expo prebuild --platform android --non-interactive --clean
+
+      - name: Build signed release APK on runner
+        id: local_build
         working-directory: apps/mobile
         shell: bash
         run: |
-          npx eas-cli build --platform android --profile release --non-interactive --wait --json > eas-build.json
-          node <<'NODE'
-          const fs = require('fs');
-          const data = JSON.parse(fs.readFileSync('eas-build.json', 'utf8'));
-          const build = Array.isArray(data) ? data[0] : data;
-          const url = build?.artifacts?.buildUrl || '';
-          if (!url) {
-            console.error('No EAS artifact URL found in eas-build.json');
-            process.exit(1);
-          }
-          fs.appendFileSync(process.env.GITHUB_OUTPUT, `apk_url=${url}\n`);
-          NODE
+          set -euo pipefail
+          STORE_FILE="$RUNNER_TEMP/edumart-release.keystore"
+          STORE_PASSWORD="edumart_store"
+          KEY_ALIAS="edumart_key"
+          KEY_PASSWORD="edumart_key_pass"
+
+          keytool -genkeypair \
+            -v \
+            -storetype PKCS12 \
+            -keystore "$STORE_FILE" \
+            -storepass "$STORE_PASSWORD" \
+            -keypass "$KEY_PASSWORD" \
+            -alias "$KEY_ALIAS" \
+            -keyalg RSA \
+            -keysize 2048 \
+            -validity 10000 \
+            -dname "CN=EduMart, OU=Mobile, O=EduMart, L=Lucknow, S=UP, C=IN"
+
+          pushd android
+          chmod +x gradlew
+          ./gradlew --no-daemon :app:assembleRelease \
+            -Pandroid.injected.signing.store.file="$STORE_FILE" \
+            -Pandroid.injected.signing.store.password="$STORE_PASSWORD" \
+            -Pandroid.injected.signing.key.alias="$KEY_ALIAS" \
+            -Pandroid.injected.signing.key.password="$KEY_PASSWORD"
+          popd
+
+          APK_PATH="$GITHUB_WORKSPACE/apps/mobile/android/app/build/outputs/apk/release/app-release.apk"
+          if [ ! -f "$APK_PATH" ]; then
+            echo "Failed to locate built APK at $APK_PATH"
+            exit 1
+          fi
+          echo "apk_path=$APK_PATH" >> "$GITHUB_OUTPUT"
 
       - name: Download APK artifact
         shell: bash
         run: |
           mkdir -p release
-          curl -fL "${{ steps.eas.outputs.apk_url }}" -o "release/EduMart-${{ steps.meta.outputs.tag }}.apk"
+          cp "${{ steps.local_build.outputs.apk_path }}" "release/EduMart-${{ steps.meta.outputs.tag }}.apk"
 
       - name: Upload build artifact
         uses: actions/upload-artifact@v4
@@ -121,5 +146,5 @@ jobs:
           generate_release_notes: false
           body: |
             Auto-updated APK from commit `${{ github.sha }}`.
-            EAS build artifact: ${{ steps.eas.outputs.apk_url }}
+            Built on GitHub Actions runner using local Gradle release build.
           files: release/EduMart-${{ steps.meta.outputs.tag }}.apk
