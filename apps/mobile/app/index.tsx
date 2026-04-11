@@ -25,9 +25,6 @@ export default function HomeScreen() {
     categoryTree,
     cartCount,
     wishlistCount,
-    addToCart,
-    toggleWishlist,
-    wishlistIds,
     audienceFilter,
     setAudienceFilter,
     contentSource,
@@ -49,9 +46,7 @@ export default function HomeScreen() {
     <ScreenShell>
       <AnimatedEntry style={styles.heroCard}>
         <View style={styles.heroTopRow}>
-          <View style={styles.brandMark}>
-            <Text style={styles.brandMarkText}>E</Text>
-          </View>
+          <Image source={require('../assets/brand-full.png')} style={styles.brandLogo} resizeMode="contain" />
           <View style={styles.heroBadgeWrap}>
             <Text style={styles.heroBadge}>EduMart marketplace</Text>
             <Text style={styles.heroMeta}>Website-first catalog sync</Text>
@@ -152,52 +147,34 @@ export default function HomeScreen() {
       <AnimatedEntry delay={180}>
         <View style={styles.sectionHeader}>
           <Text style={styles.sectionTitle}>Featured right now</Text>
-          <Text style={styles.sectionSubtitle}>Product cards with quick actions and live pricing.</Text>
+          <Text style={styles.sectionSubtitle}>Compact product cards that fit three across while you scroll.</Text>
         </View>
-        <View style={styles.featureList}>
+        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.featureRail}>
           {featured.map((product) => {
-            const inWishlist = wishlistIds.includes(product.id);
             const finalPrice = discountedPrice(product.price, product.discountPercent);
 
             return (
-              <View key={product.id} style={styles.featureCard}>
+              <Pressable key={product.id} style={styles.featureCard} onPress={() => router.push(`/shop/${product.id}` as never)}>
                 <Image source={{ uri: product.image }} style={styles.featureImage} resizeMode="cover" />
                 <View style={styles.featureBody}>
-                  <View style={styles.featureHeader}>
-                    <View style={{ flex: 1 }}>
-                      <Text style={styles.productVendor}>{product.vendor ?? 'EduMart Marketplace'}</Text>
-                      <Text style={styles.productName}>{product.name}</Text>
-                      <Text style={styles.productMeta}>{product.subcategory ?? product.category} • {product.gradeBand}</Text>
-                    </View>
+                  <Text style={styles.productVendor}>{product.vendor ?? 'EduMart Marketplace'}</Text>
+                  <Text style={styles.productName} numberOfLines={2}>{product.name}</Text>
+                  <Text style={styles.productMeta} numberOfLines={1}>{product.subcategory ?? product.category} • {product.gradeBand}</Text>
+                  <View style={styles.compactMetaRow}>
                     <View style={styles.badge}>
                       <Text style={styles.badgeText}>{product.badge ?? `${product.discountPercent}% off`}</Text>
                     </View>
+                    <Text style={styles.compactPrice}>{formatInr(finalPrice)}</Text>
                   </View>
-
                   <View style={styles.ratingRow}>
-                    <Ionicons name="star" size={14} color="#F59E0B" />
-                    <Text style={styles.ratingText}>{product.rating.toFixed(1)} • {product.reviewCount.toLocaleString('en-IN')} reviews</Text>
-                  </View>
-
-                  <View style={styles.priceRow}>
-                    <Text style={styles.priceNow}>{formatInr(finalPrice)}</Text>
-                    <Text style={styles.priceOld}>{formatInr(product.price)}</Text>
-                  </View>
-
-                  <View style={styles.actionRow}>
-                    <Pressable style={styles.buyButton} onPress={() => addToCart(product.id)}>
-                      <Text style={styles.buyButtonText}>Add to cart</Text>
-                    </Pressable>
-                    <Pressable style={styles.saveButton} onPress={() => toggleWishlist(product.id)}>
-                      <Ionicons name={inWishlist ? 'heart' : 'heart-outline'} size={14} color={theme.colors.accent} />
-                      <Text style={styles.saveButtonText}>{inWishlist ? 'Saved' : 'Save'}</Text>
-                    </Pressable>
+                    <Ionicons name="star" size={12} color="#F59E0B" />
+                    <Text style={styles.ratingText}>{product.rating.toFixed(1)}</Text>
                   </View>
                 </View>
-              </View>
+              </Pressable>
             );
           })}
-        </View>
+        </ScrollView>
       </AnimatedEntry>
 
       <AnimatedEntry delay={220}>
@@ -230,18 +207,9 @@ const getStyles = (theme: ReturnType<typeof useAppTheme>['theme']) =>
       alignItems: 'center',
       gap: 12,
     },
-    brandMark: {
-      width: 52,
+    brandLogo: {
+      width: 160,
       height: 52,
-      borderRadius: 18,
-      backgroundColor: theme.colors.accent,
-      alignItems: 'center',
-      justifyContent: 'center',
-    },
-    brandMarkText: {
-      color: theme.isDark ? '#11131B' : '#F8FBFF',
-      fontSize: 18,
-      fontWeight: '900',
     },
     heroBadgeWrap: {
       flex: 1,
@@ -453,10 +421,12 @@ const getStyles = (theme: ReturnType<typeof useAppTheme>['theme']) =>
       fontSize: 11,
       fontWeight: '800',
     },
-    featureList: {
-      gap: 12,
+    featureRail: {
+      gap: 10,
+      paddingRight: 4,
     },
     featureCard: {
+      width: 124,
       borderRadius: 24,
       borderWidth: 1,
       borderColor: theme.colors.border,
@@ -466,46 +436,50 @@ const getStyles = (theme: ReturnType<typeof useAppTheme>['theme']) =>
     },
     featureImage: {
       width: '100%',
-      height: 180,
+      height: 86,
       backgroundColor: theme.colors.bgSoft,
     },
     featureBody: {
-      padding: 14,
-      gap: 10,
-    },
-    featureHeader: {
-      flexDirection: 'row',
-      gap: 10,
-      alignItems: 'flex-start',
+      padding: 10,
+      gap: 6,
     },
     productVendor: {
-      fontSize: 10,
+      fontSize: 9,
       fontWeight: '800',
-      letterSpacing: 0.7,
+      letterSpacing: 0.6,
       textTransform: 'uppercase',
       color: theme.colors.textMuted,
     },
     productName: {
-      marginTop: 2,
-      fontSize: 16,
+      fontSize: 12,
       fontWeight: '900',
-      lineHeight: 22,
+      lineHeight: 16,
       color: theme.colors.text,
     },
     productMeta: {
-      marginTop: 2,
-      fontSize: 11,
+      fontSize: 10,
       fontWeight: '700',
       color: theme.colors.textMuted,
+    },
+    compactMetaRow: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      gap: 6,
+    },
+    compactPrice: {
+      fontSize: 12,
+      fontWeight: '900',
+      color: theme.colors.text,
     },
     badge: {
       borderRadius: 999,
       backgroundColor: theme.colors.accentSoft,
-      paddingHorizontal: 10,
-      paddingVertical: 6,
+      paddingHorizontal: 8,
+      paddingVertical: 5,
     },
     badgeText: {
-      fontSize: 10,
+      fontSize: 9,
       fontWeight: '800',
       textTransform: 'uppercase',
       color: theme.colors.accent,
@@ -513,10 +487,10 @@ const getStyles = (theme: ReturnType<typeof useAppTheme>['theme']) =>
     ratingRow: {
       flexDirection: 'row',
       alignItems: 'center',
-      gap: 6,
+      gap: 4,
     },
     ratingText: {
-      fontSize: 12,
+      fontSize: 10,
       fontWeight: '700',
       color: theme.colors.textMuted,
     },

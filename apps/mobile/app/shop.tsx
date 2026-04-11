@@ -1,7 +1,7 @@
 import React from 'react';
 import { Ionicons } from '@expo/vector-icons';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { Image, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { FlatList, Image, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import { AnimatedEntry } from '../components/ui/animated-entry';
 import { ScreenShell } from '../components/screen-shell';
@@ -15,6 +15,8 @@ function slugify(value: string) {
   return value.toLowerCase().replace(/[^a-z0-9]+/g, '-');
 }
 
+const PAGE_SIZE = 8;
+
 export default function ShopScreen() {
   const router = useRouter();
   const params = useLocalSearchParams<{ category?: string; subcategory?: string }>();
@@ -24,6 +26,7 @@ export default function ShopScreen() {
 
   const [activeCategory, setActiveCategory] = React.useState<string>('All');
   const [activeSubcategory, setActiveSubcategory] = React.useState<string>('All');
+  const [visibleProductCount, setVisibleProductCount] = React.useState(PAGE_SIZE);
 
   const categoryIndex = React.useMemo(
     () =>
@@ -79,6 +82,21 @@ export default function ShopScreen() {
     [products, activeCategory, activeSubcategory, audienceFilter],
   );
 
+  React.useEffect(() => {
+    setVisibleProductCount(PAGE_SIZE);
+  }, [activeCategory, activeSubcategory, audienceFilter]);
+
+  const displayedProducts = React.useMemo(
+    () => visibleProducts.slice(0, visibleProductCount),
+    [visibleProducts, visibleProductCount],
+  );
+
+  const hasMoreProducts = visibleProductCount < visibleProducts.length;
+
+  const loadMoreProducts = React.useCallback(() => {
+    setVisibleProductCount((current) => Math.min(current + PAGE_SIZE, visibleProducts.length));
+  }, [visibleProducts.length]);
+
   const featuredProducts = React.useMemo(
     () => products.filter((product) => product.featured).slice(0, 4),
     [products],
@@ -97,201 +115,209 @@ export default function ShopScreen() {
   }, [router]);
 
   return (
-    <ScreenShell>
-      <AnimatedEntry>
-        <View style={styles.heroCard}>
-          <View style={styles.heroTopRow}>
-            <View style={styles.brandMark}>
-              <Ionicons name="bag-handle" size={20} color={theme.isDark ? '#11131B' : '#F8FBFF'} />
-            </View>
-            <View style={styles.heroBadgeWrap}>
-              <Text style={styles.heroBadge}>Shop</Text>
-              <Text style={styles.heroMeta}>Website categories, subcategories and products</Text>
-            </View>
-          </View>
-          <Text style={styles.heroTitle}>Browse products first with clean category filters.</Text>
-          <Text style={styles.heroText}>
-            The mobile shop now mirrors the draft website style with branded cards, compact rails and native actions.
-          </Text>
-          <View style={styles.heroActions}>
-            <Pressable style={styles.primaryButton} onPress={() => router.push('/offers' as never)}>
-              <Text style={styles.primaryButtonText}>View offers</Text>
-            </Pressable>
-            <Pressable style={styles.secondaryButton} onPress={() => {
-              setActiveCategory('All');
-              setActiveSubcategory('All');
-              setAudienceFilter('all');
-            }}>
-              <Text style={styles.secondaryButtonText}>Reset filters</Text>
-            </Pressable>
-          </View>
-        </View>
-      </AnimatedEntry>
-
-      <AnimatedEntry delay={90}>
-        <View style={styles.sectionHeader}>
-          <Text style={styles.sectionTitle}>Audience</Text>
-          <Text style={styles.sectionSubtitle}>Keep the shopping feed focused for each buyer type.</Text>
-        </View>
-        <View style={styles.pillRow}>
-          {[
-            { key: 'all', label: 'All' },
-            { key: 'student', label: 'Student' },
-            { key: 'school', label: 'School' },
-          ].map((item) => (
-            <Pressable
-              key={item.key}
-              style={[styles.pill, audienceFilter === item.key ? styles.pillActive : null]}
-              onPress={() => setAudienceFilter(item.key as 'all' | 'student' | 'school')}
-            >
-              <Text style={[styles.pillText, audienceFilter === item.key ? styles.pillTextActive : null]}>{item.label}</Text>
-            </Pressable>
-          ))}
-        </View>
-      </AnimatedEntry>
-
-      <AnimatedEntry delay={130}>
-        <View style={styles.sectionHeader}>
-          <Text style={styles.sectionTitle}>Categories</Text>
-          <Text style={styles.sectionSubtitle}>Select a category, then choose a subcategory.</Text>
-        </View>
-        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.categoryRail}>
-          {categoryChips.map((label) => (
-            <Pressable
-              key={label}
-              style={[styles.categoryChip, activeCategory === label ? styles.categoryChipActive : null]}
-              onPress={() => {
-                if (label === 'All') {
-                  setActiveCategory('All');
-                  setActiveSubcategory('All');
-                  router.push('/shop' as never);
-                  return;
-                }
-                openCategory(label);
-              }}
-            >
-              <Text style={[styles.categoryChipText, activeCategory === label ? styles.categoryChipTextActive : null]}>{label}</Text>
-            </Pressable>
-          ))}
-        </ScrollView>
-      </AnimatedEntry>
-
-      {activeCategoryData?.subcategories.length ? (
-        <AnimatedEntry delay={160}>
-          <View style={styles.sectionHeader}>
-            <Text style={styles.sectionTitle}>Subcategories</Text>
-            <Text style={styles.sectionSubtitle}>Jump directly into the deeper catalog lane.</Text>
-          </View>
-          <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.subcategoryRail}>
-            <Pressable
-              style={[styles.subcategoryChip, activeSubcategory === 'All' ? styles.subcategoryChipActive : null]}
-              onPress={() => setActiveSubcategory('All')}
-            >
-              <Text style={[styles.subcategoryChipText, activeSubcategory === 'All' ? styles.subcategoryChipTextActive : null]}>All</Text>
-            </Pressable>
-            {activeCategoryData.subcategories.map((subcategory) => (
-              <Pressable
-                key={subcategory}
-                style={[styles.subcategoryChip, activeSubcategory === subcategory ? styles.subcategoryChipActive : null]}
-                onPress={() => openSubcategory(activeCategory, subcategory)}
-              >
-                <Text style={[styles.subcategoryChipText, activeSubcategory === subcategory ? styles.subcategoryChipTextActive : null]}>
-                  {subcategory}
-                </Text>
-              </Pressable>
-            ))}
-          </ScrollView>
-        </AnimatedEntry>
-      ) : null}
-
-      <AnimatedEntry delay={190}>
-        <View style={styles.sectionHeader}>
-          <Text style={styles.sectionTitle}>Featured products</Text>
-          <Text style={styles.sectionSubtitle}>{visibleProducts.length.toLocaleString('en-IN')} products shown</Text>
-        </View>
-      </AnimatedEntry>
-
-      <AnimatedEntry delay={210}>
-        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.featureRail}>
-          {featuredProducts.map((product) => {
-            const inWishlist = wishlistIds.includes(product.id);
-            return (
-              <Pressable
-                key={product.id}
-                style={styles.featureCard}
-                onPress={() => router.push(`/shop/${product.id}` as never)}
-              >
-                <Image source={{ uri: product.image }} style={styles.featureImage} resizeMode="cover" />
-                <View style={styles.featureBody}>
-                  <Text style={styles.productVendor}>{product.vendor ?? 'EduMart Marketplace'}</Text>
-                  <Text style={styles.productName}>{product.name}</Text>
-                  <Text style={styles.productMeta}>{product.subcategory ?? product.category}</Text>
-                  <View style={styles.priceRow}>
-                    <Text style={styles.priceNow}>{formatInr(discountedPrice(product.price, product.discountPercent))}</Text>
-                    <Text style={styles.priceOld}>{formatInr(product.price)}</Text>
-                  </View>
-                  <View style={styles.inlineActions}>
-                    <AppButton label="Cart" onPress={() => addToCart(product.id)} />
-                    <AppButton
-                      label={inWishlist ? 'Saved' : 'Save'}
-                      variant="secondary"
-                      onPress={() => toggleWishlist(product.id)}
-                    />
+    <ScreenShell withScroll={false}>
+      <FlatList
+        data={displayedProducts}
+        keyExtractor={(item) => item.id}
+        contentContainerStyle={styles.listContent}
+        showsVerticalScrollIndicator={false}
+        initialNumToRender={PAGE_SIZE}
+        windowSize={5}
+        removeClippedSubviews
+        onEndReached={hasMoreProducts ? loadMoreProducts : undefined}
+        onEndReachedThreshold={0.45}
+        ListHeaderComponent={(
+          <>
+            <AnimatedEntry>
+              <View style={styles.heroCard}>
+                <View style={styles.heroTopRow}>
+                  <Image source={require('../assets/brand-full.png')} style={styles.brandLogo} resizeMode="contain" />
+                  <View style={styles.heroBadgeWrap}>
+                    <Text style={styles.heroBadge}>Shop</Text>
+                    <Text style={styles.heroMeta}>Website categories, subcategories and products</Text>
                   </View>
                 </View>
-              </Pressable>
-            );
-          })}
-        </ScrollView>
-      </AnimatedEntry>
+                <Text style={styles.heroTitle}>Browse products first with clean category filters.</Text>
+                <Text style={styles.heroText}>
+                  The mobile shop now mirrors the draft website style with branded cards, compact rails and native actions.
+                </Text>
+                <View style={styles.heroActions}>
+                  <Pressable style={styles.primaryButton} onPress={() => router.push('/offers' as never)}>
+                    <Text style={styles.primaryButtonText}>View offers</Text>
+                  </Pressable>
+                  <Pressable
+                    style={styles.secondaryButton}
+                    onPress={() => {
+                      setActiveCategory('All');
+                      setActiveSubcategory('All');
+                      setAudienceFilter('all');
+                    }}
+                  >
+                    <Text style={styles.secondaryButtonText}>Reset filters</Text>
+                  </Pressable>
+                </View>
+              </View>
+            </AnimatedEntry>
 
-      <AnimatedEntry delay={240}>
-        <View style={styles.sectionHeader}>
-          <Text style={styles.sectionTitle}>All products</Text>
-          <Text style={styles.sectionSubtitle}>Cards with quick actions, website colors and native spacing.</Text>
-        </View>
-        <View style={styles.list}>
-          {visibleProducts.length ? (
-            visibleProducts.map((item) => {
-              const inWishlist = wishlistIds.includes(item.id);
-              const finalPrice = discountedPrice(item.price, item.discountPercent);
+            <AnimatedEntry delay={90}>
+              <View style={styles.sectionHeader}>
+                <Text style={styles.sectionTitle}>Audience</Text>
+                <Text style={styles.sectionSubtitle}>Keep the shopping feed focused for each buyer type.</Text>
+              </View>
+              <View style={styles.pillRow}>
+                {[
+                  { key: 'all', label: 'All' },
+                  { key: 'student', label: 'Student' },
+                  { key: 'school', label: 'School' },
+                ].map((item) => (
+                  <Pressable
+                    key={item.key}
+                    style={[styles.pill, audienceFilter === item.key ? styles.pillActive : null]}
+                    onPress={() => setAudienceFilter(item.key as 'all' | 'student' | 'school')}
+                  >
+                    <Text style={[styles.pillText, audienceFilter === item.key ? styles.pillTextActive : null]}>{item.label}</Text>
+                  </Pressable>
+                ))}
+              </View>
+            </AnimatedEntry>
 
-              return (
-                <InfoCard
-                  key={item.id}
-                  title={item.name}
-                  subtitle={`${item.subcategory ?? item.category} • ${item.gradeBand} • ${item.rating.toFixed(1)}★ (${item.reviewCount})`}
-                >
-                  <Image source={{ uri: item.image }} style={styles.cardImage} resizeMode="cover" />
-                  <View style={styles.cardBadge}>
-                    <Text style={styles.cardBadgeText}>{item.badge ?? `${item.discountPercent}% off`}</Text>
-                  </View>
-                  <View style={styles.priceRow}>
-                    <Text style={styles.priceNow}>{formatInr(finalPrice)}</Text>
-                    <Text style={styles.priceOld}>{formatInr(item.price)}</Text>
-                  </View>
-                  <View style={styles.rowButtons}>
-                    <AppButton label="View" variant="secondary" onPress={() => router.push(`/shop/${item.id}` as never)} />
-                    <AppButton label="Add to cart" onPress={() => addToCart(item.id)} />
-                    <AppButton
-                      label={inWishlist ? 'Saved' : 'Wishlist'}
-                      variant="secondary"
-                      icon={<Ionicons name={inWishlist ? 'heart' : 'heart-outline'} size={14} color={theme.colors.accent} />}
-                      onPress={() => toggleWishlist(item.id)}
-                    />
-                  </View>
-                </InfoCard>
-              );
-            })
-          ) : (
-            <View style={styles.emptyCard}>
-              <Ionicons name="search-outline" size={24} color={theme.colors.accent} />
-              <Text style={styles.emptyTitle}>No products found</Text>
-              <Text style={styles.emptyText}>Try another category, subcategory or audience filter.</Text>
-            </View>
-          )}
-        </View>
-      </AnimatedEntry>
+            <AnimatedEntry delay={130}>
+              <View style={styles.sectionHeader}>
+                <Text style={styles.sectionTitle}>Categories</Text>
+                <Text style={styles.sectionSubtitle}>Select a category, then choose a subcategory.</Text>
+              </View>
+              <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.categoryRail}>
+                {categoryChips.map((label) => (
+                  <Pressable
+                    key={label}
+                    style={[styles.categoryChip, activeCategory === label ? styles.categoryChipActive : null]}
+                    onPress={() => {
+                      if (label === 'All') {
+                        setActiveCategory('All');
+                        setActiveSubcategory('All');
+                        router.push('/shop' as never);
+                        return;
+                      }
+                      openCategory(label);
+                    }}
+                  >
+                    <Text style={[styles.categoryChipText, activeCategory === label ? styles.categoryChipTextActive : null]}>{label}</Text>
+                  </Pressable>
+                ))}
+              </ScrollView>
+            </AnimatedEntry>
+
+            {activeCategoryData?.subcategories.length ? (
+              <AnimatedEntry delay={160}>
+                <View style={styles.sectionHeader}>
+                  <Text style={styles.sectionTitle}>Subcategories</Text>
+                  <Text style={styles.sectionSubtitle}>Jump directly into the deeper catalog lane.</Text>
+                </View>
+                <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.subcategoryRail}>
+                  <Pressable
+                    style={[styles.subcategoryChip, activeSubcategory === 'All' ? styles.subcategoryChipActive : null]}
+                    onPress={() => setActiveSubcategory('All')}
+                  >
+                    <Text style={[styles.subcategoryChipText, activeSubcategory === 'All' ? styles.subcategoryChipTextActive : null]}>All</Text>
+                  </Pressable>
+                  {activeCategoryData.subcategories.map((subcategory) => (
+                    <Pressable
+                      key={subcategory}
+                      style={[styles.subcategoryChip, activeSubcategory === subcategory ? styles.subcategoryChipActive : null]}
+                      onPress={() => openSubcategory(activeCategory, subcategory)}
+                    >
+                      <Text style={[styles.subcategoryChipText, activeSubcategory === subcategory ? styles.subcategoryChipTextActive : null]}>
+                        {subcategory}
+                      </Text>
+                    </Pressable>
+                  ))}
+                </ScrollView>
+              </AnimatedEntry>
+            ) : null}
+
+            <AnimatedEntry delay={190}>
+              <View style={styles.sectionHeader}>
+                <Text style={styles.sectionTitle}>Featured products</Text>
+                <Text style={styles.sectionSubtitle}>{visibleProducts.length.toLocaleString('en-IN')} products shown</Text>
+              </View>
+            </AnimatedEntry>
+
+            <AnimatedEntry delay={210}>
+              <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.featureRail}>
+                {featuredProducts.map((product) => {
+                  const finalPrice = discountedPrice(product.price, product.discountPercent);
+
+                  return (
+                    <Pressable key={product.id} style={styles.featureCard} onPress={() => router.push(`/shop/${product.id}` as never)}>
+                      <Image source={{ uri: product.image }} style={styles.featureImage} resizeMode="cover" />
+                      <View style={styles.featureBody}>
+                        <Text style={styles.productVendor}>{product.vendor ?? 'EduMart Marketplace'}</Text>
+                        <Text style={styles.productName} numberOfLines={2}>{product.name}</Text>
+                        <Text style={styles.productMeta} numberOfLines={1}>{product.subcategory ?? product.category}</Text>
+                        <View style={styles.compactMetaRow}>
+                          <View style={styles.badge}>
+                            <Text style={styles.badgeText}>{product.badge ?? `${product.discountPercent}% off`}</Text>
+                          </View>
+                          <Text style={styles.compactPrice}>{formatInr(finalPrice)}</Text>
+                        </View>
+                        <View style={styles.ratingRow}>
+                          <Ionicons name="star" size={12} color="#F59E0B" />
+                          <Text style={styles.ratingText}>{product.rating.toFixed(1)}</Text>
+                        </View>
+                      </View>
+                    </Pressable>
+                  );
+                })}
+              </ScrollView>
+            </AnimatedEntry>
+
+            <AnimatedEntry delay={240}>
+              <View style={styles.sectionHeader}>
+                <Text style={styles.sectionTitle}>All products</Text>
+                <Text style={styles.sectionSubtitle}>Products load in batches as you scroll for a lighter feed.</Text>
+              </View>
+            </AnimatedEntry>
+          </>
+        )}
+        renderItem={({ item }) => {
+          const inWishlist = wishlistIds.includes(item.id);
+          const finalPrice = discountedPrice(item.price, item.discountPercent);
+
+          return (
+            <InfoCard
+              title={item.name}
+              subtitle={`${item.subcategory ?? item.category} • ${item.gradeBand} • ${item.rating.toFixed(1)}★ (${item.reviewCount})`}
+            >
+              <Image source={{ uri: item.image }} style={styles.cardImage} resizeMode="cover" />
+              <View style={styles.cardBadge}>
+                <Text style={styles.cardBadgeText}>{item.badge ?? `${item.discountPercent}% off`}</Text>
+              </View>
+              <View style={styles.priceRow}>
+                <Text style={styles.priceNow}>{formatInr(finalPrice)}</Text>
+                <Text style={styles.priceOld}>{formatInr(item.price)}</Text>
+              </View>
+              <View style={styles.rowButtons}>
+                <AppButton label="View" variant="secondary" onPress={() => router.push(`/shop/${item.id}` as never)} />
+                <AppButton label="Add to cart" onPress={() => addToCart(item.id)} />
+                <AppButton
+                  label={inWishlist ? 'Saved' : 'Wishlist'}
+                  variant="secondary"
+                  icon={<Ionicons name={inWishlist ? 'heart' : 'heart-outline'} size={14} color={theme.colors.accent} />}
+                  onPress={() => toggleWishlist(item.id)}
+                />
+              </View>
+            </InfoCard>
+          );
+        }}
+        ListEmptyComponent={(
+          <View style={styles.emptyCard}>
+            <Ionicons name="search-outline" size={24} color={theme.colors.accent} />
+            <Text style={styles.emptyTitle}>No products found</Text>
+            <Text style={styles.emptyText}>Try another category, subcategory or audience filter.</Text>
+          </View>
+        )}
+        ListFooterComponent={hasMoreProducts ? <Text style={styles.footerHint}>Loading more products as you scroll…</Text> : null}
+      />
     </ScreenShell>
   );
 }
@@ -312,13 +338,9 @@ const getStyles = (theme: ReturnType<typeof useAppTheme>['theme']) =>
       alignItems: 'center',
       gap: 12,
     },
-    brandMark: {
-      width: 52,
+    brandLogo: {
+      width: 160,
       height: 52,
-      borderRadius: 18,
-      backgroundColor: theme.colors.accent,
-      alignItems: 'center',
-      justifyContent: 'center',
     },
     heroBadgeWrap: {
       flex: 1,
@@ -463,11 +485,11 @@ const getStyles = (theme: ReturnType<typeof useAppTheme>['theme']) =>
       color: theme.isDark ? '#11131B' : '#F8FBFF',
     },
     featureRail: {
-      gap: 12,
+      gap: 10,
       paddingRight: 4,
     },
     featureCard: {
-      width: 260,
+      width: 124,
       borderRadius: 24,
       borderWidth: 1,
       borderColor: theme.colors.border,
@@ -477,28 +499,61 @@ const getStyles = (theme: ReturnType<typeof useAppTheme>['theme']) =>
     },
     featureImage: {
       width: '100%',
-      height: 150,
+      height: 86,
       backgroundColor: theme.colors.bgSoft,
     },
     featureBody: {
-      padding: 14,
-      gap: 8,
+      padding: 10,
+      gap: 6,
     },
     productVendor: {
-      fontSize: 10,
+      fontSize: 9,
       fontWeight: '800',
       textTransform: 'uppercase',
       color: theme.colors.textMuted,
-      letterSpacing: 0.8,
+      letterSpacing: 0.6,
     },
     productName: {
-      fontSize: 15,
+      fontSize: 12,
       fontWeight: '900',
       color: theme.colors.text,
-      lineHeight: 21,
+      lineHeight: 16,
     },
     productMeta: {
-      fontSize: 11,
+      fontSize: 10,
+      fontWeight: '700',
+      color: theme.colors.textMuted,
+    },
+    compactMetaRow: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      gap: 6,
+    },
+    compactPrice: {
+      fontSize: 12,
+      fontWeight: '900',
+      color: theme.colors.text,
+    },
+    badge: {
+      borderRadius: 999,
+      backgroundColor: theme.colors.accentSoft,
+      paddingHorizontal: 8,
+      paddingVertical: 5,
+    },
+    badgeText: {
+      fontSize: 9,
+      fontWeight: '800',
+      textTransform: 'uppercase',
+      color: theme.colors.accent,
+    },
+    ratingRow: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: 4,
+    },
+    ratingText: {
+      fontSize: 10,
       fontWeight: '700',
       color: theme.colors.textMuted,
     },
@@ -509,12 +564,12 @@ const getStyles = (theme: ReturnType<typeof useAppTheme>['theme']) =>
       flexWrap: 'wrap',
     },
     priceNow: {
-      fontSize: 18,
+      fontSize: 16,
       fontWeight: '900',
       color: theme.colors.text,
     },
     priceOld: {
-      fontSize: 12,
+      fontSize: 11,
       textDecorationLine: 'line-through',
       color: theme.colors.textMuted,
     },
@@ -536,7 +591,7 @@ const getStyles = (theme: ReturnType<typeof useAppTheme>['theme']) =>
     },
     cardImage: {
       width: '100%',
-      height: 140,
+      height: 116,
       borderRadius: 14,
       backgroundColor: theme.colors.bgSoft,
     },
@@ -572,5 +627,21 @@ const getStyles = (theme: ReturnType<typeof useAppTheme>['theme']) =>
       lineHeight: 18,
       textAlign: 'center',
       color: theme.colors.textMuted,
+    },
+    listContent: {
+      paddingHorizontal: 16,
+      paddingTop: 8,
+      paddingBottom: 28,
+      gap: 14,
+    },
+    footerHint: {
+      marginTop: 4,
+      marginBottom: 8,
+      fontSize: 11,
+      fontWeight: '800',
+      color: theme.colors.textMuted,
+      textAlign: 'center',
+      textTransform: 'uppercase',
+      letterSpacing: 0.7,
     },
   });
