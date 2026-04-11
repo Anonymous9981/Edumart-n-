@@ -70,7 +70,9 @@ interface ApiEnvelope<T> {
 
 function resolveApiBaseUrl() {
   const extra = Constants.expoConfig?.extra as { webApiBaseUrl?: string } | undefined;
-  return extra?.webApiBaseUrl?.trim() || '';
+  const envUrl = (globalThis as { process?: { env?: Record<string, string | undefined> } }).process?.env
+    ?.EXPO_PUBLIC_WEB_API_BASE_URL?.trim();
+  return envUrl || extra?.webApiBaseUrl?.trim() || '';
 }
 
 export async function fetchWebsiteMobileContent(timeoutMs = 5000): Promise<WebsiteMobileContent | null> {
