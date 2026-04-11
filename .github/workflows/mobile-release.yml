@@ -84,7 +84,7 @@ jobs:
           STORE_FILE="$RUNNER_TEMP/edumart-release.keystore"
           STORE_PASSWORD="edumart_store"
           KEY_ALIAS="edumart_key"
-          KEY_PASSWORD="edumart_key_pass"
+          KEY_PASSWORD="$STORE_PASSWORD"
 
           keytool -genkeypair \
             -v \
@@ -101,6 +101,7 @@ jobs:
           pushd android
           chmod +x gradlew
           ./gradlew --no-daemon :app:assembleRelease \
+            --stacktrace \
             -Pandroid.injected.signing.store.file="$STORE_FILE" \
             -Pandroid.injected.signing.store.password="$STORE_PASSWORD" \
             -Pandroid.injected.signing.key.alias="$KEY_ALIAS" \
