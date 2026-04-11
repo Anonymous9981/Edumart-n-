@@ -75,7 +75,7 @@ export function AppHeader() {
           <Link href="/login" className="hidden rounded-lg border border-slate-300 px-3 py-2 text-sm font-semibold text-slate-700 sm:inline-flex">
             Login
           </Link>
-          <Link href="/signup" className="hidden rounded-lg bg-[#00A67E] px-3 py-2 text-sm font-semibold text-white sm:inline-flex">
+          <Link href="/signup" className="hidden rounded-lg bg-[#B78A2A] px-3 py-2 text-sm font-semibold text-white sm:inline-flex">
             Become Seller
           </Link>
 
@@ -139,7 +139,7 @@ export function AppHeader() {
             <Link
               href="/signup"
               onClick={() => setMobileMenuOpen(false)}
-              className="rounded-lg bg-[#00A67E] px-3 py-2 text-sm font-semibold text-white"
+              className="rounded-lg bg-[#B78A2A] px-3 py-2 text-sm font-semibold text-white"
             >
               Become Seller
             </Link>

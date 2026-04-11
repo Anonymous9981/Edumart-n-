@@ -1,8 +1,8 @@
 import Constants from 'expo-constants';
 import { useFocusEffect } from 'expo-router';
 import { useCallback } from 'react';
-import { useMemo, useRef, useState } from 'react';
-import { ActivityIndicator, Alert, BackHandler, Linking, Platform, Pressable, Share, StyleSheet, Text, View } from 'react-native';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import { ActivityIndicator, BackHandler, Platform, Pressable, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { WebView } from 'react-native-webview';
 
@@ -15,9 +15,7 @@ interface WebRouteScreenProps {
 
 type NavigationState = {
   canGoBack: boolean;
-  canGoForward: boolean;
   loading: boolean;
-  url: string;
 };
 
 function resolveWebBaseUrl() {
@@ -28,15 +26,13 @@ function resolveWebBaseUrl() {
 }
 
 export function WebRouteScreen({ path, title }: WebRouteScreenProps) {
-  const { theme, mode } = useAppTheme();
+  const { theme, mode, toggleTheme } = useAppTheme();
   const styles = getStyles(theme);
   const webViewRef = useRef<WebView>(null);
   const baseUrl = useMemo(resolveWebBaseUrl, []);
   const [state, setState] = useState<NavigationState>({
     canGoBack: false,
-    canGoForward: false,
     loading: true,
-    url: '',
   });
 
   const targetUrl = useMemo(() => {
@@ -48,10 +44,19 @@ export function WebRouteScreen({ path, title }: WebRouteScreenProps) {
     return `${baseUrl}${cleanPath}`;
   }, [baseUrl, path]);
 
-  const injectedBridge = useMemo(
-    () => `
+  const nativeThemeBridge = useMemo(
+    () => {
+      const viewport = "width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover";
+      return `
       (function () {
         try {
+          var viewportMeta = document.querySelector('meta[name="viewport"]');
+          if (!viewportMeta) {
+            viewportMeta = document.createElement('meta');
+            viewportMeta.setAttribute('name', 'viewport');
+            document.head.appendChild(viewportMeta);
+          }
+          viewportMeta.setAttribute('content', '${viewport}');
           document.documentElement.setAttribute('data-app-shell', 'edumart-mobile');
           document.documentElement.setAttribute('data-native-theme', '${mode}');
           document.documentElement.classList.remove('dark', 'light');
@@ -67,9 +72,14 @@ export function WebRouteScreen({ path, title }: WebRouteScreenProps) {
         } catch (e) {}
       })();
       true;
-    `,
+    `;
+    },
     [mode, theme.colors.bg],
   );
+
+  useEffect(() => {
+    webViewRef.current?.injectJavaScript(nativeThemeBridge);
+  }, [nativeThemeBridge]);
 
   useFocusEffect(
     useCallback(() => {
@@ -101,75 +111,21 @@ export function WebRouteScreen({ path, title }: WebRouteScreenProps) {
     );
   }
 
-  const activeUrl = state.url || targetUrl;
-
   return (
     <SafeAreaView style={styles.safeArea} edges={['top', 'left', 'right']}>
-      <View style={styles.topCard}>
-        <View>
-          <Text style={styles.topLabel}>{title}</Text>
-          <Text style={styles.topUrl} numberOfLines={1}>{activeUrl}</Text>
-        </View>
-        {state.loading ? <ActivityIndicator size="small" color={theme.colors.accent} /> : null}
-      </View>
-
-      <View style={styles.toolbar}>
-        <Pressable
-          accessibilityRole="button"
-          accessibilityLabel="Back"
-          style={[styles.toolButton, !state.canGoBack ? styles.toolButtonDisabled : null]}
-          disabled={!state.canGoBack}
-          onPress={() => webViewRef.current?.goBack()}
-        >
-          <Text style={styles.toolText}>Back</Text>
-        </Pressable>
-        <Pressable
-          accessibilityRole="button"
-          accessibilityLabel="Forward"
-          style={[styles.toolButton, !state.canGoForward ? styles.toolButtonDisabled : null]}
-          disabled={!state.canGoForward}
-          onPress={() => webViewRef.current?.goForward()}
-        >
-          <Text style={styles.toolText}>Next</Text>
-        </Pressable>
-        <Pressable accessibilityRole="button" accessibilityLabel="Refresh" style={styles.toolButton} onPress={() => webViewRef.current?.reload()}>
-          <Text style={styles.toolText}>Refresh</Text>
-        </Pressable>
-        <Pressable
-          accessibilityRole="button"
-          accessibilityLabel="Open in browser"
-          style={styles.toolButton}
-          onPress={async () => {
-            const supported = await Linking.canOpenURL(activeUrl);
-            if (!supported) {
-              Alert.alert('Cannot open browser', 'This link is not supported on this device.');
-              return;
-            }
-            await Linking.openURL(activeUrl);
-          }}
-        >
-          <Text style={styles.toolText}>Browser</Text>
-        </Pressable>
-        <Pressable
-          accessibilityRole="button"
-          accessibilityLabel="Share link"
-          style={styles.toolButton}
-          onPress={async () => {
-            await Share.share({ message: activeUrl, url: activeUrl, title: title });
-          }}
-        >
-          <Text style={styles.toolText}>Share</Text>
-        </Pressable>
-      </View>
-
       <View style={styles.webWrap}>
         <WebView
           ref={webViewRef}
           source={{ uri: targetUrl }}
-          injectedJavaScript={injectedBridge}
+          injectedJavaScriptBeforeContentLoaded={nativeThemeBridge}
           javaScriptEnabled
           domStorageEnabled
           setSupportMultipleWindows={false}
+          setBuiltInZoomControls={false}
+          setDisplayZoomControls={false}
+          scalesPageToFit={false}
+          bounces={false}
+          overScrollMode="never"
           allowsBackForwardNavigationGestures
           pullToRefreshEnabled
           startInLoadingState
@@ -182,12 +138,30 @@ export function WebRouteScreen({ path, title }: WebRouteScreenProps) {
           onNavigationStateChange={(event) => {
             setState({
               canGoBack: event.canGoBack,
-              canGoForward: event.canGoForward,
               loading: event.loading,
-              url: event.url,
             });
           }}
         />
+        <Pressable
+          accessibilityRole="button"
+          accessibilityLabel={`Switch to ${mode === 'dark' ? 'light' : 'dark'} mode`}
+          style={styles.themeToggle}
+          onPress={() => {
+            const nextMode = mode === 'dark' ? 'light' : 'dark';
+            toggleTheme();
+            webViewRef.current?.injectJavaScript(
+              `(function(){try{document.documentElement.setAttribute('data-native-theme','${nextMode}');document.documentElement.classList.remove('dark','light');document.documentElement.classList.add('${nextMode}');}catch(e){}})(); true;`,
+            );
+          }}
+        >
+          <Text style={styles.themeToggleText}>{mode === 'dark' ? 'Light' : 'Dark'}</Text>
+        </Pressable>
+        {state.loading ? (
+          <View pointerEvents="none" style={styles.loadingChip}>
+            <ActivityIndicator size="small" color={theme.colors.accent} />
+            <Text style={styles.loadingChipText}>{title}</Text>
+          </View>
+        ) : null}
       </View>
     </SafeAreaView>
   );
@@ -199,66 +173,57 @@ const getStyles = (theme: ReturnType<typeof useAppTheme>['theme']) =>
       flex: 1,
       backgroundColor: theme.colors.bg,
     },
-    topCard: {
-      marginHorizontal: 12,
+    webWrap: {
+      flex: 1,
+      marginHorizontal: 10,
       marginTop: 8,
-      marginBottom: 8,
-      paddingHorizontal: 12,
-      paddingVertical: 10,
-      borderRadius: 16,
-      borderWidth: 1,
+      marginBottom: 10,
+      borderRadius: 22,
+      borderWidth: 1.2,
       borderColor: theme.colors.border,
+      overflow: 'hidden',
       backgroundColor: theme.colors.surface,
-      flexDirection: 'row',
-      alignItems: 'center',
-      justifyContent: 'space-between',
-      gap: 10,
     },
-    topLabel: {
-      color: theme.colors.text,
-      fontSize: 12,
-      fontWeight: '900',
-      textTransform: 'uppercase',
-      letterSpacing: 0.7,
-    },
-    topUrl: {
-      marginTop: 2,
-      color: theme.colors.textMuted,
-      fontSize: 11,
-      maxWidth: 250,
-    },
-    toolbar: {
-      marginHorizontal: 12,
-      marginBottom: 8,
-      flexDirection: 'row',
-      flexWrap: 'wrap',
-      gap: 8,
-    },
-    toolButton: {
+    themeToggle: {
+      position: 'absolute',
+      top: 12,
+      right: 12,
       borderRadius: 999,
       borderWidth: 1,
       borderColor: theme.colors.border,
       backgroundColor: theme.colors.surface,
       paddingHorizontal: 12,
       paddingVertical: 7,
+      shadowColor: '#000000',
+      shadowOpacity: theme.isDark ? 0.32 : 0.12,
+      shadowRadius: 8,
+      shadowOffset: { width: 0, height: 4 },
+      elevation: 5,
     },
-    toolButtonDisabled: {
-      opacity: 0.45,
+    themeToggleText: {
+      color: theme.colors.text,
+      fontSize: 11,
+      fontWeight: '900',
+      letterSpacing: 0.2,
     },
-    toolText: {
+    loadingChip: {
+      position: 'absolute',
+      left: 12,
+      top: 12,
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: 8,
+      borderRadius: 999,
+      borderWidth: 1,
+      borderColor: theme.colors.border,
+      backgroundColor: theme.colors.surface,
+      paddingHorizontal: 10,
+      paddingVertical: 6,
+    },
+    loadingChipText: {
       color: theme.colors.text,
       fontSize: 11,
       fontWeight: '800',
-    },
-    webWrap: {
-      flex: 1,
-      marginHorizontal: 12,
-      marginBottom: 12,
-      borderRadius: 20,
-      borderWidth: 1,
-      borderColor: theme.colors.border,
-      overflow: 'hidden',
-      backgroundColor: theme.colors.surface,
     },
     loaderWrap: {
       flex: 1,
