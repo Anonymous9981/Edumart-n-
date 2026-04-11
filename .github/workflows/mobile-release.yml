@@ -8,6 +8,8 @@ on:
         required: true
         type: string
   push:
+    branches:
+      - main
     tags:
       - "mobile-v*"
 
@@ -60,8 +62,13 @@ jobs:
         run: |
           if [ -n "${{ github.event.inputs.release_tag }}" ]; then
             echo "tag=${{ github.event.inputs.release_tag }}" >> "$GITHUB_OUTPUT"
-          else
+            echo "latest_tag=mobile-latest" >> "$GITHUB_OUTPUT"
+          elif [[ "${GITHUB_REF_TYPE}" == "tag" ]]; then
             echo "tag=${GITHUB_REF_NAME}" >> "$GITHUB_OUTPUT"
+            echo "latest_tag=mobile-latest" >> "$GITHUB_OUTPUT"
+          else
+            echo "tag=mobile-${GITHUB_SHA::7}" >> "$GITHUB_OUTPUT"
+            echo "latest_tag=mobile-latest" >> "$GITHUB_OUTPUT"
           fi
 
       - name: Build APK on EAS Cloud
@@ -86,18 +93,33 @@ jobs:
         shell: bash
         run: |
           mkdir -p release
-          curl -fL "${{ steps.eas.outputs.apk_url }}" -o "release/Karom-EduMart-${{ steps.meta.outputs.tag }}.apk"
+          curl -fL "${{ steps.eas.outputs.apk_url }}" -o "release/EduMart-${{ steps.meta.outputs.tag }}.apk"
 
       - name: Upload build artifact
         uses: actions/upload-artifact@v4
         with:
-          name: Karom-EduMart-${{ steps.meta.outputs.tag }}
-          path: release/Karom-EduMart-${{ steps.meta.outputs.tag }}.apk
+          name: EduMart-${{ steps.meta.outputs.tag }}
+          path: release/EduMart-${{ steps.meta.outputs.tag }}.apk
 
-      - name: Create GitHub Release
+      - name: Create GitHub Release (versioned)
         uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ steps.meta.outputs.tag }}
           name: EduMart Mobile ${{ steps.meta.outputs.tag }}
+          target_commitish: ${{ github.sha }}
           generate_release_notes: true
-          files: release/Karom-EduMart-${{ steps.meta.outputs.tag }}.apk
+          files: release/EduMart-${{ steps.meta.outputs.tag }}.apk
+
+      - name: Create/Update GitHub Release (latest)
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.meta.outputs.latest_tag }}
+          name: EduMart Mobile Latest
+          target_commitish: ${{ github.sha }}
+          prerelease: false
+          make_latest: true
+          generate_release_notes: false
+          body: |
+            Auto-updated APK from commit `${{ github.sha }}`.
+            EAS build artifact: ${{ steps.eas.outputs.apk_url }}
+          files: release/EduMart-${{ steps.meta.outputs.tag }}.apk
