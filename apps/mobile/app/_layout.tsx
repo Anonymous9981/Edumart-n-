@@ -2,22 +2,18 @@ import { Ionicons } from '@expo/vector-icons';
 import { Tabs } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 
-import { NativeStoreProvider, useNativeStore } from '../lib/native-store';
 import { ThemeProvider, useAppTheme } from '../theme/theme-provider';
 
 export default function RootLayout() {
   return (
     <ThemeProvider>
-      <NativeStoreProvider>
-        <RootTabs />
-      </NativeStoreProvider>
+      <RootTabs />
     </ThemeProvider>
   );
 }
 
 function RootTabs() {
   const { theme } = useAppTheme();
-  const { cartCount, wishlistCount } = useNativeStore();
 
   return (
     <>
@@ -76,7 +72,6 @@ function RootTabs() {
           options={{
             title: 'Cart',
             tabBarIcon: ({ color, size }) => <Ionicons name="cart-outline" color={color} size={size} />,
-            tabBarBadge: cartCount > 0 ? cartCount : undefined,
           }}
         />
         <Tabs.Screen
@@ -84,7 +79,6 @@ function RootTabs() {
           options={{
             title: 'Wishlist',
             tabBarIcon: ({ color, size }) => <Ionicons name="heart-outline" color={color} size={size} />,
-            tabBarBadge: wishlistCount > 0 ? wishlistCount : undefined,
           }}
         />
         <Tabs.Screen
@@ -99,6 +93,8 @@ function RootTabs() {
         <Tabs.Screen name="offers/refer" options={{ href: null }} />
         <Tabs.Screen name="shop/[id]" options={{ href: null }} />
         <Tabs.Screen name="more" options={{ href: null }} />
+        <Tabs.Screen name="login" options={{ href: null }} />
+        <Tabs.Screen name="signup" options={{ href: null }} />
       </Tabs>
     </>
   );

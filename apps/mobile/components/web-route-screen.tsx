@@ -57,6 +57,13 @@ export function WebRouteScreen({ path, title }: WebRouteScreenProps) {
             document.head.appendChild(viewportMeta);
           }
           viewportMeta.setAttribute('content', '${viewport}');
+          var styleTag = document.getElementById('edumart-native-bridge-style');
+          if (!styleTag) {
+            styleTag = document.createElement('style');
+            styleTag.id = 'edumart-native-bridge-style';
+            document.head.appendChild(styleTag);
+          }
+          styleTag.textContent = 'html,body{overscroll-behavior:none;-webkit-text-size-adjust:100%;text-size-adjust:100%;touch-action:manipulation;} input,select,textarea,button{font-size:16px !important;}';
           document.documentElement.setAttribute('data-app-shell', 'edumart-mobile');
           document.documentElement.setAttribute('data-native-theme', '${mode}');
           document.documentElement.classList.remove('dark', 'light');
@@ -117,9 +124,11 @@ export function WebRouteScreen({ path, title }: WebRouteScreenProps) {
         <WebView
           ref={webViewRef}
           source={{ uri: targetUrl }}
+          originWhitelist={['*']}
           injectedJavaScriptBeforeContentLoaded={nativeThemeBridge}
           javaScriptEnabled
           domStorageEnabled
+          textZoom={100}
           setSupportMultipleWindows={false}
           setBuiltInZoomControls={false}
           setDisplayZoomControls={false}
