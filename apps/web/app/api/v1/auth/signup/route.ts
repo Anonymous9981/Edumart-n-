@@ -15,12 +15,13 @@ export async function POST(request: NextRequest) {
     const { supabase, applyCookies } = createRouteClient(request);
 
     const parsedRole = String(body?.role ?? UserRole.CUSTOMER).toUpperCase() as UserRole;
+    const normalizedRole = parsedRole.toLowerCase();
     const { data, error } = await supabase.auth.signUp({
       email: String(body?.email ?? '').trim().toLowerCase(),
       password: String(body?.password ?? ''),
       options: {
         data: {
-          role: parsedRole,
+          role: normalizedRole,
           first_name: String(body?.firstName ?? '').trim(),
           last_name: String(body?.lastName ?? '').trim(),
           phone: String(body?.phone ?? '').trim(),
