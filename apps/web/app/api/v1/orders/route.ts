@@ -1,16 +1,13 @@
-import { randomUUID } from 'crypto'
-
-import { UserRole } from '@edumart/shared'
 import { NextRequest } from 'next/server'
 
 import { prisma } from '../../../../lib/prisma'
 import { errorResponse, successResponse } from '../../../../lib/response'
+import { requireAuthenticatedAppUser } from '../../../../lib/supabase/request-auth'
 
 interface CreateOrderPayload {
   address: {
     fullName: string
     phone: string
-    email: string
     line1: string
     city: string
     state: string
@@ -30,6 +27,11 @@ interface CreateOrderPayload {
 }
 
 export async function POST(request: NextRequest) {
+  const auth = await requireAuthenticatedAppUser(request)
+  if (!auth.user) {
+    return errorResponse(auth.message, auth.status)
+  }
+
   let payload: CreateOrderPayload
 
   try {
@@ -38,7 +40,7 @@ export async function POST(request: NextRequest) {
     return errorResponse('Invalid request payload', 400, 'INVALID_PAYLOAD')
   }
 
-  if (!payload?.address?.email || !payload?.address?.fullName || !payload?.address?.line1 || !payload?.address?.pincode) {
+  if (!payload?.address?.fullName || !payload?.address?.line1 || !payload?.address?.pincode) {
     return errorResponse('Address details are incomplete', 400, 'INVALID_ADDRESS')
   }
 
@@ -46,23 +48,13 @@ export async function POST(request: NextRequest) {
     return errorResponse('No items found for order', 400, 'EMPTY_ORDER')
   }
 
-  const normalizedEmail = payload.address.email.trim().toLowerCase()
-
   try {
     const result = await prisma.$transaction(async (tx: any) => {
-      const user =
-        (await tx.user.findUnique({ where: { email: normalizedEmail } })) ??
-        (await tx.user.create({
-          data: {
-            email: normalizedEmail,
-            role: UserRole.CUSTOMER,
-            firstName: payload.address.fullName.split(' ')[0] ?? payload.address.fullName,
-            lastName: payload.address.fullName.split(' ').slice(1).join(' ') || null,
-            phone: payload.address.phone,
-            isEmailVerified: false,
-            passwordHash: null,
-          },
-        }))
+      const user = await tx.user.findUnique({ where: { id: auth.user!.id } })
+
+      if (!user) {
+        throw new Error('Authenticated user not found')
+      }
 
       const address = await tx.address.create({
         data: {
@@ -78,7 +70,7 @@ export async function POST(request: NextRequest) {
         },
       })
 
-      const orderNumber = `EDU-${Date.now().toString().slice(-8)}-${randomUUID().slice(0, 4).toUpperCase()}`
+      const orderNumber = `EDU-${Date.now().toString().slice(-8)}-${Math.random().toString(36).slice(2, 6).toUpperCase()}`
 
       const order = await tx.order.create({
         data: {

@@ -1,8 +1,21 @@
-import { PrismaClient } from '@prisma/client';
+/// <reference types="node" />
 
-import { hashPassword } from '../apps/web/lib/auth';
+import { PrismaClient } from '@prisma/client';
+import bcrypt from 'bcryptjs';
 
 const prisma = new PrismaClient();
+
+const seedSuffix =
+  process.env.SEED_EMAIL_SUFFIX?.trim() || `${Date.now()}${Math.floor(Math.random() * 1000)}`;
+
+function withSeedSuffix(email: string): string {
+  const [local, domain] = email.split('@');
+  return `${local}+${seedSuffix}@${domain}`;
+}
+
+async function hashPassword(password: string): Promise<string> {
+  return bcrypt.hash(password, 12);
+}
 
 async function main() {
   console.log('🌱 Seeding database...');
@@ -29,7 +42,7 @@ async function main() {
   const adminPassword = await hashPassword('Admin@123456');
   const admin = await prisma.user.create({
     data: {
-      email: 'admin@edumart.com',
+      email: withSeedSuffix('admin@edumart.com'),
       passwordHash: adminPassword,
       firstName: 'Admin',
       lastName: 'User',
@@ -43,7 +56,7 @@ async function main() {
   const customerPassword = await hashPassword('Customer@123456');
   const customer1 = await prisma.user.create({
     data: {
-      email: 'customer1@edumart.com',
+      email: withSeedSuffix('customer1@edumart.com'),
       passwordHash: customerPassword,
       firstName: 'John',
       lastName: 'Doe',
@@ -56,7 +69,7 @@ async function main() {
 
   const customer2 = await prisma.user.create({
     data: {
-      email: 'customer2@edumart.com',
+      email: withSeedSuffix('customer2@edumart.com'),
       passwordHash: customerPassword,
       firstName: 'Jane',
       lastName: 'Smith',
@@ -71,7 +84,7 @@ async function main() {
   const vendorPassword = await hashPassword('Vendor@123456');
   const vendor1 = await prisma.user.create({
     data: {
-      email: 'vendor1@edumart.com',
+      email: withSeedSuffix('vendor1@edumart.com'),
       passwordHash: vendorPassword,
       firstName: 'Vendor',
       lastName: 'One',
@@ -96,7 +109,7 @@ async function main() {
 
   const vendor2 = await prisma.user.create({
     data: {
-      email: 'vendor2@edumart.com',
+      email: withSeedSuffix('vendor2@edumart.com'),
       passwordHash: vendorPassword,
       firstName: 'Vendor',
       lastName: 'Two',
@@ -527,10 +540,11 @@ async function main() {
   });
 
   console.log('✅ Database seeded successfully!');
+  console.log(`\n🔖 Seed email suffix: +${seedSuffix}`);
   console.log('\n📝 Default Credentials:');
-  console.log('   Admin: admin@edumart.com / Admin@123456');
-  console.log('   Customer: customer1@edumart.com / Customer@123456');
-  console.log('   Vendor: vendor1@edumart.com / Vendor@123456');
+  console.log(`   Admin: ${withSeedSuffix('admin@edumart.com')} / Admin@123456`);
+  console.log(`   Customer: ${withSeedSuffix('customer1@edumart.com')} / Customer@123456`);
+  console.log(`   Vendor: ${withSeedSuffix('vendor1@edumart.com')} / Vendor@123456`);
 }
 
 main()

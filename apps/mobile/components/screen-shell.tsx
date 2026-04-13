@@ -17,6 +17,8 @@ export function ScreenShell({ children, withScroll = true }: ScreenShellProps) {
   if (!withScroll) {
     return (
       <SafeAreaView style={styles.safeArea} edges={['top', 'left', 'right']}>
+        <View style={styles.bgOrbTop} />
+        <View style={styles.bgOrbBottom} />
         <View style={[styles.container, { paddingTop: insets.top > 0 ? 8 : 14 }]}>{children}</View>
       </SafeAreaView>
     );
@@ -24,6 +26,8 @@ export function ScreenShell({ children, withScroll = true }: ScreenShellProps) {
 
   return (
     <SafeAreaView style={styles.safeArea} edges={['top', 'left', 'right']}>
+      <View style={styles.bgOrbTop} />
+      <View style={styles.bgOrbBottom} />
       <ScrollView
         contentContainerStyle={[styles.content, { paddingTop: insets.top > 0 ? 8 : 14, paddingBottom: 28 + insets.bottom }]}
         showsVerticalScrollIndicator={false}
@@ -45,6 +49,26 @@ const getStyles = (theme: ReturnType<typeof useAppTheme>['theme']) =>
     safeArea: {
       flex: 1,
       backgroundColor: theme.colors.bg,
+    },
+    bgOrbTop: {
+      position: 'absolute',
+      top: -120,
+      left: -80,
+      width: 260,
+      height: 260,
+      borderRadius: 180,
+      backgroundColor: theme.colors.accentSoft,
+      opacity: theme.isDark ? 0.2 : 0.45,
+    },
+    bgOrbBottom: {
+      position: 'absolute',
+      right: -90,
+      bottom: 40,
+      width: 220,
+      height: 220,
+      borderRadius: 140,
+      backgroundColor: theme.colors.bgSoft,
+      opacity: theme.isDark ? 0.22 : 0.6,
     },
     container: {
       flex: 1,

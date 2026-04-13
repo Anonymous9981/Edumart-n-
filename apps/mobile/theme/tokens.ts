@@ -1,14 +1,15 @@
 export const lightColors = {
-  bg: '#EEF3F8',
-  bgSoft: '#E5ECF4',
+  bg: '#F4F8FC',
+  bgSoft: '#E9F1FA',
   surface: '#FFFFFF',
-  surfaceRaised: '#EDF3FA',
-  border: '#D4DFEC',
-  text: '#0B1E35',
-  textMuted: '#506076',
+  surfaceRaised: '#F7FAFE',
+  border: '#DBE4EE',
+  text: '#0F172A',
+  textMuted: '#475569',
   accent: '#0B3558',
-  accentSoft: '#D7E8FA',
-  success: '#0CA678',
+  accentSoft: '#DFF7EE',
+  success: '#00A67E',
+  warning: '#FF8A24',
   danger: '#D14343',
 };
 
@@ -20,9 +21,10 @@ export const darkColors = {
   border: '#233651',
   text: '#EDF4FF',
   textMuted: '#A9BAD1',
-  accent: '#00B58A',
+  accent: '#00A67E',
   accentSoft: '#123D38',
   success: '#34D399',
+  warning: '#FDBA74',
   danger: '#F87171',
 };
 

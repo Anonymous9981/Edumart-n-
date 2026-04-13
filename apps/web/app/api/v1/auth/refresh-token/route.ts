@@ -1,42 +1,43 @@
 import { NextRequest } from 'next/server';
 
 import { errorResponse, successResponse } from '../../../../../lib/response';
-import { buildAuthError, refreshAuthSession } from '../../../../../lib/auth-service';
-import { AUTH_COOKIE_NAMES, clearAuthCookies, setAuthCookies } from '../../../../../lib/auth';
+import { buildAuthError, getCurrentUserFromPayload } from '../../../../../lib/auth-service';
+import { createRouteClient } from '../../../../../lib/supabase/middleware';
+import { syncAppUserFromSupabaseUser } from '../../../../../lib/supabase/auth-route';
 
 export const runtime = 'nodejs';
 
 export async function POST(request: NextRequest) {
   try {
-    const body = (await request.json().catch(() => ({}))) as { refreshToken?: string };
-    const refreshToken = body.refreshToken || request.cookies.get(AUTH_COOKIE_NAMES.refreshToken)?.value;
+    const { supabase, applyCookies } = createRouteClient(request);
+    const { data, error } = await supabase.auth.refreshSession();
 
-    if (!refreshToken) {
-      return errorResponse('Refresh token is required', 400);
+    if (error || !data.session || !data.user) {
+      throw error ?? new Error('Unable to refresh session');
     }
 
-    const result = await refreshAuthSession(
-      { refreshToken },
-      {
-        ipAddress:
-          request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ??
-          request.headers.get('x-real-ip') ??
-          null,
-        userAgent: request.headers.get('user-agent'),
-      },
-    );
+    const appUser = await syncAppUserFromSupabaseUser({
+      id: data.user.id,
+      email: data.user.email ?? '',
+      firstName: data.user.user_metadata?.first_name ?? null,
+      lastName: data.user.user_metadata?.last_name ?? null,
+      avatar: data.user.user_metadata?.avatar_url ?? null,
+      phone: data.user.user_metadata?.phone ?? null,
+      isEmailVerified: Boolean(data.user.email_confirmed_at),
+      ipAddress:
+        request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ??
+        request.headers.get('x-real-ip') ??
+        null,
+    })
 
     const response = successResponse({
-      user: result.user,
-      accessToken: result.tokenPair.accessToken,
-      refreshToken: result.tokenPair.refreshToken,
-    });
+      user: appUser ?? (await getCurrentUserFromPayload(data.user.id)),
+      accessToken: data.session.access_token,
+      refreshToken: data.session.refresh_token,
+    })
 
-    setAuthCookies(response, result.tokenPair);
-    return response;
+    return applyCookies(response)
   } catch (error) {
-    const response = errorResponse(buildAuthError(error).message, 401);
-    clearAuthCookies(response);
-    return response;
+    return errorResponse(buildAuthError(error).message, 401)
   }
 }

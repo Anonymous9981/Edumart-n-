@@ -1,18 +1,44 @@
 "use client"
 
-import { useMemo } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 
 import { MarketingPageShell } from '../../components/marketing-page-shell'
 import { ProductCard } from '../../components/ui/product-card'
-import { FALLBACK_PRODUCTS } from '../homepage-loader'
+import type { HomepageProduct } from '../../lib/homepage-types'
 import { resolveProductsByIds, useMarketplaceState } from '../../lib/marketplace-state'
 
 export default function WishlistPage() {
   const marketplace = useMarketplaceState()
-  const wishlistProducts = useMemo(() => resolveProductsByIds(FALLBACK_PRODUCTS, marketplace.wishlist), [marketplace.wishlist])
+  const [catalogProducts, setCatalogProducts] = useState<HomepageProduct[]>([])
 
-  const studentCount = wishlistProducts.filter((item) => item.audience === 'student').length
-  const schoolCount = wishlistProducts.filter((item) => item.audience === 'teacher').length
+  useEffect(() => {
+    let active = true
+
+    fetch('/api/v1/products?limit=100', { cache: 'no-store' })
+      .then(async (response) => {
+        const payload = await response.json().catch(() => null)
+        return response.ok ? payload?.data ?? [] : []
+      })
+      .then((items) => {
+        if (active) {
+          setCatalogProducts(Array.isArray(items) ? items : [])
+        }
+      })
+      .catch(() => {
+        if (active) {
+          setCatalogProducts([])
+        }
+      })
+
+    return () => {
+      active = false
+    }
+  }, [])
+
+  const liveWishlistProducts = useMemo(() => resolveProductsByIds(catalogProducts, marketplace.wishlist), [catalogProducts, marketplace.wishlist])
+
+  const studentCount = liveWishlistProducts.filter((item) => item.audience === 'student').length
+  const schoolCount = liveWishlistProducts.filter((item) => item.audience === 'teacher').length
 
   return (
     <MarketingPageShell
@@ -33,7 +59,7 @@ export default function WishlistPage() {
 
           <div className="mt-6 grid gap-3 sm:grid-cols-3">
             {[
-              ['Saved items', `${wishlistProducts.length}`],
+              ['Saved items', `${liveWishlistProducts.length}`],
               ['Student picks', `${studentCount}`],
               ['School picks', `${schoolCount}`],
             ].map(([label, value]) => (
@@ -53,7 +79,7 @@ export default function WishlistPage() {
         </section>
 
         <section className="grid gap-5 sm:grid-cols-2">
-          {wishlistProducts.length ? wishlistProducts.map((product) => (
+          {liveWishlistProducts.length ? liveWishlistProducts.map((product) => (
             <ProductCard
               key={product.id}
               product={product}

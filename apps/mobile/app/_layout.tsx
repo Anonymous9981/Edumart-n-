@@ -2,21 +2,22 @@ import { Ionicons } from '@expo/vector-icons';
 import { Tabs } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 
-import { MockStoreProvider } from '../lib/mock-store';
+import { NativeStoreProvider, useNativeStore } from '../lib/native-store';
 import { ThemeProvider, useAppTheme } from '../theme/theme-provider';
 
 export default function RootLayout() {
   return (
     <ThemeProvider>
-      <MockStoreProvider>
+      <NativeStoreProvider>
         <RootTabs />
-      </MockStoreProvider>
+      </NativeStoreProvider>
     </ThemeProvider>
   );
 }
 
 function RootTabs() {
   const { theme } = useAppTheme();
+  const { cartCount, wishlistCount } = useNativeStore();
 
   return (
     <>
@@ -75,6 +76,7 @@ function RootTabs() {
           options={{
             title: 'Cart',
             tabBarIcon: ({ color, size }) => <Ionicons name="cart-outline" color={color} size={size} />,
+            tabBarBadge: cartCount > 0 ? cartCount : undefined,
           }}
         />
         <Tabs.Screen
@@ -82,6 +84,7 @@ function RootTabs() {
           options={{
             title: 'Wishlist',
             tabBarIcon: ({ color, size }) => <Ionicons name="heart-outline" color={color} size={size} />,
+            tabBarBadge: wishlistCount > 0 ? wishlistCount : undefined,
           }}
         />
         <Tabs.Screen

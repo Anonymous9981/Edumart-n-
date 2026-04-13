@@ -1,6 +1,5 @@
 import { getHomepageData } from '../../../homepage-loader';
 import { successResponse } from '../../../../lib/response';
-import { EDUMART_CATALOG_TAXONOMY } from '@edumart/shared';
 
 function buildCategories(products: Array<{ category: string }>) {
   const unique = Array.from(new Set(products.map((product) => product.category)));
@@ -19,58 +18,22 @@ function buildTaxonomy(products: Array<{ category: string; subcategory?: string 
     }
   });
 
-  const merged = EDUMART_CATALOG_TAXONOMY.map((category) => ({
-    id: `legacy-${category.legacyId}`,
-    name: category.name,
-    slug: category.slug,
-    priority: category.priority,
-    subcategories: category.subcategories.map((subcategory) => ({
-      id: `legacy-${subcategory.legacyId}`,
-      name: subcategory.name,
-      slug: subcategory.slug,
-      priority: subcategory.priority,
-    })),
-  }));
-
-  dynamicTaxonomy.forEach((subcategories, categoryName) => {
-    const existing = merged.find((category) => category.name === categoryName);
-    if (!existing) {
-      merged.push({
-        id: `dynamic-${categoryName.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`,
-        name: categoryName,
-        slug: categoryName.toLowerCase().replace(/[^a-z0-9]+/g, '-'),
-        priority: 999,
-        subcategories: Array.from(subcategories).map((subcategory) => ({
+  return Array.from(dynamicTaxonomy.entries())
+    .map(([categoryName, subcategories]) => ({
+      id: `dynamic-${categoryName.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`,
+      name: categoryName,
+      slug: categoryName.toLowerCase().replace(/[^a-z0-9]+/g, '-'),
+      priority: 0,
+      subcategories: Array.from(subcategories)
+        .map((subcategory) => ({
           id: `dynamic-${subcategory.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`,
           name: subcategory,
           slug: subcategory.toLowerCase().replace(/[^a-z0-9]+/g, '-'),
           priority: 0,
-        })),
-      });
-      return;
-    }
-
-    const existingNames = new Set(existing.subcategories.map((subcategory) => subcategory.name));
-    Array.from(subcategories).forEach((subcategory) => {
-      if (!existingNames.has(subcategory)) {
-        existing.subcategories.push({
-          id: `dynamic-${subcategory.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`,
-          name: subcategory,
-          slug: subcategory.toLowerCase().replace(/[^a-z0-9]+/g, '-'),
-          priority: 0,
-        });
-      }
-    });
-  });
-
-  return merged
-    .sort((a, b) => a.priority - b.priority || a.name.localeCompare(b.name))
-    .map((category) => ({
-      ...category,
-      subcategories: category.subcategories
-        .slice()
-        .sort((a, b) => a.priority - b.priority || a.name.localeCompare(b.name)),
-    }));
+        }))
+        .sort((a, b) => a.name.localeCompare(b.name)),
+    }))
+    .sort((a, b) => a.name.localeCompare(b.name));
 }
 
 function buildAudienceStats(products: Array<{ audience: 'student' | 'teacher' }>) {

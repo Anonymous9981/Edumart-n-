@@ -5,6 +5,7 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation"
 
 import type { HomepageProduct } from "../lib/homepage-types"
 import { ProductCard } from "./ui/product-card"
+import { useRealtimeRefresh } from "../lib/supabase/realtime"
 
 export interface ShopSubcategory {
   id: string
@@ -41,6 +42,21 @@ export function ShopCatalog({ products, categories }: ShopCatalogProps) {
 
   const [activeCategorySlug, setActiveCategorySlug] = useState<string>(initialCategory)
   const [activeSubcategorySlug, setActiveSubcategorySlug] = useState<string>(initialSubcategory)
+  const realtimeTables = useMemo(
+    () => [
+      { table: 'Product' as const },
+      { table: 'Category' as const },
+      { table: 'VendorProfile' as const },
+    ],
+    [],
+  )
+
+  useRealtimeRefresh(
+    'edumart-shop-live-refresh',
+    realtimeTables,
+    () => router.refresh(),
+    true,
+  )
 
   function updateQuery(categorySlug: string, subcategorySlug: string) {
     const params = new URLSearchParams(searchParams.toString())

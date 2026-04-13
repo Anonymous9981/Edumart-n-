@@ -1,18 +1,17 @@
 "use client"
 
 import Link from 'next/link'
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useRouter } from 'next/navigation'
 
 import { MarketingPageShell } from '../../components/marketing-page-shell'
-import { FALLBACK_PRODUCTS } from '../homepage-loader'
+import type { HomepageProduct } from '../../lib/homepage-types'
 import { resolveProductsByIds, useMarketplaceState } from '../../lib/marketplace-state'
 import { useSiteFeedback } from '../../lib/site-feedback'
 
 type AddressForm = {
   fullName: string
   phone: string
-  email: string
   line1: string
   city: string
   state: string
@@ -22,7 +21,6 @@ type AddressForm = {
 const INITIAL_ADDRESS: AddressForm = {
   fullName: '',
   phone: '',
-  email: '',
   line1: '',
   city: '',
   state: '',
@@ -33,19 +31,44 @@ export default function CheckoutPage() {
   const router = useRouter()
   const marketplace = useMarketplaceState()
   const feedback = useSiteFeedback()
+  const [catalogProducts, setCatalogProducts] = useState<HomepageProduct[]>([])
 
   const [address, setAddress] = useState<AddressForm>(INITIAL_ADDRESS)
   const [placingOrder, setPlacingOrder] = useState(false)
   const [paymentMethod, setPaymentMethod] = useState<'cod'>('cod')
 
+  useEffect(() => {
+    let active = true
+
+    fetch('/api/v1/products?limit=100', { cache: 'no-store' })
+      .then(async (response) => {
+        const payload = await response.json().catch(() => null)
+        return response.ok ? payload?.data ?? [] : []
+      })
+      .then((items) => {
+        if (active) {
+          setCatalogProducts(Array.isArray(items) ? items : [])
+        }
+      })
+      .catch(() => {
+        if (active) {
+          setCatalogProducts([])
+        }
+      })
+
+    return () => {
+      active = false
+    }
+  }, [])
+
   const cartItems = useMemo(() => {
     return Object.entries(marketplace.cart)
       .map(([productId, quantity]) => ({
-        product: resolveProductsByIds(FALLBACK_PRODUCTS, [productId])[0],
+        product: resolveProductsByIds(catalogProducts, [productId])[0],
         quantity,
       }))
-      .filter((item): item is { product: (typeof FALLBACK_PRODUCTS)[number]; quantity: number } => Boolean(item.product))
-  }, [marketplace.cart])
+        .filter((item): item is { product: HomepageProduct; quantity: number } => Boolean(item.product))
+  }, [catalogProducts, marketplace.cart])
 
   const subtotal = cartItems.reduce((sum, item) => sum + item.product.finalPrice * item.quantity, 0)
   const shipping = 0
@@ -60,7 +83,6 @@ export default function CheckoutPage() {
     return (
       address.fullName.trim().length >= 3 &&
       address.phone.trim().length >= 10 &&
-      address.email.trim().includes('@') &&
       address.line1.trim().length >= 6 &&
       address.city.trim().length >= 2 &&
       address.state.trim().length >= 2 &&
@@ -130,7 +152,6 @@ export default function CheckoutPage() {
           <div className="mt-5 grid gap-3 sm:grid-cols-2">
             <input className="rounded-xl border border-slate-300 px-4 py-3 text-sm outline-none" placeholder="Full name" value={address.fullName} onChange={(event) => updateAddress('fullName', event.target.value)} />
             <input className="rounded-xl border border-slate-300 px-4 py-3 text-sm outline-none" placeholder="Phone number" value={address.phone} onChange={(event) => updateAddress('phone', event.target.value)} />
-            <input className="rounded-xl border border-slate-300 px-4 py-3 text-sm outline-none sm:col-span-2" placeholder="Email" value={address.email} onChange={(event) => updateAddress('email', event.target.value)} />
             <input className="rounded-xl border border-slate-300 px-4 py-3 text-sm outline-none sm:col-span-2" placeholder="Address line" value={address.line1} onChange={(event) => updateAddress('line1', event.target.value)} />
             <input className="rounded-xl border border-slate-300 px-4 py-3 text-sm outline-none" placeholder="City" value={address.city} onChange={(event) => updateAddress('city', event.target.value)} />
             <input className="rounded-xl border border-slate-300 px-4 py-3 text-sm outline-none" placeholder="State" value={address.state} onChange={(event) => updateAddress('state', event.target.value)} />
