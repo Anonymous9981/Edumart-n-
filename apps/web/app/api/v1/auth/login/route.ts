@@ -6,6 +6,7 @@ import { createRouteClient } from '../../../../../lib/supabase/middleware';
 import { syncAppUserFromSupabaseUser } from '../../../../../lib/supabase/auth-route';
 
 export const runtime = 'nodejs';
+export const dynamic = 'force-dynamic';
 
 export async function POST(request: NextRequest) {
   try {

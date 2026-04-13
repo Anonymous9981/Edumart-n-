@@ -8,6 +8,7 @@ import { syncAppUserFromSupabaseUser } from '../../../../../lib/supabase/auth-ro
 import { buildAuthError } from '../../../../../lib/auth-service';
 
 export const runtime = 'nodejs';
+export const dynamic = 'force-dynamic';
 
 export async function POST(request: NextRequest) {
   try {

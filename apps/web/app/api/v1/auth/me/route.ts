@@ -5,6 +5,7 @@ import { createRouteClient } from '../../../../../lib/supabase/middleware';
 import { findAppUserForSupabaseUser } from '../../../../../lib/supabase/auth-route';
 
 export const runtime = 'nodejs';
+export const dynamic = 'force-dynamic';
 
 export async function GET(request: NextRequest) {
   try {

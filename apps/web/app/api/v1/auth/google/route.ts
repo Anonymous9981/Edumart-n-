@@ -11,6 +11,7 @@ function normalizeReturnTo(value: string | null) {
 }
 
 export const runtime = 'nodejs';
+export const dynamic = 'force-dynamic';
 
 export async function GET(request: NextRequest) {
   const returnTo = normalizeReturnTo(request.nextUrl.searchParams.get('returnTo'));

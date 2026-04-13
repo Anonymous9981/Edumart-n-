@@ -5,6 +5,7 @@ import { buildAuthError } from '../../../../../lib/auth-service';
 import { createRouteClient } from '../../../../../lib/supabase/middleware';
 
 export const runtime = 'nodejs';
+export const dynamic = 'force-dynamic';
 
 export async function POST(request: NextRequest) {
   try {
