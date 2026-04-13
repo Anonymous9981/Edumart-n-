@@ -6,6 +6,8 @@ import { ProductDetailActions } from '../../../components/ui/product-detail-acti
 import { ProductCard } from '../../../components/ui/product-card'
 import { getHomepageData } from '../../homepage-loader'
 
+export const dynamic = 'force-dynamic'
+
 const INR = new Intl.NumberFormat('en-IN', {
   style: 'currency',
   currency: 'INR',

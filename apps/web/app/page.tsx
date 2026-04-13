@@ -1,6 +1,8 @@
 import { HomepageClient } from '../components/homepage'
 import { getHomepageData } from './homepage-loader'
 
+export const dynamic = 'force-dynamic'
+
 export default async function Page() {
   const data = await getHomepageData()
 

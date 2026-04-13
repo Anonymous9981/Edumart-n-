@@ -22,7 +22,6 @@ export const metadata: Metadata = {
   metadataBase: new URL('https://edumart.com'),
   manifest: '/manifest.webmanifest',
   applicationName: 'Karom EduMart',
-  themeColor: '#0B3558',
   appleWebApp: {
     capable: true,
     statusBarStyle: 'default',
@@ -47,6 +46,10 @@ export const metadata: Metadata = {
     icon: '/brand/karom-edumart-mark.webp',
     apple: '/brand/karom-edumart-mark.webp',
   },
+}
+
+export const viewport = {
+  themeColor: '#0B3558',
 }
 
 export default function RootLayout({

@@ -1,6 +1,8 @@
 import { getHomepageData } from '../../../homepage-loader';
 import { successResponse } from '../../../../lib/response';
 
+export const dynamic = 'force-dynamic';
+
 function buildCategories(products: Array<{ category: string }>) {
   const unique = Array.from(new Set(products.map((product) => product.category)));
   return ['All', ...unique];

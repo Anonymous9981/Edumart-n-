@@ -3,6 +3,8 @@ import { ShopCatalog, type ShopCategory } from '../../components/shop-catalog'
 import { prisma } from '../../lib/prisma'
 import { getHomepageData } from '../homepage-loader'
 
+export const dynamic = 'force-dynamic'
+
 async function getShopCategories(): Promise<ShopCategory[]> {
   try {
     const categories = await prisma.category.findMany({

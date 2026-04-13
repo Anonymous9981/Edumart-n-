@@ -6,6 +6,7 @@ import { prisma } from '@/lib/prisma'
 import { requireAuthenticatedAppUser } from '@/lib/supabase/request-auth'
 
 export const runtime = 'nodejs'
+export const dynamic = 'force-dynamic'
 
 export async function GET(request: NextRequest) {
   const auth = await requireAuthenticatedAppUser(request, [UserRole.VENDOR, UserRole.ADMIN])
