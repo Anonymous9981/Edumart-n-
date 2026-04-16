@@ -32,6 +32,7 @@ const NAV_LINKS: Array<{ label: string; href: string }> = [
   { label: "Home", href: "/" },
   { label: "Shop", href: "/shop" },
   { label: "Services", href: "/services" },
+  { label: "Doctors", href: "/doctors" },
   { label: "Schools", href: "/schools" },
   { label: "Offers", href: "/offers" },
   { label: "About", href: "/about" },

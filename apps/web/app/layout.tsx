@@ -19,7 +19,7 @@ const spaceGrotesk = Space_Grotesk({
 
 export const metadata: Metadata = {
   title: 'Karom EduMart - Premium Education Marketplace',
-  description: 'Shop educational products, online classes, wellness partnerships, doctors, and school discovery in one marketplace.',
+  description: 'Shop educational products, wellness partnerships, doctors, and school discovery in one marketplace.',
   metadataBase: new URL('https://edumart.com'),
   manifest: '/manifest.webmanifest',
   applicationName: 'Karom EduMart',
@@ -34,13 +34,13 @@ export const metadata: Metadata = {
     url: 'https://edumart.com',
     siteName: 'EduMart',
     title: 'Karom EduMart - Premium Education Marketplace',
-    description: 'Shop educational products, online classes, wellness partnerships, doctors, and school discovery in one marketplace.',
+    description: 'Shop educational products, wellness partnerships, doctors, and school discovery in one marketplace.',
     images: [{ url: '/brand/karom-edumart-full.webp', width: 1024, height: 1024, alt: 'Karom EduMart social preview' }],
   },
   twitter: {
     card: 'summary_large_image',
     title: 'Karom EduMart - Premium Education Marketplace',
-    description: 'Shop educational products, online classes, wellness partnerships, doctors, and school discovery in one marketplace.',
+    description: 'Shop educational products, wellness partnerships, doctors, and school discovery in one marketplace.',
     images: ['/brand/karom-edumart-full.webp'],
   },
   icons: {

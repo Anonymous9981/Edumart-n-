@@ -1,6 +1,6 @@
 "use client"
 
-import { useMemo, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 import { usePathname, useRouter, useSearchParams } from "next/navigation"
 
 import type { HomepageProduct } from "../lib/homepage-types"
@@ -73,6 +73,31 @@ export function ShopCatalog({ products, categories }: ShopCatalogProps) {
     () => categories.find((category) => category.slug === activeCategorySlug) ?? categories[0],
     [activeCategorySlug, categories],
   )
+
+  useEffect(() => {
+    if (!categories.length) {
+      return
+    }
+
+    const validCategory = categories.some((category) => category.slug === activeCategorySlug)
+    if (!validCategory) {
+      setActiveCategorySlug(categories[0].slug)
+      setActiveSubcategorySlug('all')
+      return
+    }
+
+    const currentCategory = categories.find((category) => category.slug === activeCategorySlug)
+    if (!currentCategory) {
+      return
+    }
+
+    if (activeSubcategorySlug !== 'all') {
+      const validSubcategory = currentCategory.subcategories.some((subcategory) => subcategory.slug === activeSubcategorySlug)
+      if (!validSubcategory) {
+        setActiveSubcategorySlug('all')
+      }
+    }
+  }, [activeCategorySlug, activeSubcategorySlug, categories])
 
   const activeSubcategory = useMemo(
     () => activeCategory?.subcategories.find((subcategory) => subcategory.slug === activeSubcategorySlug),

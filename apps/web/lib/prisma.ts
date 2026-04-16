@@ -20,12 +20,12 @@ function resolveSupabaseDatabaseUrl() {
   }
 
   const projectRegion = process.env.SUPABASE_REGION?.trim() || 'ap-northeast-2'
-  const host = process.env.SUPABASE_POOLER_HOST?.trim() || `aws-0-${projectRegion}.pooler.supabase.com`
+  const host = process.env.SUPABASE_POOLER_HOST?.trim() || `${projectRef}.pooler.supabase.com`
   const port = process.env.SUPABASE_POOLER_PORT?.trim() || '6543'
   const user = process.env.SUPABASE_DB_USER?.trim() || `postgres.${projectRef}`
   const database = process.env.SUPABASE_DB_NAME?.trim() || 'postgres'
 
-  return `postgresql://${encodeURIComponent(user)}:${encodeURIComponent(password)}@${host}:${port}/${database}?pgbouncer=true&connection_limit=1&sslmode=require`
+  return `postgresql://${encodeURIComponent(user)}:${encodeURIComponent(password)}@${host}:${port}/${database}?sslmode=require`
 }
 
 function resolveDatabaseUrl() {

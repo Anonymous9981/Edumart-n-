@@ -4,7 +4,6 @@ import { UserRole } from '@edumart/shared';
 import { AccountStatus } from '@edumart/shared';
 import type { User as SupabaseUser } from '@supabase/supabase-js'
 
-import { getDashboardPath } from './lib/auth';
 import { isAuthPage, isProtectedPath } from './lib/rbac';
 import { findAppUserForSupabaseUser } from './lib/supabase/auth-route';
 import { applySupabaseCookies, createRequestClient } from './lib/supabase/middleware';
@@ -161,7 +160,7 @@ export async function middleware(request: NextRequest) {
   const role = dbRole ?? metadataRole
 
   if (isAuthPage(pathname) && role) {
-    return NextResponse.redirect(new URL(getDashboardPath(role), request.url));
+    return NextResponse.redirect(new URL('/dashboard/profile', request.url));
   }
 
   if (!isProtectedPath(pathname)) {

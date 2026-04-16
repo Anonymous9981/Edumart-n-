@@ -5,7 +5,6 @@ import { useRouter } from 'next/navigation'
 import { useMemo, useState } from 'react'
 
 import { AppHeader } from './app-header'
-import { MarketplaceEcosystem } from './marketplace-ecosystem'
 
 import type { HomepageAudience, HomepageData, HomepageProduct } from '../lib/homepage-types'
 import { useMarketplaceState } from '../lib/marketplace-state'
@@ -420,13 +419,6 @@ export function HomepageClient({ initialData }: { initialData: HomepageData }) {
             >
               Open school flow
             </button>
-            <button
-              type="button"
-              onClick={() => goToRoute('/services')}
-              className="rounded-full border border-slate-300 px-4 py-2 text-sm font-bold text-slate-700 transition hover:bg-slate-100"
-            >
-              Explore services hub
-            </button>
           </div>
         </div>
       </section>
@@ -456,8 +448,27 @@ export function HomepageClient({ initialData }: { initialData: HomepageData }) {
         />
       </section>
 
-      <section className="mx-auto max-w-7xl px-4 py-6 sm:px-6">
-        <MarketplaceEcosystem />
+      <section className="mx-auto max-w-7xl px-4 py-4 sm:px-6">
+        <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+          {[
+            ['Shop', '/shop', 'Books, stationery, uniforms and classroom products'],
+            ['Doctors', '/doctors', 'Find pediatricians and child specialists'],
+            ['Schools', '/schools', 'State, district, block and school-wise discovery'],
+            ['Wellness Assessment', '/shop?category=assessment-tools', 'Assessment and partnership product flows'],
+          ].map(([label, href, description]) => (
+            <button
+              key={label}
+              type="button"
+              onClick={() => goToRoute(href)}
+              className="rounded-2xl border border-slate-200 bg-white p-4 text-left shadow-sm transition hover:-translate-y-0.5 hover:shadow-md"
+            >
+              <p className="text-xs font-bold uppercase tracking-[0.16em] text-slate-500">View page</p>
+              <h3 className="mt-2 text-lg font-extrabold text-slate-900">{label}</h3>
+              <p className="mt-2 text-sm leading-6 text-slate-600">{description}</p>
+              <p className="mt-3 text-sm font-bold text-[#0B3558]">Open section →</p>
+            </button>
+          ))}
+        </div>
       </section>
 
       <section id="catalog" className="mx-auto max-w-7xl px-4 py-6 sm:px-6">
