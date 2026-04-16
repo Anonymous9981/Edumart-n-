@@ -4,12 +4,25 @@ import { errorResponse, successResponse } from '../../../../../lib/response';
 import { buildAuthError, getCurrentUserFromPayload } from '../../../../../lib/auth-service';
 import { createRouteClient } from '../../../../../lib/supabase/middleware';
 import { syncAppUserFromSupabaseUser } from '../../../../../lib/supabase/auth-route';
+import { applyRateLimit, getClientIp } from '../../../../../lib/rate-limit';
+import { AccountStatus } from '@edumart/shared';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
 export async function POST(request: NextRequest) {
   try {
+    const ip = getClientIp(request.headers)
+    const rate = applyRateLimit({
+      key: `auth:refresh:${ip}`,
+      maxRequests: 20,
+      windowMs: 60_000,
+    })
+
+    if (!rate.ok) {
+      return errorResponse('Too many refresh attempts. Please wait and try again.', 429)
+    }
+
     const { supabase, applyCookies } = createRouteClient(request);
     const { data, error } = await supabase.auth.refreshSession();
 
@@ -30,6 +43,11 @@ export async function POST(request: NextRequest) {
         request.headers.get('x-real-ip') ??
         null,
     })
+
+    if (!appUser || appUser.deletedAt || !appUser.isActive || appUser.accountStatus !== AccountStatus.ACTIVE) {
+      await supabase.auth.signOut()
+      return errorResponse('Account is not active. Please contact support.', 403)
+    }
 
     const response = successResponse({
       user: appUser ?? (await getCurrentUserFromPayload(data.user.id)),

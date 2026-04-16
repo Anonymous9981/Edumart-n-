@@ -5,7 +5,7 @@ import { UserRole } from '@edumart/shared';
 import { getDashboardPath } from '../../../../../../lib/auth';
 import { buildAuthError } from '../../../../../../lib/auth-service';
 import { createRouteClient } from '../../../../../../lib/supabase/middleware';
-import { syncAppUserFromSupabaseUser } from '../../../../../../lib/supabase/auth-route';
+import { findAppUserForSupabaseUser, syncAppUserFromSupabaseUser } from '../../../../../../lib/supabase/auth-route';
 
 function normalizeReturnTo(value: string | null) {
   if (!value || !value.startsWith('/') || value.startsWith('//')) {
@@ -41,10 +41,20 @@ export async function GET(request: NextRequest) {
     const user = data.user;
     const profile = user.user_metadata ?? {};
 
+    const existingAppUser = await findAppUserForSupabaseUser({
+      id: user.id,
+      email: user.email,
+    })
+
+    if (!existingAppUser) {
+      const response = NextResponse.redirect(new URL(`/select-role?returnTo=${encodeURIComponent(returnTo)}`, request.url));
+      return applyCookies(response);
+    }
+
     await syncAppUserFromSupabaseUser({
       id: user.id,
       email: user.email ?? '',
-      role: UserRole.CUSTOMER,
+      role: existingAppUser.role as UserRole,
       firstName: profile.first_name ?? profile.given_name ?? null,
       lastName: profile.last_name ?? profile.family_name ?? null,
       avatar: profile.avatar_url ?? profile.picture ?? null,

@@ -532,9 +532,9 @@ This project is licensed under the MIT License - see [LICENSE](./LICENSE) file.
 ## Logins 
 
  Default Credentials:
-   Admin: admin+1776057176869851@edumart.com / Admin@123456
-   Customer: customer1+1776057176869851@edumart.com / Customer@123456
-   Vendor: vendor1+1776057176869851@edumart.com / Vendor@123456
+  Admin: admin@edumart.com / Admin@123456
+  Customer: customer1@edumart.com / Customer@123456
+  Vendor: vendor1@edumart.com / Vendor@123456
 
 ## ✨ Made with ❤️ by the EduMart Team
 

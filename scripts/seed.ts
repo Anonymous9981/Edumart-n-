@@ -2,15 +2,148 @@
 
 import { PrismaClient } from '@prisma/client';
 import bcrypt from 'bcryptjs';
+import fs from 'fs';
+import path from 'path';
 
 const prisma = new PrismaClient();
 
-const seedSuffix =
-  process.env.SEED_EMAIL_SUFFIX?.trim() || `${Date.now()}${Math.floor(Math.random() * 1000)}`;
+function loadEnvFile(filePath: string) {
+  if (!fs.existsSync(filePath)) {
+    return;
+  }
+
+  const content = fs.readFileSync(filePath, 'utf8');
+  const lines = content.split(/\r?\n/);
+
+  for (const line of lines) {
+    const trimmed = line.trim();
+    if (!trimmed || trimmed.startsWith('#')) {
+      continue;
+    }
+
+    const eqIndex = trimmed.indexOf('=');
+    if (eqIndex <= 0) {
+      continue;
+    }
+
+    const key = trimmed.slice(0, eqIndex).trim();
+    if (!key || process.env[key] !== undefined) {
+      continue;
+    }
+
+    let value = trimmed.slice(eqIndex + 1).trim();
+    if ((value.startsWith('"') && value.endsWith('"')) || (value.startsWith("'") && value.endsWith("'"))) {
+      value = value.slice(1, -1);
+    }
+
+    process.env[key] = value;
+  }
+}
+
+const workspaceRoot = process.cwd();
+loadEnvFile(path.join(workspaceRoot, '.env'));
+loadEnvFile(path.join(workspaceRoot, '.env.local'));
+loadEnvFile(path.join(workspaceRoot, 'apps/web/.env'));
+loadEnvFile(path.join(workspaceRoot, 'apps/web/.env.local'));
+
+const seedSuffix = process.env.SEED_EMAIL_SUFFIX?.trim() ?? '';
 
 function withSeedSuffix(email: string): string {
+  const normalizedSuffix = seedSuffix.replace(/^\+/, '');
+  if (!normalizedSuffix) {
+    return email;
+  }
+
   const [local, domain] = email.split('@');
-  return `${local}+${seedSuffix}@${domain}`;
+  return `${local}+${normalizedSuffix}@${domain}`;
+}
+
+function getSupabaseAdminConfig() {
+  const projectUrl =
+    process.env.NEXT_PUBLIC_SUPABASE_URL?.trim() ||
+    process.env.SUPABASE_URL?.trim() ||
+    '';
+  const serviceRoleKey =
+    process.env.SUPABASE_SERVICE_ROLE_KEY?.trim() ||
+    process.env.SUPABASE_SECRET_KEY?.trim() ||
+    process.env.SUPABASE_SERVICE_KEY?.trim() ||
+    '';
+
+  if (!projectUrl || !serviceRoleKey) {
+    return null;
+  }
+
+  return { projectUrl, serviceRoleKey };
+}
+
+async function fetchSupabaseAdmin(
+  config: { projectUrl: string; serviceRoleKey: string },
+  path: string,
+  init?: RequestInit,
+) {
+  const response = await fetch(`${config.projectUrl}${path}`, {
+    ...init,
+    headers: {
+      'Content-Type': 'application/json',
+      apikey: config.serviceRoleKey,
+      Authorization: `Bearer ${config.serviceRoleKey}`,
+      ...(init?.headers || {}),
+    },
+  });
+
+  return response;
+}
+
+async function upsertSupabaseAuthUser(
+  config: { projectUrl: string; serviceRoleKey: string },
+  input: { email: string; password: string; role: 'ADMIN' | 'CUSTOMER' | 'VENDOR' },
+) {
+  const listResponse = await fetchSupabaseAdmin(config, '/auth/v1/admin/users?page=1&per_page=1000', {
+    method: 'GET',
+  });
+
+  if (!listResponse.ok) {
+    throw new Error(`Unable to list Supabase users (${listResponse.status})`);
+  }
+
+  const listPayload = (await listResponse.json()) as {
+    users?: Array<{ id: string; email?: string | null }>;
+  };
+
+  const existing = (listPayload.users || []).find(
+    (user) => user.email?.trim().toLowerCase() === input.email.trim().toLowerCase(),
+  );
+
+  const payload = {
+    email: input.email,
+    password: input.password,
+    email_confirm: true,
+    user_metadata: {
+      role: input.role.toLowerCase(),
+    },
+  };
+
+  if (existing) {
+    const updateResponse = await fetchSupabaseAdmin(config, `/auth/v1/admin/users/${existing.id}`, {
+      method: 'PUT',
+      body: JSON.stringify(payload),
+    });
+
+    if (!updateResponse.ok) {
+      throw new Error(`Unable to update Supabase auth user ${input.email} (${updateResponse.status})`);
+    }
+
+    return;
+  }
+
+  const createResponse = await fetchSupabaseAdmin(config, '/auth/v1/admin/users', {
+    method: 'POST',
+    body: JSON.stringify(payload),
+  });
+
+  if (!createResponse.ok) {
+    throw new Error(`Unable to create Supabase auth user ${input.email} (${createResponse.status})`);
+  }
 }
 
 async function hashPassword(password: string): Promise<string> {
@@ -131,6 +264,38 @@ async function main() {
       vendorProfile: true,
     },
   });
+
+  const supabaseAdmin = getSupabaseAdminConfig();
+  if (supabaseAdmin) {
+    await upsertSupabaseAuthUser(supabaseAdmin, {
+      email: withSeedSuffix('admin@edumart.com'),
+      password: 'Admin@123456',
+      role: 'ADMIN',
+    });
+    await upsertSupabaseAuthUser(supabaseAdmin, {
+      email: withSeedSuffix('customer1@edumart.com'),
+      password: 'Customer@123456',
+      role: 'CUSTOMER',
+    });
+    await upsertSupabaseAuthUser(supabaseAdmin, {
+      email: withSeedSuffix('customer2@edumart.com'),
+      password: 'Customer@123456',
+      role: 'CUSTOMER',
+    });
+    await upsertSupabaseAuthUser(supabaseAdmin, {
+      email: withSeedSuffix('vendor1@edumart.com'),
+      password: 'Vendor@123456',
+      role: 'VENDOR',
+    });
+    await upsertSupabaseAuthUser(supabaseAdmin, {
+      email: withSeedSuffix('vendor2@edumart.com'),
+      password: 'Vendor@123456',
+      role: 'VENDOR',
+    });
+    console.log('✅ Supabase Auth users synced for seeded credentials.');
+  } else {
+    console.log('ℹ️ Supabase admin env missing, skipped Supabase Auth user sync.');
+  }
 
   // Create categories
   const studentEssentialsCategory = await prisma.category.create({
@@ -540,7 +705,7 @@ async function main() {
   });
 
   console.log('✅ Database seeded successfully!');
-  console.log(`\n🔖 Seed email suffix: +${seedSuffix}`);
+  console.log(`\n🔖 Seed email suffix: ${seedSuffix ? `+${seedSuffix.replace(/^\+/, '')}` : '(none)'}`);
   console.log('\n📝 Default Credentials:');
   console.log(`   Admin: ${withSeedSuffix('admin@edumart.com')} / Admin@123456`);
   console.log(`   Customer: ${withSeedSuffix('customer1@edumart.com')} / Customer@123456`);

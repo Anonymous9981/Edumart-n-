@@ -119,7 +119,7 @@ export function WebRouteScreen({ path, title }: WebRouteScreenProps) {
   }
 
   return (
-    <SafeAreaView style={styles.safeArea} edges={['top', 'left', 'right']}>
+    <SafeAreaView style={styles.safeArea} edges={['top']}>
       <View style={styles.webWrap}>
         <WebView
           ref={webViewRef}
@@ -138,12 +138,7 @@ export function WebRouteScreen({ path, title }: WebRouteScreenProps) {
           allowsBackForwardNavigationGestures
           pullToRefreshEnabled
           startInLoadingState
-          renderLoading={() => (
-            <View style={styles.loaderWrap}>
-              <ActivityIndicator size="large" color={theme.colors.accent} />
-              <Text style={styles.loaderText}>Loading website experience...</Text>
-            </View>
-          )}
+          renderLoading={() => <WebSkeleton theme={theme} />}
           onNavigationStateChange={(event) => {
             setState({
               canGoBack: event.canGoBack,
@@ -176,6 +171,27 @@ export function WebRouteScreen({ path, title }: WebRouteScreenProps) {
   );
 }
 
+function WebSkeleton({ theme }: { theme: ReturnType<typeof useAppTheme>['theme'] }) {
+  const styles = getStyles(theme);
+
+  return (
+    <View style={styles.loaderWrap}>
+      <View style={styles.skeletonHero} />
+      <View style={styles.skeletonGrid}>
+        {Array.from({ length: 4 }).map((_, index) => (
+          <View key={index} style={styles.skeletonCard}>
+            <View style={styles.skeletonMedia} />
+            <View style={styles.skeletonLineShort} />
+            <View style={styles.skeletonLineLong} />
+            <View style={styles.skeletonAction} />
+          </View>
+        ))}
+      </View>
+      <Text style={styles.loaderText}>Loading products and cards...</Text>
+    </View>
+  );
+}
+
 const getStyles = (theme: ReturnType<typeof useAppTheme>['theme']) =>
   StyleSheet.create({
     safeArea: {
@@ -184,11 +200,11 @@ const getStyles = (theme: ReturnType<typeof useAppTheme>['theme']) =>
     },
     webWrap: {
       flex: 1,
-      marginHorizontal: 10,
-      marginTop: 8,
-      marginBottom: 10,
-      borderRadius: 22,
-      borderWidth: 1.2,
+      marginHorizontal: 0,
+      marginTop: 0,
+      marginBottom: 0,
+      borderRadius: 0,
+      borderWidth: 0,
       borderColor: theme.colors.border,
       overflow: 'hidden',
       backgroundColor: theme.colors.surface,
@@ -236,15 +252,61 @@ const getStyles = (theme: ReturnType<typeof useAppTheme>['theme']) =>
     },
     loaderWrap: {
       flex: 1,
-      alignItems: 'center',
-      justifyContent: 'center',
-      gap: 12,
+      paddingHorizontal: 12,
+      paddingTop: 12,
+      gap: 10,
       backgroundColor: theme.colors.bg,
+    },
+    skeletonHero: {
+      height: 110,
+      borderRadius: 16,
+      borderWidth: 1,
+      borderColor: theme.colors.border,
+      backgroundColor: theme.colors.surfaceRaised,
+    },
+    skeletonGrid: {
+      flexDirection: 'row',
+      flexWrap: 'wrap',
+      gap: 10,
+      justifyContent: 'space-between',
+    },
+    skeletonCard: {
+      width: '48%',
+      borderRadius: 14,
+      borderWidth: 1,
+      borderColor: theme.colors.border,
+      backgroundColor: theme.colors.surface,
+      padding: 8,
+      gap: 8,
+    },
+    skeletonMedia: {
+      height: 88,
+      borderRadius: 10,
+      backgroundColor: theme.colors.surfaceRaised,
+    },
+    skeletonLineShort: {
+      height: 8,
+      width: '55%',
+      borderRadius: 999,
+      backgroundColor: theme.colors.surfaceRaised,
+    },
+    skeletonLineLong: {
+      height: 10,
+      width: '90%',
+      borderRadius: 999,
+      backgroundColor: theme.colors.surfaceRaised,
+    },
+    skeletonAction: {
+      height: 28,
+      borderRadius: 8,
+      backgroundColor: theme.colors.surfaceRaised,
     },
     loaderText: {
       color: theme.colors.textMuted,
       fontSize: 13,
       fontWeight: '700',
+      textAlign: 'center',
+      marginTop: 6,
     },
     errorWrap: {
       marginHorizontal: 16,

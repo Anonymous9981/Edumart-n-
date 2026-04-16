@@ -15,12 +15,78 @@
   --brand-bg: radial-gradient(circle at 0% 0%, #dff7ee 0%, #f8fbff 45%, #fff7ee 100%);
 }
 
+html[data-theme='dark'] {
+  color-scheme: dark;
+  --brand-ink: #edf4ff;
+  --brand-muted: #a9bad1;
+  --brand-border: #233651;
+  --brand-surface: #0e1a2d;
+  --brand-surface-soft: #152338;
+  --brand-bg: radial-gradient(circle at 0% 0%, #0a1a2d 0%, #07101e 56%, #0e1f33 100%);
+}
+
 body {
   margin: 0;
   min-height: 100vh;
   font-family: var(--font-sans), sans-serif;
   background: var(--brand-bg);
   color: var(--brand-ink);
+}
+
+html[data-theme='dark'] .bg-white,
+html[data-theme='dark'] .bg-white\/90 {
+  background-color: var(--brand-surface) !important;
+}
+
+html[data-theme='dark'] .bg-slate-50,
+html[data-theme='dark'] .bg-slate-100 {
+  background-color: var(--brand-surface-soft) !important;
+}
+
+html[data-theme='dark'] .text-slate-900 {
+  color: var(--brand-ink) !important;
+}
+
+html[data-theme='dark'] .text-slate-700,
+html[data-theme='dark'] .text-slate-600,
+html[data-theme='dark'] .text-slate-500,
+html[data-theme='dark'] .text-slate-400 {
+  color: var(--brand-muted) !important;
+}
+
+html[data-theme='dark'] .border-slate-100,
+html[data-theme='dark'] .border-slate-200,
+html[data-theme='dark'] .border-slate-300 {
+  border-color: var(--brand-border) !important;
+}
+
+html[data-theme='dark'] .shadow-sm,
+html[data-theme='dark'] .shadow-lg,
+html[data-theme='dark'] .shadow-xl {
+  --tw-shadow-color: rgba(0, 0, 0, 0.44);
+}
+
+@keyframes brand-skeleton-wave {
+  0% {
+    background-position: 100% 0;
+  }
+
+  100% {
+    background-position: 0 0;
+  }
+}
+
+.brand-skeleton {
+  border-radius: 0.9rem;
+  background: linear-gradient(100deg, rgba(148, 163, 184, 0.15) 20%, rgba(255, 255, 255, 0.5) 45%, rgba(148, 163, 184, 0.15) 70%);
+  background-size: 240% 100%;
+  animation: brand-skeleton-wave 1.1s linear infinite;
+}
+
+html[data-theme='dark'] .brand-skeleton,
+html[data-app-shell='edumart-mobile'][data-native-theme='dark'] .brand-skeleton {
+  background: linear-gradient(100deg, rgba(71, 85, 105, 0.45) 20%, rgba(148, 163, 184, 0.2) 45%, rgba(71, 85, 105, 0.45) 70%);
+  background-size: 240% 100%;
 }
 
 h1,

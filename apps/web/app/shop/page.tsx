@@ -44,8 +44,8 @@ async function getShopCategories(): Promise<ShopCategory[]> {
 
 export default async function ShopPage() {
   const categories = await getShopCategories()
-  const data = await getHomepageData()
-  const featuredProducts = data.products.slice(0, 24)
+  const data = await getHomepageData({ take: 200 })
+  const featuredProducts = data.products
 
   return (
     <MarketingPageShell

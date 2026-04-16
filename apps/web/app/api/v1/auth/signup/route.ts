@@ -6,20 +6,40 @@ import { errorResponse, successResponse } from '../../../../../lib/response';
 import { createRouteClient } from '../../../../../lib/supabase/middleware';
 import { syncAppUserFromSupabaseUser } from '../../../../../lib/supabase/auth-route';
 import { buildAuthError } from '../../../../../lib/auth-service';
+import { ensureConfirmedAuthUser, isConfirmationDeliveryError } from '../../../../../lib/supabase/admin-auth';
+import { applyRateLimit, getClientIp } from '../../../../../lib/rate-limit';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
 export async function POST(request: NextRequest) {
   try {
+    const ip = getClientIp(request.headers)
+    const rate = applyRateLimit({
+      key: `auth:signup:${ip}`,
+      maxRequests: 6,
+      windowMs: 60_000,
+    })
+
+    if (!rate.ok) {
+      return errorResponse('Too many signup attempts. Please wait and try again.', 429)
+    }
+
     const body = await request.json();
     const { supabase, applyCookies } = createRouteClient(request);
 
-    const parsedRole = String(body?.role ?? UserRole.CUSTOMER).toUpperCase() as UserRole;
+    const roleCandidate = String(body?.role ?? UserRole.CUSTOMER).toUpperCase();
+    const parsedRole =
+      roleCandidate === UserRole.VENDOR || roleCandidate === UserRole.CUSTOMER
+        ? (roleCandidate as UserRole)
+        : UserRole.CUSTOMER;
     const normalizedRole = parsedRole.toLowerCase();
-    const { data, error } = await supabase.auth.signUp({
-      email: String(body?.email ?? '').trim().toLowerCase(),
-      password: String(body?.password ?? ''),
+    const email = String(body?.email ?? '').trim().toLowerCase();
+    const password = String(body?.password ?? '');
+
+    let { data, error } = await supabase.auth.signUp({
+      email,
+      password,
       options: {
         data: {
           role: normalizedRole,
@@ -29,6 +49,29 @@ export async function POST(request: NextRequest) {
         },
       },
     });
+
+    if ((error || !data.user) && isConfirmationDeliveryError(error?.message)) {
+      const ensured = await ensureConfirmedAuthUser({
+        email,
+        password,
+        metadata: {
+          role: normalizedRole,
+          first_name: String(body?.firstName ?? '').trim(),
+          last_name: String(body?.lastName ?? '').trim(),
+          phone: String(body?.phone ?? '').trim(),
+        },
+      });
+
+      if (!ensured) {
+        throw new Error(
+          'Email confirmation service is unavailable. Set SUPABASE_SERVICE_ROLE_KEY to auto-confirm users or enable SMTP in Supabase Auth.',
+        );
+      }
+
+      const retry = await supabase.auth.signInWithPassword({ email, password });
+      data = retry.data;
+      error = retry.error;
+    }
 
     if (error || !data.user) {
       throw error ?? new Error('Unable to create account');

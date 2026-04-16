@@ -8,8 +8,6 @@ on:
         required: true
         type: string
   push:
-    branches:
-      - main
     tags:
       - "mobile-v*"
 
@@ -17,8 +15,8 @@ permissions:
   contents: write
 
 jobs:
-  build-android-apk:
-    name: Build Android APK (Runner Local)
+  publish-github-release:
+    name: Publish GitHub Release from Tag
     runs-on: ubuntu-latest
 
     steps:
@@ -31,29 +29,6 @@ jobs:
         run: |
           git fetch --tags --force
           git checkout "refs/tags/${{ github.event.inputs.release_tag }}"
-
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v2
-        with:
-          version: 10.33.0
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-          cache: pnpm
-
-      - name: Setup Java
-        uses: actions/setup-java@v4
-        with:
-          distribution: temurin
-          java-version: '17'
-
-      - name: Setup Android SDK
-        uses: android-actions/setup-android@v3
-
-      - name: Install dependencies
-        run: pnpm install --filter ./apps/mobile... --frozen-lockfile
 
       - name: Resolve release tag
         id: meta
@@ -70,63 +45,6 @@ jobs:
             echo "latest_tag=mobile-latest" >> "$GITHUB_OUTPUT"
           fi
 
-      - name: Prebuild Android project
-        working-directory: apps/mobile
-        shell: bash
-        run: pnpm exec expo prebuild --platform android --non-interactive --clean
-
-      - name: Build signed release APK on runner
-        id: local_build
-        working-directory: apps/mobile
-        shell: bash
-        run: |
-          set -euo pipefail
-          STORE_FILE="$RUNNER_TEMP/edumart-release.keystore"
-          STORE_PASSWORD="edumart_store"
-          KEY_ALIAS="edumart_key"
-          KEY_PASSWORD="$STORE_PASSWORD"
-
-          keytool -genkeypair \
-            -v \
-            -storetype PKCS12 \
-            -keystore "$STORE_FILE" \
-            -storepass "$STORE_PASSWORD" \
-            -keypass "$KEY_PASSWORD" \
-            -alias "$KEY_ALIAS" \
-            -keyalg RSA \
-            -keysize 2048 \
-            -validity 10000 \
-            -dname "CN=EduMart, OU=Mobile, O=EduMart, L=Lucknow, S=UP, C=IN"
-
-          pushd android
-          chmod +x gradlew
-          ./gradlew --no-daemon :app:assembleRelease \
-            --stacktrace \
-            -Pandroid.injected.signing.store.file="$STORE_FILE" \
-            -Pandroid.injected.signing.store.password="$STORE_PASSWORD" \
-            -Pandroid.injected.signing.key.alias="$KEY_ALIAS" \
-            -Pandroid.injected.signing.key.password="$KEY_PASSWORD"
-          popd
-
-          APK_PATH="$GITHUB_WORKSPACE/apps/mobile/android/app/build/outputs/apk/release/app-release.apk"
-          if [ ! -f "$APK_PATH" ]; then
-            echo "Failed to locate built APK at $APK_PATH"
-            exit 1
-          fi
-          echo "apk_path=$APK_PATH" >> "$GITHUB_OUTPUT"
-
-      - name: Download APK artifact
-        shell: bash
-        run: |
-          mkdir -p release
-          cp "${{ steps.local_build.outputs.apk_path }}" "release/EduMart-${{ steps.meta.outputs.tag }}.apk"
-
-      - name: Upload build artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: EduMart-${{ steps.meta.outputs.tag }}
-          path: release/EduMart-${{ steps.meta.outputs.tag }}.apk
-
       - name: Create GitHub Release (versioned)
         uses: softprops/action-gh-release@v2
         with:
@@ -134,7 +52,9 @@ jobs:
           name: EduMart Mobile ${{ steps.meta.outputs.tag }}
           target_commitish: ${{ github.sha }}
           generate_release_notes: true
-          files: release/EduMart-${{ steps.meta.outputs.tag }}.apk
+          body: |
+            Release created from tag `${{ steps.meta.outputs.tag }}`.
+            Commit: `${{ github.sha }}`
 
       - name: Create/Update GitHub Release (latest)
         uses: softprops/action-gh-release@v2
@@ -146,6 +66,7 @@ jobs:
           make_latest: true
           generate_release_notes: false
           body: |
-            Auto-updated APK from commit `${{ github.sha }}`.
-            Built on GitHub Actions runner using local Gradle release build.
-          files: release/EduMart-${{ steps.meta.outputs.tag }}.apk
+            Auto-updated release pointer.
+            Source tag: `${{ steps.meta.outputs.tag }}`.
+            Commit: `${{ github.sha }}`
+

@@ -71,7 +71,9 @@ function toHomepageProduct(product: {
   }
 }
 
-export async function getHomepageData(): Promise<HomepageData> {
+export async function getHomepageData(options?: { take?: number }): Promise<HomepageData> {
+  const take = options?.take ?? 24
+
   try {
     const products = await prisma.product.findMany({
       where: {
@@ -107,7 +109,7 @@ export async function getHomepageData(): Promise<HomepageData> {
       orderBy: {
         createdAt: 'desc',
       },
-      take: 24,
+      take,
     })
     return {
       products: products.map(toHomepageProduct),

@@ -5,6 +5,7 @@ import { Plus_Jakarta_Sans, Space_Grotesk } from 'next/font/google'
 import { MarketplaceProvider } from '../lib/marketplace-state'
 import { SiteFeedbackProvider } from '../lib/site-feedback'
 import { PwaRegister } from '../components/pwa-register'
+import { WebThemeProvider } from '../components/web-theme-provider'
 
 const jakarta = Plus_Jakarta_Sans({
   subsets: ['latin'],
@@ -18,7 +19,7 @@ const spaceGrotesk = Space_Grotesk({
 
 export const metadata: Metadata = {
   title: 'Karom EduMart - Premium Education Marketplace',
-  description: 'Buy and sell educational products with ease. Secure, trusted, scalable.',
+  description: 'Shop educational products, online classes, wellness partnerships, doctors, and school discovery in one marketplace.',
   metadataBase: new URL('https://edumart.com'),
   manifest: '/manifest.webmanifest',
   applicationName: 'Karom EduMart',
@@ -33,13 +34,13 @@ export const metadata: Metadata = {
     url: 'https://edumart.com',
     siteName: 'EduMart',
     title: 'Karom EduMart - Premium Education Marketplace',
-    description: 'Buy and sell educational products with ease. Secure, trusted, scalable.',
+    description: 'Shop educational products, online classes, wellness partnerships, doctors, and school discovery in one marketplace.',
     images: [{ url: '/brand/karom-edumart-full.webp', width: 1024, height: 1024, alt: 'Karom EduMart social preview' }],
   },
   twitter: {
     card: 'summary_large_image',
     title: 'Karom EduMart - Premium Education Marketplace',
-    description: 'Buy and sell educational products with ease. Secure, trusted, scalable.',
+    description: 'Shop educational products, online classes, wellness partnerships, doctors, and school discovery in one marketplace.',
     images: ['/brand/karom-edumart-full.webp'],
   },
   icons: {
@@ -61,9 +62,11 @@ export default function RootLayout({
     <html lang="en">
       <body className={`${jakarta.variable} ${spaceGrotesk.variable}`}>
         <PwaRegister />
-        <MarketplaceProvider>
-          <SiteFeedbackProvider>{children}</SiteFeedbackProvider>
-        </MarketplaceProvider>
+        <WebThemeProvider>
+          <MarketplaceProvider>
+            <SiteFeedbackProvider>{children}</SiteFeedbackProvider>
+          </MarketplaceProvider>
+        </WebThemeProvider>
       </body>
     </html>
   )

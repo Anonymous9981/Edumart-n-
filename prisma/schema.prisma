@@ -20,6 +20,12 @@ enum UserRole {
   ADMIN
 }
 
+enum AccountStatus {
+  ACTIVE
+  SUSPENDED
+  PENDING
+}
+
 enum VendorStatus {
   PENDING_VERIFICATION
   APPROVED
@@ -75,6 +81,7 @@ model User {
   email         String    @unique @db.VarChar(255)
   passwordHash  String?   @db.Text // NULL for OAuth users
   role          UserRole  @default(CUSTOMER)
+  accountStatus AccountStatus @default(ACTIVE)
   firstName     String?   @db.VarChar(100)
   lastName      String?   @db.VarChar(100)
   avatar        String?   @db.Text
@@ -106,6 +113,7 @@ model User {
 
   @@index([email])
   @@index([role])
+  @@index([accountStatus])
   @@index([isActive])
   @@index([deletedAt])
 }

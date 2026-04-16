@@ -4,6 +4,12 @@ export enum UserRole {
   ADMIN = 'ADMIN',
 }
 
+export enum AccountStatus {
+  ACTIVE = 'ACTIVE',
+  SUSPENDED = 'SUSPENDED',
+  PENDING = 'PENDING',
+}
+
 export enum VendorStatus {
   PENDING_VERIFICATION = 'PENDING_VERIFICATION',
   APPROVED = 'APPROVED',

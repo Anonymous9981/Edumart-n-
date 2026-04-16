@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
 import { getDashboardPath } from '../../lib/auth';
+import { resolvePostLoginPath } from '../../lib/rbac';
 import { UserRole } from '@edumart/shared';
 import { loginSchema } from '@edumart/validation';
 
@@ -21,8 +22,8 @@ interface AuthSuccessPayload {
 }
 
 function normalizeReturnPath(value: string | null) {
-  if (!value || !value.startsWith('/') || value.startsWith('//')) {
-    return '/dashboard/customer';
+  if (!value || !value.startsWith('/') || value.startsWith('//') || value.startsWith('/login') || value.startsWith('/signup')) {
+    return '/dashboard/profile';
   }
 
   return value;
@@ -53,7 +54,7 @@ export default function LoginPage() {
   const [password, setPassword] = useState('');
   const [rememberMe, setRememberMe] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-  const [redirectPath, setRedirectPath] = useState('/dashboard/customer');
+  const [redirectPath, setRedirectPath] = useState('/dashboard/profile');
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
@@ -107,7 +108,8 @@ export default function LoginPage() {
         throw new Error('Unable to sign in');
       }
 
-      router.push(redirectPath !== '/dashboard/customer' ? redirectPath : getDashboardPath(role));
+      const nextPath = resolvePostLoginPath(redirectPath, role)
+      router.push(nextPath === '/dashboard/profile' ? '/dashboard/profile' : nextPath || getDashboardPath(role));
       router.refresh();
     } catch (submitError) {
       setError(submitError instanceof Error ? submitError.message : 'Unable to sign in');

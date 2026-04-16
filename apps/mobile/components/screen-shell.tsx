@@ -16,20 +16,20 @@ export function ScreenShell({ children, withScroll = true }: ScreenShellProps) {
 
   if (!withScroll) {
     return (
-      <SafeAreaView style={styles.safeArea} edges={['top', 'left', 'right']}>
+      <SafeAreaView style={styles.safeArea} edges={['top']}>
         <View style={styles.bgOrbTop} />
         <View style={styles.bgOrbBottom} />
-        <View style={[styles.container, { paddingTop: insets.top > 0 ? 8 : 14 }]}>{children}</View>
+        <View style={[styles.container, { paddingTop: 8 }]}>{children}</View>
       </SafeAreaView>
     );
   }
 
   return (
-    <SafeAreaView style={styles.safeArea} edges={['top', 'left', 'right']}>
+    <SafeAreaView style={styles.safeArea} edges={['top']}>
       <View style={styles.bgOrbTop} />
       <View style={styles.bgOrbBottom} />
       <ScrollView
-        contentContainerStyle={[styles.content, { paddingTop: insets.top > 0 ? 8 : 14, paddingBottom: 28 + insets.bottom }]}
+        contentContainerStyle={[styles.content, { paddingTop: 8, paddingBottom: 28 + insets.bottom }]}
         showsVerticalScrollIndicator={false}
       >
         {children}

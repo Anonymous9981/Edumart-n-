@@ -6,7 +6,7 @@ import { NextRequest, NextResponse } from 'next/server';
 
 import { UserRole } from '@edumart/shared';
 
-import { DASHBOARD_PATHS } from './rbac';
+import { ROLE_DASHBOARD_PATHS } from '../constants/roles';
 
 const ACCESS_TOKEN_COOKIE = 'edumart_access_token';
 const REFRESH_TOKEN_COOKIE = 'edumart_refresh_token';
@@ -228,7 +228,7 @@ export function getTokenFromRequest(request: NextRequest, cookieName = AUTH_COOK
 }
 
 export function getDashboardPath(role: UserRole) {
-  return DASHBOARD_PATHS[role];
+  return ROLE_DASHBOARD_PATHS[role];
 }
 
 export function createResetToken() {

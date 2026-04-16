@@ -28,6 +28,7 @@
     "db:push": "cd apps/web && npx prisma db push",
     "db:migrate": "cd apps/web && npx prisma migrate dev",
     "db:seed": "cd apps/web && npx tsx ../../scripts/seed.ts",
+    "db:sync:mobile-products": "npx tsx scripts/sync-mobile-products-to-supabase.ts",
     "db:studio": "cd apps/web && npx prisma studio",
     "clean": "turbo run clean && rm -rf node_modules",
     "docker:build": "docker-compose -f docker/docker-compose.yml build",

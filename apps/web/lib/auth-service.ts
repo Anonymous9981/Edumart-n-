@@ -1,6 +1,6 @@
 import { randomUUID } from 'crypto';
 
-import { UserRole, VendorStatus } from '@edumart/shared';
+import { AccountStatus, UserRole, VendorStatus } from '@edumart/shared';
 import {
   forgotPasswordSchema,
   loginSchema,
@@ -38,6 +38,7 @@ export interface PublicUser {
   id: string;
   email: string;
   role: UserRole;
+  accountStatus: AccountStatus;
   firstName: string | null;
   lastName: string | null;
   avatar: string | null;
@@ -51,6 +52,7 @@ function toPublicUser(user: {
   id: string;
   email: string;
   role: string;
+  accountStatus: string;
   firstName: string | null;
   lastName: string | null;
   avatar: string | null;
@@ -79,6 +81,7 @@ function toPublicUser(user: {
     id: user.id,
     email: user.email,
     role: user.role as UserRole,
+    accountStatus: user.accountStatus as AccountStatus,
     firstName: user.firstName,
     lastName: user.lastName,
     avatar: user.avatar,
@@ -131,6 +134,7 @@ export async function registerUser(input: unknown, meta: AuthRequestMeta) {
         lastName: parsed.lastName,
         phone: parsed.phone,
         role: parsed.role,
+        accountStatus: AccountStatus.ACTIVE,
         isEmailVerified: false,
         vendorProfile:
           parsed.role === 'VENDOR'
@@ -187,6 +191,10 @@ export async function loginUser(input: unknown, meta: AuthRequestMeta) {
     throw new Error('Account is suspended or inactive');
   }
 
+  if (user.accountStatus !== AccountStatus.ACTIVE) {
+    throw new Error('Account is not active');
+  }
+
   const isPasswordValid = await verifyPassword(parsed.password, user.passwordHash);
   if (!isPasswordValid) {
     throw new Error('Invalid email or password');
@@ -231,6 +239,10 @@ export async function signInOAuthUser(input: OAuthProfileInput, meta: AuthReques
     throw new Error('Account is suspended or inactive');
   }
 
+  if (existingUser && existingUser.accountStatus !== AccountStatus.ACTIVE) {
+    throw new Error('Account is not active');
+  }
+
   const user = existingUser
     ? await prisma.user.update({
         where: { id: existingUser.id },
@@ -249,6 +261,7 @@ export async function signInOAuthUser(input: OAuthProfileInput, meta: AuthReques
           email,
           passwordHash: null,
           role: input.role ?? UserRole.CUSTOMER,
+          accountStatus: AccountStatus.ACTIVE,
           firstName: input.firstName?.trim() ?? null,
           lastName: input.lastName?.trim() ?? null,
           avatar: input.avatar ?? null,

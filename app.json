@@ -1,0 +1,12 @@
+{
+  "expo": {
+    "extra": {
+      "eas": {
+        "projectId": "731247d8-4d42-4acf-b658-361e92a36d5a"
+      }
+    },
+    "android": {
+      "package": "com.kacpl.edumart"
+    }
+  }
+}
