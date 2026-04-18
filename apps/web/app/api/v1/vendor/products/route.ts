@@ -1,6 +1,7 @@
 import { UserRole } from '@edumart/shared'
 import { NextRequest } from 'next/server'
 
+import { hasPermission, toPermissionSubject } from '@/lib/authorization/policy'
 import { errorResponse, successResponse } from '@/lib/response'
 import { prisma } from '@/lib/prisma'
 import { requireAuthenticatedAppUser } from '@/lib/supabase/request-auth'
@@ -18,9 +19,24 @@ export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
 
 export async function GET(request: NextRequest) {
-  const auth = await requireAuthenticatedAppUser(request, [UserRole.VENDOR, UserRole.ADMIN])
+  const auth = await requireAuthenticatedAppUser(request)
   if (!auth.user) {
     return errorResponse(auth.message, auth.status)
+  }
+
+  const subject = toPermissionSubject(auth.user)
+
+  if (
+    !hasPermission({
+      subject,
+      action: 'product.list',
+      resource: {
+        type: 'product',
+        vendorId: auth.user.vendorProfileId,
+      },
+    })
+  ) {
+    return errorResponse('Forbidden', 403)
   }
 
   try {
@@ -63,14 +79,12 @@ export async function GET(request: NextRequest) {
 }
 
 export async function POST(request: NextRequest) {
-  const auth = await requireAuthenticatedAppUser(request, [UserRole.VENDOR, UserRole.ADMIN])
+  const auth = await requireAuthenticatedAppUser(request)
   if (!auth.user) {
     return errorResponse(auth.message, auth.status)
   }
 
-  if (auth.user.role === UserRole.VENDOR && !auth.user.vendorProfileId) {
-    return errorResponse('Vendor profile not found', 400)
-  }
+  const subject = toPermissionSubject(auth.user)
 
   try {
     const body = await request.json()
@@ -98,8 +112,17 @@ export async function POST(request: NextRequest) {
         ? String(body?.vendorId ?? '').trim()
         : (auth.user.vendorProfileId as string)
 
-    if (!vendorId) {
-      return errorResponse('vendorId is required for admin product creation', 400)
+    if (
+      !hasPermission({
+        subject,
+        action: 'product.create',
+        resource: {
+          type: 'product',
+          vendorId: vendorId || null,
+        },
+      })
+    ) {
+      return errorResponse('Forbidden', 403)
     }
 
     const product = await prisma.product.create({

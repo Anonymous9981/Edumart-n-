@@ -4,7 +4,7 @@ import { UserRole } from '@edumart/shared';
 import { AccountStatus } from '@edumart/shared';
 import type { User as SupabaseUser } from '@supabase/supabase-js'
 
-import { isAuthPage, isProtectedPath } from './lib/rbac';
+import { isAuthPage, isPathAllowedForRole, isProtectedPath } from './lib/rbac';
 import { findAppUserForSupabaseUser } from './lib/supabase/auth-route';
 import { applySupabaseCookies, createRequestClient } from './lib/supabase/middleware';
 
@@ -91,22 +91,6 @@ async function getDbRoleFromUser(user: SupabaseUser | null) {
   }
 }
 
-function isRoleAllowedOnPath(pathname: string, role: UserRole) {
-  if (pathname.startsWith('/dashboard/admin')) {
-    return role === UserRole.ADMIN
-  }
-
-  if (pathname.startsWith('/dashboard/vendor')) {
-    return role === UserRole.VENDOR
-  }
-
-  if (pathname.startsWith('/dashboard/customer')) {
-    return role === UserRole.CUSTOMER
-  }
-
-  return true
-}
-
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
@@ -173,7 +157,7 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(loginUrl);
   }
 
-  if (!isRoleAllowedOnPath(pathname, role)) {
+  if (!isPathAllowedForRole(pathname, role)) {
     const unauthorizedUrl = new URL('/unauthorized', request.url)
     unauthorizedUrl.searchParams.set('from', requestedPath)
     return NextResponse.redirect(unauthorizedUrl);

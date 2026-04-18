@@ -1,5 +1,6 @@
 import { UserRole } from '@edumart/shared';
 import { ROLE_DASHBOARD_PATHS } from '../constants/roles';
+import { canAccessDashboardPath } from './authorization/policy'
 
 export const DASHBOARD_PATHS = ROLE_DASHBOARD_PATHS;
 
@@ -35,19 +36,14 @@ function getPathname(pathOrUrl: string) {
 export function isPathAllowedForRole(pathOrUrl: string, role: UserRole) {
   const pathname = getPathname(pathOrUrl)
 
-  if (pathname.startsWith('/dashboard/admin')) {
-    return role === UserRole.ADMIN
-  }
-
-  if (pathname.startsWith('/dashboard/vendor')) {
-    return role === UserRole.VENDOR
-  }
-
-  if (pathname.startsWith('/dashboard/customer')) {
-    return role === UserRole.CUSTOMER
-  }
-
-  return true
+  return canAccessDashboardPath(
+    {
+      id: 'anonymous',
+      role,
+      vendorProfileId: null,
+    },
+    pathname,
+  )
 }
 
 export function resolvePostLoginPath(fromValue: string | null | undefined, role: UserRole) {
