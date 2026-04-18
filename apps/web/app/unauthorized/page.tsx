@@ -37,8 +37,9 @@ function normalizeRequestedPage(value: string) {
   return current
 }
 
-export default function UnauthorizedPage({ searchParams }: { searchParams?: { from?: string } }) {
-  const returnPath = normalizeReturnPath(searchParams?.from)
+export default async function UnauthorizedPage({ searchParams }: { searchParams?: Promise<{ from?: string }> }) {
+  const params = await searchParams
+  const returnPath = normalizeReturnPath(params?.from)
   const requestedPage = normalizeRequestedPage(returnPath)
   const loginHref = `/login?from=${encodeURIComponent(returnPath)}`
   const signupHref = `/signup?from=${encodeURIComponent(returnPath)}`

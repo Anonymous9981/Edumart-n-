@@ -31,9 +31,10 @@ function getOfferSummary(product: Awaited<ReturnType<typeof getHomepageData>>['p
   }
 }
 
-export default async function ProductDetailPage({ params }: { params: { slug: string } }) {
+export default async function ProductDetailPage({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params
   const data = await getHomepageData()
-  const product = data.products.find((item) => item.slug === params.slug)
+  const product = data.products.find((item) => item.slug === slug)
 
   if (!product) {
     notFound()

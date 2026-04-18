@@ -12,8 +12,9 @@ function normalizeReturnPath(value: string | undefined) {
   return value
 }
 
-export default function AccountInactivePage({ searchParams }: { searchParams?: { from?: string } }) {
-  const returnPath = normalizeReturnPath(searchParams?.from)
+export default async function AccountInactivePage({ searchParams }: { searchParams?: Promise<{ from?: string }> }) {
+  const params = await searchParams
+  const returnPath = normalizeReturnPath(params?.from)
   const loginHref = `/login?from=${encodeURIComponent(returnPath)}`
 
   return (
