@@ -67,14 +67,12 @@ function getJwtSecret(name: string) {
 }
 
 function getAccessTokenExpiry() {
-  return process.env.JWT_EXPIRES_IN ?? ;
+  return process.env.JWT_EXPIRES_IN ?? '1h';
 }
 
 function getRefreshTokenExpiry(rememberMe = false) {
-  if (rememberMe) {
-    return process.env.JWT_REFRESH_EXPIRES_IN ?? ;
-  }
-  return process.env.JWT_REFRESH_EXPIRES_IN ?? ;
+  const refreshExpiry = process.env.JWT_REFRESH_EXPIRES_IN;
+  return rememberMe ? refreshExpiry ?? '30d' : refreshExpiry ?? '7d';
 }
 
 export function hashToken(token: string) {
