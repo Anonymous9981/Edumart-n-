@@ -2,6 +2,7 @@ import { NextRequest } from 'next/server';
 
 import { UserRole } from '@edumart/shared';
 import { errorResponse, successResponse } from '../../../../../lib/response';
+import { enforceApiRateLimit } from '../../../../../lib/api-rate-limit';
 import { createRouteClient } from '../../../../../lib/supabase/middleware';
 import { findAppUserForSupabaseUser } from '../../../../../lib/supabase/auth-route';
 import { AccountStatus } from '@edumart/shared';
@@ -36,6 +37,11 @@ function normalizeAccountStatus(value: unknown): AccountStatus {
 }
 
 export async function GET(request: NextRequest) {
+  const limited = enforceApiRateLimit(request, { scope: 'auth:me', maxRequests: 90, windowMs: 60_000 })
+  if (limited) {
+    return limited
+  }
+
   try {
     const { supabase } = createRouteClient(request)
     const { data, error } = await supabase.auth.getUser()

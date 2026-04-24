@@ -6,30 +6,28 @@
   color-scheme: light;
   --brand-navy: #0b3558;
   --brand-teal: #00a67e;
-  --brand-amber: #ff8a24;
-  --brand-ink: #0f172a;
-  --brand-muted: #475569;
-  --brand-border: #dbe4ee;
-  --brand-surface: #ffffff;
-  --brand-surface-soft: #f4f8fc;
-  --brand-bg: radial-gradient(circle at 0% 0%, #dff7ee 0%, #f8fbff 45%, #fff7ee 100%);
+  --brand-amber: #ffc107;
+  --brand-ink: #212121;
+  --brand-muted: #757575;
+  --brand-border: #e0e0e0;
+  --brand-surface: radial-gradient(circle at 0% 0%, #e0f2f1 0%, #f5f5f5 45%, #fff8e1 100%);
+  --brand-surface-soft: #f9f9f9;
 }
 
 html[data-theme='dark'] {
   color-scheme: dark;
-  --brand-ink: #edf4ff;
-  --brand-muted: #a9bad1;
-  --brand-border: #233651;
-  --brand-surface: #0e1a2d;
-  --brand-surface-soft: #152338;
-  --brand-bg: radial-gradient(circle at 0% 0%, #0a1a2d 0%, #07101e 56%, #0e1f33 100%);
+  --brand-ink: #ffffff;
+  --brand-muted: #bdbdbd;
+  --brand-border: #424242;
+  --brand-surface: radial-gradient(circle at 0% 0%, #121212 0%, #1e1e1e 56%, #212121 100%);
+  --brand-surface-soft: #373737;
 }
 
 body {
   margin: 0;
   min-height: 100vh;
   font-family: var(--font-sans), sans-serif;
-  background: var(--brand-bg);
+  background: var(--brand-surface);
   color: var(--brand-ink);
 }
 
@@ -39,7 +37,8 @@ html[data-theme='dark'] .bg-white\/90 {
 }
 
 html[data-theme='dark'] .bg-slate-50,
-html[data-theme='dark'] .bg-slate-100 {
+html[data-theme='dark'] .bg-slate-100,
+html[data-theme='dark'] .bg-slate-200 {
   background-color: var(--brand-surface-soft) !important;
 }
 
@@ -50,14 +49,37 @@ html[data-theme='dark'] .text-slate-900 {
 html[data-theme='dark'] .text-slate-700,
 html[data-theme='dark'] .text-slate-600,
 html[data-theme='dark'] .text-slate-500,
-html[data-theme='dark'] .text-slate-400 {
+html[data-theme='dark'] .text-slate-400,
+html[data-theme='dark'] .text-slate-300,
+html[data-theme='dark'] .text-slate-200 {
   color: var(--brand-muted) !important;
+}
+
+html[data-theme='dark'] .text-white {
+  color: var(--brand-ink) !important;
 }
 
 html[data-theme='dark'] .border-slate-100,
 html[data-theme='dark'] .border-slate-200,
 html[data-theme='dark'] .border-slate-300 {
   border-color: var(--brand-border) !important;
+}
+
+html[data-theme='dark'] .border-b {
+  border-color: var(--brand-border) !important;
+}
+
+html[data-theme='dark'] .border-amber-200 {
+  border-color: var(--brand-border) !important;
+}
+
+html[data-theme='dark'] .bg-amber-300 {
+  background-color: var(--brand-surface-soft) !important;
+  color: var(--brand-ink) !important;
+}
+
+html[data-theme='dark'] .bg-slate-900 {
+  background-color: #0B3558 !important;
 }
 
 html[data-theme='dark'] .shadow-sm,

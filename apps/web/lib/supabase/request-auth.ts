@@ -36,7 +36,7 @@ export async function getAuthenticatedAppUser(request: NextRequest): Promise<Aut
     appUser = await prisma.user.findFirst({
       where: {
         OR: [
-          { id: data.user.id },
+          { supabaseAuthId: data.user.id },
           ...(email ? [{ email }] : []),
         ],
       },

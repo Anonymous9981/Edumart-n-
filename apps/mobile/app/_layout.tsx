@@ -107,7 +107,11 @@ function RootTabs() {
           style={[styles.themeToggle, { top: Math.max(insets.top + 4, 10) }]}
           onPress={toggleTheme}
         >
-          <Text style={styles.themeToggleText}>{mode === 'dark' ? 'Light' : 'Dark'}</Text>
+          <Ionicons
+            name={mode === 'dark' ? 'sunny-outline' : 'moon-outline'}
+            size={24}
+            color={theme.colors.text}
+          />
         </Pressable>
       </View>
     </>
@@ -133,12 +137,5 @@ const getStyles = (theme: ReturnType<typeof useAppTheme>['theme']) =>
       shadowRadius: 8,
       shadowOffset: { width: 0, height: 4 },
       elevation: 6,
-    },
-    themeToggleText: {
-      color: theme.colors.text,
-      fontSize: 11,
-      fontWeight: '900',
-      letterSpacing: 0.4,
-      textTransform: 'uppercase',
     },
   });

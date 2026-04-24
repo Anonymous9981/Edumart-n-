@@ -1,6 +1,7 @@
 import { NextRequest } from 'next/server'
 
 import { prisma } from '../../../../lib/prisma'
+import { enforceApiRateLimit } from '../../../../lib/api-rate-limit'
 import { errorResponse, successResponse } from '../../../../lib/response'
 import { requireAuthenticatedAppUser } from '../../../../lib/supabase/request-auth'
 
@@ -27,6 +28,11 @@ interface CreateOrderPayload {
 }
 
 export async function POST(request: NextRequest) {
+  const limited = enforceApiRateLimit(request, { scope: 'orders:create', maxRequests: 25, windowMs: 60_000 })
+  if (limited) {
+    return limited
+  }
+
   const auth = await requireAuthenticatedAppUser(request)
   if (!auth.user) {
     return errorResponse(auth.message, auth.status)

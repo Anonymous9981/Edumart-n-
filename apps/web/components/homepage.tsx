@@ -207,7 +207,7 @@ function ProductCard({ product }: { product: HomepageProduct }) {
 
         <div className="mt-3 flex items-center gap-2 text-sm">
           <span className="rounded bg-amber-300 px-2 py-0.5 font-bold text-slate-900">{product.rating.toFixed(1)} ★</span>
-          <span className="text-slate-600">{product.reviews.toLocaleString('en-IN')} reviews</span>
+          <span className="text-slate-600 dark:text-slate-300">{product.reviews.toLocaleString('en-IN')} reviews</span>
         </div>
 
         <div className="mt-3 flex flex-wrap items-end gap-2">
@@ -464,8 +464,8 @@ export function HomepageClient({ initialData }: { initialData: HomepageData }) {
             >
               <p className="text-xs font-bold uppercase tracking-[0.16em] text-slate-500">View page</p>
               <h3 className="mt-2 text-lg font-extrabold text-slate-900">{label}</h3>
-              <p className="mt-2 text-sm leading-6 text-slate-600">{description}</p>
-              <p className="mt-3 text-sm font-bold text-[#0B3558]">Open section →</p>
+              <p className="mt-2 text-sm leading-6 text-slate-600 dark:text-slate-300">{description}</p>
+              <p className="mt-3 text-sm font-bold text-amber-600 dark:text-amber-400">Open section →</p>
             </button>
           ))}
         </div>
@@ -477,7 +477,7 @@ export function HomepageClient({ initialData }: { initialData: HomepageData }) {
             <div>
               <p className="text-xs font-bold uppercase tracking-[0.2em] text-slate-500">Marketplace feed</p>
               <h2 className="mt-1 text-2xl font-extrabold text-slate-900 sm:text-3xl">Top picks and live deals first</h2>
-              <p className="mt-2 text-sm text-slate-600">Product-first layout with fast category and subcategory jumps.</p>
+              <p className="mt-2 text-sm text-slate-600 dark:text-slate-300">Product-first layout with fast category and subcategory jumps.</p>
             </div>
             <div className="flex flex-wrap items-center gap-2 text-xs font-semibold sm:text-sm">
               <span className="rounded-full bg-blue-50 px-3 py-2 text-blue-700">Viewing {activeAudienceLabel}</span>
@@ -563,7 +563,7 @@ export function HomepageClient({ initialData }: { initialData: HomepageData }) {
           {visibleProducts.length ? (
             visibleProducts.map((product) => <ProductCard key={product.id} product={product} />)
           ) : (
-            <div className="rounded-2xl border border-dashed border-slate-300 bg-white p-6 text-sm text-slate-600 sm:col-span-2 xl:col-span-3">
+            <div className="rounded-2xl border border-dashed border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 p-6 text-sm text-slate-600 dark:text-slate-300 sm:col-span-2 xl:col-span-3">
               No products match the current filter. Switch audience or category to see more items.
             </div>
           )}
@@ -626,7 +626,7 @@ export function HomepageClient({ initialData }: { initialData: HomepageData }) {
               <h2 className="inline-flex rounded-xl bg-emerald-50 px-3 py-1 text-2xl font-extrabold text-emerald-700 sm:text-3xl">
                 Featured Stores
               </h2>
-              <p className="mt-2 text-sm text-slate-600">The most visible vendors based on the current product catalog.</p>
+              <p className="mt-2 text-sm text-slate-600 dark:text-slate-300">The most visible vendors based on the current product catalog.</p>
             </div>
             <button
               type="button"

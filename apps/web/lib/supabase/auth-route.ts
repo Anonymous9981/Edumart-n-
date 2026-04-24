@@ -62,13 +62,13 @@ export async function findAppUserForSupabaseUser(input: { id?: string | null; em
 
   try {
     if (input.id) {
-      const byId = await prisma.user.findUnique({
-        where: { id: input.id },
+      const bySupabaseAuthId = await prisma.user.findUnique({
+        where: { supabaseAuthId: input.id },
         include: { vendorProfile: true },
       })
 
-      if (byId) {
-        return byId
+      if (bySupabaseAuthId) {
+        return bySupabaseAuthId
       }
     }
 
@@ -104,26 +104,54 @@ export async function syncAppUserFromSupabaseUser(input: {
   const normalizedEmail = input.email.trim().toLowerCase()
 
   try {
-    const existingById = await prisma.user.findUnique({
-      where: { id: input.id },
+    const existingBySupabaseAuthId = await prisma.user.findUnique({
+      where: { supabaseAuthId: input.id },
       include: { vendorProfile: true },
     })
     const existingByEmail = await prisma.user.findUnique({
       where: { email: normalizedEmail },
       include: { vendorProfile: true },
     })
-    const existingUser = existingById ?? existingByEmail
+    const existingUser = existingBySupabaseAuthId ?? existingByEmail
 
     const role = input.role ?? (existingUser?.role as UserRole | undefined) ?? UserRole.CUSTOMER
     const isVendor = role === UserRole.VENDOR
     const isEmailVerified = input.isEmailVerified ?? existingUser?.isEmailVerified ?? true
 
-    const userId = existingUser?.id ?? input.id
+    let userId = existingUser?.id ?? null
+
+    if (!existingUser) {
+      const created = await prisma.user.create({
+        data: {
+          email: normalizedEmail,
+          passwordHash: null,
+          role,
+          accountStatus: AccountStatus.ACTIVE,
+          firstName: input.firstName ?? null,
+          lastName: input.lastName ?? null,
+          avatar: input.avatar ?? null,
+          phone: input.phone ?? null,
+          isActive: true,
+          isEmailVerified,
+          lastLoginAt: new Date(),
+          lastLoginIP: input.ipAddress ?? undefined,
+          supabaseAuthId: input.id,
+        },
+        select: { id: true },
+      })
+
+      userId = created.id
+    }
+
+    if (!userId) {
+      throw new Error('Unable to resolve app user id for Supabase sync')
+    }
 
     await prisma.user.upsert({
       where: { id: userId },
       create: {
         id: userId,
+        supabaseAuthId: input.id,
         email: normalizedEmail,
         passwordHash: null,
         role,
@@ -138,6 +166,7 @@ export async function syncAppUserFromSupabaseUser(input: {
         lastLoginIP: input.ipAddress ?? undefined,
       },
       update: {
+        supabaseAuthId: input.id,
         email: normalizedEmail,
         role,
         accountStatus: existingUser?.accountStatus ?? AccountStatus.ACTIVE,

@@ -69,7 +69,7 @@ export function MarketingPageShell({
   children,
 }: MarketingPageShellProps) {
   return (
-    <main className="min-h-screen bg-[radial-gradient(circle_at_top_left,_rgba(214,248,236,0.95)_0%,_rgba(248,251,255,1)_40%,_rgba(255,247,237,1)_100%)] text-slate-900">
+    <main className="min-h-screen bg-[radial-gradient(circle_at_top_left,_rgba(214,248,236,0.95)_0%,_rgba(248,251,255,1)_40%,_rgba(255,247,237,1)_100%)] dark:bg-[radial-gradient(circle_at_0%_0%,_#121212_0%,_#1e1e1e_56%,_#212121_100%)] text-slate-900 dark:text-white">
       <AppHeader />
 
       <section className="mx-auto max-w-7xl px-4 pb-8 pt-6 sm:px-6 lg:pt-10">

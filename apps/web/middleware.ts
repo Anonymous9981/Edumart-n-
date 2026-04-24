@@ -7,6 +7,7 @@ import type { User as SupabaseUser } from '@supabase/supabase-js'
 import { isAuthPage, isPathAllowedForRole, isProtectedPath } from './lib/rbac';
 import { findAppUserForSupabaseUser } from './lib/supabase/auth-route';
 import { applySupabaseCookies, createRequestClient } from './lib/supabase/middleware';
+import { applyRateLimit, getClientIp } from './lib/rate-limit';
 
 const PUBLIC_FILE = /\.(.*)$/;
 
@@ -94,7 +95,42 @@ async function getDbRoleFromUser(user: SupabaseUser | null) {
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  if (pathname.startsWith('/_next') || pathname.startsWith('/api') || PUBLIC_FILE.test(pathname)) {
+  if (pathname.startsWith('/api')) {
+    if (pathname === '/api/v1/health') {
+      return NextResponse.next();
+    }
+
+    const ip = getClientIp(request.headers)
+    const maxRequests = Number.parseInt(process.env.RATE_LIMIT_API_MAX_REQUESTS ?? '120', 10)
+    const windowMs = Number.parseInt(process.env.RATE_LIMIT_API_WINDOW_MS ?? '60000', 10)
+    const rate = applyRateLimit({
+      key: `edge:api:${ip}`,
+      maxRequests: Number.isFinite(maxRequests) && maxRequests > 0 ? maxRequests : 120,
+      windowMs: Number.isFinite(windowMs) && windowMs > 0 ? windowMs : 60_000,
+    })
+
+    if (!rate.ok) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: {
+            code: 'RATE_LIMIT_EXCEEDED',
+            message: 'Too many requests. Please try again shortly.',
+          },
+        },
+        {
+          status: 429,
+          headers: {
+            'Retry-After': String(Math.ceil(rate.retryAfterMs / 1000)),
+          },
+        },
+      )
+    }
+
+    return NextResponse.next()
+  }
+
+  if (pathname.startsWith('/_next') || PUBLIC_FILE.test(pathname)) {
     return NextResponse.next();
   }
 

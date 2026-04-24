@@ -123,26 +123,26 @@ export function ProductCard({
           <div>
             <div className="flex flex-wrap items-start justify-between gap-3">
               <div>
-                <p className="text-xs font-bold uppercase tracking-[0.15em] text-slate-500">{product.vendor}</p>
-                <Link href={detailHref ?? `/product/${product.slug}`} className="mt-2 block text-lg font-extrabold leading-tight text-slate-900 transition hover:text-[#0B3558]">
+                <p className="text-xs font-bold uppercase tracking-[0.15em] text-slate-500 dark:text-slate-400">{product.vendor}</p>
+                <Link href={detailHref ?? `/product/${product.slug}`} className="mt-2 block text-lg font-extrabold leading-tight text-slate-900 dark:text-white transition hover:text-[#0B3558] dark:hover:text-blue-400">
                   {product.title}
                 </Link>
                 <p className="mt-1 text-xs font-semibold uppercase tracking-[0.15em] text-[#00A67E]">{metaLabel ?? product.category}</p>
               </div>
-              <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-bold text-slate-700">Qty {quantity}</span>
+              <span className="rounded-full bg-slate-100 dark:bg-slate-800 px-3 py-1 text-xs font-bold text-slate-700 dark:text-slate-300">Qty {quantity}</span>
             </div>
 
             <div className="mt-3 flex flex-wrap items-end gap-2">
               <span className="text-2xl font-extrabold text-slate-900">{priceLabel}</span>
-              <span className="text-sm text-slate-400 line-through">{originalPriceLabel}</span>
+              <span className="text-sm text-slate-400 dark:text-slate-500 line-through">{originalPriceLabel}</span>
               <span className="text-xs font-bold text-emerald-700">{discountLabel}</span>
             </div>
 
             <div className="mt-4 flex flex-wrap gap-2">
-              <button type="button" className="rounded-xl border border-slate-300 px-3 py-2 text-sm font-bold text-slate-700 transition hover:bg-slate-50" onClick={() => marketplace.decrementCartItem(product.id)}>
+              <button type="button" className="rounded-xl border border-slate-300 dark:border-slate-600 px-3 py-2 text-sm font-bold text-slate-700 dark:text-slate-300 transition hover:bg-slate-50 dark:hover:bg-slate-800" onClick={() => marketplace.decrementCartItem(product.id)}>
                 -
               </button>
-              <button type="button" className="rounded-xl border border-slate-300 px-3 py-2 text-sm font-bold text-slate-700 transition hover:bg-slate-50" onClick={() => marketplace.increaseCartQuantity(product.id, 1)}>
+              <button type="button" className="rounded-xl border border-slate-300 dark:border-slate-600 px-3 py-2 text-sm font-bold text-slate-700 dark:text-slate-300 transition hover:bg-slate-50 dark:hover:bg-slate-800" onClick={() => marketplace.increaseCartQuantity(product.id, 1)}>
                 +
               </button>
               <button

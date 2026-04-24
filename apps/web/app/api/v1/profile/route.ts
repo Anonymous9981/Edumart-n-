@@ -4,12 +4,18 @@ import { NextRequest } from 'next/server'
 
 import { prisma } from '@/lib/prisma'
 import { errorResponse, successResponse } from '@/lib/response'
+import { enforceApiRateLimit } from '@/lib/api-rate-limit'
 import { requireAuthenticatedAppUser } from '@/lib/supabase/request-auth'
 
 export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
 
 export async function GET(request: NextRequest) {
+  const limited = enforceApiRateLimit(request, { scope: 'profile:read', maxRequests: 60, windowMs: 60_000 })
+  if (limited) {
+    return limited
+  }
+
   const auth = await requireAuthenticatedAppUser(request, [UserRole.CUSTOMER, UserRole.VENDOR, UserRole.ADMIN])
   if (!auth.user) {
     return errorResponse(auth.message, auth.status)
@@ -51,6 +57,11 @@ export async function GET(request: NextRequest) {
 }
 
 export async function PUT(request: NextRequest) {
+  const limited = enforceApiRateLimit(request, { scope: 'profile:update', maxRequests: 20, windowMs: 60_000 })
+  if (limited) {
+    return limited
+  }
+
   const auth = await requireAuthenticatedAppUser(request, [UserRole.CUSTOMER, UserRole.VENDOR, UserRole.ADMIN])
   if (!auth.user) {
     return errorResponse(auth.message, auth.status)

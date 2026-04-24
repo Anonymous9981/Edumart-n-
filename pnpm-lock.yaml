@@ -203,6 +203,9 @@ importers:
       jose:
         specifier: ^5.1.0
         version: 5.10.0
+      lucide-react:
+        specifier: ^1.8.0
+        version: 1.8.0(react@18.2.0)
       next:
         specifier: ^15.5.15
         version: 15.5.15(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
@@ -4866,6 +4869,11 @@ packages:
   lru-cache@6.0.0:
     resolution: {integrity: sha512-Jo6dJ04CmSjuznwJSS3pUeWmd/H0ffTlkXXgwZi+eq1UCmqQwCh+eLsYOYCwY991i2Fah4h1BEMCx4qThGbsiA==}
     engines: {node: '>=10'}
+
+  lucide-react@1.8.0:
+    resolution: {integrity: sha512-WuvlsjngSk7TnTBJ1hsCy3ql9V9VOdcPkd3PKcSmM34vJD8KG6molxz7m7zbYFgICwsanQWmJ13JlYs4Zp7Arw==}
+    peerDependencies:
+      react: ^16.5.1 || ^17.0.0 || ^18.0.0 || ^19.0.0
 
   make-dir@2.1.0:
     resolution: {integrity: sha512-LS9X+dc8KLxXCb8dni79fLIIUA5VyZoyjSMCwTluaXA0o27cCK0bhXkpgw+sTXVpPy/lSO57ilRixqk0vDmtRA==}
@@ -12481,6 +12489,10 @@ snapshots:
   lru-cache@6.0.0:
     dependencies:
       yallist: 4.0.0
+
+  lucide-react@1.8.0(react@18.2.0):
+    dependencies:
+      react: 18.2.0
 
   make-dir@2.1.0:
     dependencies:

@@ -78,6 +78,7 @@ enum NotificationType {
 
 model User {
   id            String    @id @default(cuid())
+  supabaseAuthId String?  @unique @db.Uuid
   email         String    @unique @db.VarChar(255)
   passwordHash  String?   @db.Text // NULL for OAuth users
   role          UserRole  @default(CUSTOMER)
@@ -112,6 +113,7 @@ model User {
   deletedAt        DateTime?
 
   @@index([email])
+  @@index([supabaseAuthId])
   @@index([role])
   @@index([accountStatus])
   @@index([isActive])

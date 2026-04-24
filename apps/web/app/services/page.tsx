@@ -53,7 +53,7 @@ export default function ServicesPage() {
             </div>
             <h2 className="mt-4 text-xl font-extrabold text-slate-900">{service.title}</h2>
             <p className="mt-2 text-sm leading-6 text-slate-600">{service.description}</p>
-            <p className="mt-4 text-sm font-bold text-[#0B3558] transition group-hover:text-[#00A67E]">Open section -&gt;</p>
+            <p className="mt-4 text-sm font-bold text-amber-600 dark:text-amber-400 transition group-hover:text-[#00A67E]">Open section -&gt;</p>
           </Link>
         ))}
       </div>

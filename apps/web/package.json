@@ -11,7 +11,9 @@
     "lint:fix": "next lint --fix",
     "type-check": "tsc --noEmit",
     "db:push": "prisma db push",
-    "db:migrate": "prisma migrate dev"
+    "db:migrate": "prisma migrate dev",
+    "db:migrate:deploy": "prisma migrate deploy",
+    "db:seed:baseline": "tsx ../../scripts/seed-baseline.ts"
   },
   "dependencies": {
     "@edumart/config": "workspace:*",
@@ -29,6 +31,7 @@
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.0.0",
     "jose": "^5.1.0",
+    "lucide-react": "^1.8.0",
     "next": "^15.5.15",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
